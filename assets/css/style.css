@@ -1,0 +1,1051 @@
+/* ==========================================================
+   STRIVELY — style.css
+   Arquivo global de estilos do projeto.
+   Todas as páginas importam este arquivo via head.php
+   ========================================================== */
+
+
+/* ----------------------------------------------------------
+   IMPORTAÇÃO DE FONTES
+   - Bebas Neue: títulos, navbar, números grandes
+   - Outfit: textos, botões, labels, parágrafos
+   ---------------------------------------------------------- */
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&display=swap');
+
+
+/* ----------------------------------------------------------
+   VARIÁVEIS GLOBAIS
+   Centraliza cores, sombras e tamanhos do projeto inteiro.
+   Para mudar uma cor basta alterar aqui — reflete em tudo.
+   ---------------------------------------------------------- */
+:root {
+  /* Cores principais */
+  --green:         #1DB954;                  /* verde principal */
+  --green-dark:    #15923e;                  /* verde escuro para hover */
+  --green-glow:    rgba(29, 185, 84, 0.25);  /* verde translúcido para badges e brilhos */
+
+  /* Cores de fundo */
+  --bg:            #f0f2f0;                  /* fundo geral da página */
+  --card-bg:       #e4e7e4;                  /* fundo dos cards */
+  --card-hover:    #dce0dc;                  /* fundo dos cards no hover */
+
+  /* Cores de texto */
+  --text-main:     #111;                     /* texto principal */
+  --text-muted:    #555;                     /* texto secundário/discreto */
+
+  /* Navbar */
+  --nav-bg:        #1DB954;                  /* fundo da navbar */
+  --nav-height:    64px;                     /* altura fixa da navbar */
+
+  /* Utilitários */
+  --radius:        18px;                     /* arredondamento padrão dos cards */
+  --shadow:        0 4px 24px rgba(0,0,0,0.10);           /* sombra suave padrão */
+  --shadow-hover:  0 10px 40px rgba(29,185,84,0.20);      /* sombra verde no hover */
+}
+
+
+/* ----------------------------------------------------------
+   RESET GLOBAL
+   Remove margin e padding padrão do navegador.
+   box-sizing: border-box faz padding/border entrarem
+   no tamanho total do elemento, evitando surpresas.
+   ---------------------------------------------------------- */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+
+/* ----------------------------------------------------------
+   BASE DO BODY
+   Define fonte padrão, cor de fundo e altura mínima
+   para a página sempre ocupar a tela inteira.
+   ---------------------------------------------------------- */
+body {
+  font-family: 'Outfit', sans-serif;
+  background: var(--bg);
+  color: var(--text-main);
+  min-height: 100vh;
+}
+
+
+/* ----------------------------------------------------------
+   LINKS GLOBAIS
+   Remove sublinhado padrão de todos os links.
+   ---------------------------------------------------------- */
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+
+/* ----------------------------------------------------------
+   LISTAS GLOBAIS
+   Remove marcadores padrão de todas as listas.
+   ---------------------------------------------------------- */
+ul {
+  list-style: none;
+}
+
+
+/* ==========================================================
+   NAVBAR / HEADER
+   Barra de navegação fixa no topo da página.
+   Usada em todas as páginas via include do header.php
+   ========================================================== */
+
+/* Container principal do header —
+   ocupa toda a largura e fica colado no topo ao rolar */
+header {
+  position: sticky;       /* fica fixo no topo ao scrollar */
+  top: 0;
+  z-index: 100;           /* fica acima de todo conteúdo da página */
+  width: 100%;
+}
+
+/* A nav dentro do header:
+   flexbox para alinhar logo à esquerda e links à direita */
+header nav {
+  background: var(--nav-bg);
+  display: flex;
+  align-items: center;            /* alinha verticalmente ao centro */
+  justify-content: space-between; /* logo na esquerda, links na direita */
+  padding: 0 40px;
+  height: var(--nav-height);
+  box-shadow: 0 2px 16px rgba(29, 185, 84, 0.3); /* sombra verde abaixo da nav */
+}
+
+/* ----------------------------------------------------------
+   LOGO / MARCA
+   ---------------------------------------------------------- */
+
+/* Container do logo — alinha ícone e texto lado a lado */
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;           /* espaço entre o ícone e o texto */
+}
+
+/* Caixa branca quadrada que envolve o ícone SVG */
+.nav-brand .logo-icon {
+  width: 42px;
+  height: 42px;
+  background: #fff;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;   /* necessário para o chão se posicionar dentro */
+  overflow: hidden;   
+}
+
+/* O SVG do ícone — preenchido com verde */
+.nav-brand .logo-icon svg {
+  width: 34px;
+  height: 34px;
+  fill: var(--green);
+}
+
+/* Texto "Strively" ao lado do ícone */
+.nav-brand span {
+  font-family: 'Bebas Neue', sans-serif; /* fonte display para o nome da marca */
+  font-size: 1.45rem;
+  letter-spacing: 1.5px;
+  color: #fff;
+}
+
+/* ----------------------------------------------------------
+   LINKS DE NAVEGAÇÃO
+   ---------------------------------------------------------- */
+
+/* Lista horizontal dos links */
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 6px;             /* espaço entre os itens */
+}
+
+/* Estilo de cada link individual */
+.nav-links a {
+  color: #fff;
+  font-size: 0.88rem;
+  font-weight: 500;
+  padding: 6px 14px;
+  border-radius: 8px;
+  letter-spacing: 0.3px;
+  transition: background 0.2s; /* suaviza a mudança de fundo no hover */
+}
+
+/* Hover e estado ativo (página atual) dos links */
+.nav-links a:hover,
+.nav-links a.active {
+  background: rgba(0, 0, 0, 0.15); /* fundo levemente escurecido */
+}
+
+/* Botão de Login — aparência invertida (fundo branco, texto verde) */
+.nav-login {
+  background: #fff !important;      /* sobrescreve o fundo padrão do link */
+  color: var(--green) !important;   /* texto verde */
+  font-weight: 700 !important;
+  border-radius: 8px;
+}
+
+/* Hover do botão de Login */
+.nav-login:hover {
+  background: #f0f0f0 !important;
+}
+
+
+/* ==========================================================
+   RESPONSIVIDADE — MEDIA QUERIES
+   Adapta o layout para tablets e celulares
+   ========================================================== */
+
+/* Tablet — telas até 900px */
+@media (max-width: 900px) {
+  header nav {
+    padding: 0 24px;
+  }
+}
+
+/* Celular — telas até 560px */
+@media (max-width: 560px) {
+  header nav {
+    padding: 0 18px;
+  }
+
+  .nav-links {
+    gap: 2px;
+  }
+
+  .nav-links a {
+    padding: 6px 8px;
+    font-size: 0.78rem;
+  }
+
+  /* Esconde "Divulgue Eventos" e "Equipamentos" no celular
+     para não lotar a navbar em tela pequena */
+  .nav-links li:nth-child(3),
+  .nav-links li:nth-child(4) {
+    display: none;
+  }
+}
+/* ==========================================================
+   PÁGINA INICIAL — index.php
+   Hero centralizado + seção explicativa
+   ========================================================== */
+
+
+/* ----------------------------------------------------------
+   HERO — seção principal centralizada
+   Ocupa a tela inteira menos a altura do navbar
+   ---------------------------------------------------------- */
+.hero {
+  display: flex;
+  flex-direction: column;   /* empilha título, slogan e botões verticalmente */
+  align-items: center;      /* centraliza horizontalmente */
+  justify-content: center;  /* centraliza verticalmente */
+  text-align: center;
+  min-height: calc(100vh - var(--nav-height)); /* tela inteira menos o navbar */
+  padding: 40px 24px;
+}
+
+/* Título principal do hero — grande e impactante */
+.hero h1 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 5rem;          /* bem grande para impacto visual */
+  letter-spacing: 3px;
+  line-height: 1;
+  color: var(--text-main);
+}
+
+/* A palavra destacada em verde dentro do h1 */
+.hero h1 span {
+  color: var(--green);
+}
+
+/* Slogan abaixo do título */
+.hero p {
+  font-size: 1.1rem;
+  font-weight: 400;
+  color: var(--text-muted);
+  margin-top: 16px;
+  max-width: 480px;         /* limita a largura para não ficar muito espalhado */
+  line-height: 1.6;
+}
+
+/* Container dos botões do hero */
+.hero-buttons {
+  display: flex;
+  gap: 12px;                /* espaço entre os botões */
+  margin-top: 32px;
+  flex-wrap: wrap;          /* quebra linha em telas pequenas */
+  justify-content: center;
+}
+
+/* Botão primário — fundo verde */
+.btn-primary {
+  background: var(--green);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 13px 32px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+  text-decoration: none;    /* para funcionar como link também */
+  display: inline-block;
+}
+
+/* Hover do botão primário */
+.btn-primary:hover {
+  background: var(--green-dark);
+  transform: scale(1.03);   /* cresce levemente */
+}
+
+/* Botão secundário — contorno verde, fundo transparente */
+.btn-secondary {
+  background: transparent;
+  color: var(--green);
+  border: 2px solid var(--green);
+  border-radius: 10px;
+  padding: 11px 32px;       /* 2px a menos no padding para compensar a borda */
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, transform 0.15s;
+  text-decoration: none;
+  display: inline-block;
+}
+
+/* Hover do botão secundário — preenche com verde */
+.btn-secondary:hover {
+  background: var(--green);
+  color: #fff;
+  transform: scale(1.03);
+}
+
+
+/* ----------------------------------------------------------
+   SEÇÃO EXPLICATIVA — "Como funciona o Strively"
+   Três cards lado a lado explicando as funcionalidades
+   ---------------------------------------------------------- */
+.sobre {
+  padding: 80px 60px;
+  text-align: center;
+}
+
+/* Título da seção */
+.sobre h2 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2.5rem;
+  letter-spacing: 2px;
+  color: var(--text-main);
+  margin-bottom: 8px;
+}
+
+/* Subtítulo da seção */
+.sobre p.subtitulo {
+  font-size: 1rem;
+  color: var(--text-muted);
+  margin-bottom: 48px;
+}
+
+/* Grid dos cards explicativos — 3 colunas */
+.sobre-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 colunas iguais */
+  gap: 24px;
+  max-width: 1000px;
+  margin: 0 auto;            /* centraliza o grid */
+}
+
+/* Card individual da seção explicativa */
+.sobre-card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: 36px 28px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;       /* centraliza o conteúdo */
+  gap: 12px;
+  box-shadow: var(--shadow);
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+}
+
+/* Hover do card — levita levemente */
+.sobre-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-hover);
+}
+
+/* Ícone emoji ou SVG grande no topo do card */
+.sobre-card .icone {
+  font-size: 2.5rem;         /* tamanho do emoji */
+  line-height: 1;
+}
+
+/* Título do card */
+.sobre-card h3 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.3rem;
+  letter-spacing: 1px;
+  color: var(--text-main);
+}
+
+/* Descrição do card */
+.sobre-card p {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+  text-align: center;
+}
+
+
+/* ----------------------------------------------------------
+   RESPONSIVIDADE DA PÁGINA INICIAL
+   ---------------------------------------------------------- */
+
+/* Tablet */
+@media (max-width: 900px) {
+  .hero h1 {
+    font-size: 3.5rem;       /* título menor em tablet */
+  }
+
+  .sobre {
+    padding: 60px 24px;
+  }
+
+  .sobre-grid {
+    grid-template-columns: repeat(2, 1fr); /* 2 colunas em tablet */
+  }
+}
+
+/* Celular */
+@media (max-width: 560px) {
+  .hero h1 {
+    font-size: 2.8rem;       /* título menor no celular */
+  }
+
+  .hero p {
+    font-size: 0.95rem;
+  }
+
+  .sobre-grid {
+    grid-template-columns: 1fr; /* 1 coluna no celular */
+  }
+}
+/* ==========================================================
+   AUTENTICAÇÃO — login.php e cadastro.php
+   Adicione este bloco no final do seu style.css
+   ========================================================== */
+
+
+/* ----------------------------------------------------------
+   SEÇÃO PRINCIPAL
+   Centraliza o card na tela inteira menos o navbar
+   ---------------------------------------------------------- */
+.auth-section {
+  display: flex;
+  align-items: center;       /* centraliza verticalmente */
+  justify-content: center;   /* centraliza horizontalmente */
+  min-height: calc(100vh - var(--nav-height));
+  padding: 40px 24px;
+}
+
+
+/* ----------------------------------------------------------
+   CARD DO FORMULÁRIO
+   Container branco centralizado com sombra
+   ---------------------------------------------------------- */
+.auth-card {
+  background: #fff;
+  border-radius: var(--radius);
+  padding: 40px 36px;
+  width: 100%;
+  max-width: 420px;          /* largura máxima do card */
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+
+/* ----------------------------------------------------------
+   TÍTULO E SUBTÍTULO DO CARD
+   ---------------------------------------------------------- */
+.auth-titulo {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2.2rem;
+  letter-spacing: 2px;
+  color: var(--text-main);
+  line-height: 1;
+}
+
+.auth-subtitulo {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+
+/* ----------------------------------------------------------
+   MENSAGENS DE ERRO E SUCESSO
+   ---------------------------------------------------------- */
+
+/* Mensagem de erro — fundo vermelho claro */
+.auth-erro {
+  background: #fff0f0;
+  border: 1px solid #ffcccc;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 0.85rem;
+  color: #cc0000;
+}
+
+/* Mensagem de sucesso — fundo verde claro */
+.auth-sucesso {
+  background: #f0fff4;
+  border: 1px solid #b2f5c8;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 0.85rem;
+  color: var(--green-dark);
+}
+
+
+/* ----------------------------------------------------------
+   FORMULÁRIO
+   ---------------------------------------------------------- */
+
+/* Container do formulário — espaçamento entre os grupos */
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 8px;
+}
+
+/* Grupo de campo — label + input empilhados */
+.form-grupo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;                  /* espaço entre o label e o input */
+}
+
+/* Label do campo */
+.form-grupo label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+/* Input do campo */
+.form-grupo input {
+  background: var(--bg);
+  border: 2px solid #ddd;
+  border-radius: 10px;
+  padding: 11px 14px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.92rem;
+  color: var(--text-main);
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;             /* remove o contorno padrão do navegador */
+  width: 100%;
+}
+
+/* Input em foco — borda verde */
+.form-grupo input:focus {
+  border-color: var(--green);
+  box-shadow: 0 0 0 3px var(--green-glow); /* anel verde translúcido */
+}
+
+/* Input com erro — borda vermelha */
+.form-grupo input.erro {
+  border-color: #cc0000;
+}
+
+
+/* ----------------------------------------------------------
+   BOTÃO FULL WIDTH
+   Variante do btn-primary que ocupa 100% do card
+   ---------------------------------------------------------- */
+.btn-full {
+  width: 100%;
+  text-align: center;
+  padding: 13px 0;
+  margin-top: 4px;
+}
+
+
+/* ----------------------------------------------------------
+   LINK DE RODAPÉ DO CARD
+   Ex: "Não tem uma conta? Criar conta grátis"
+   ---------------------------------------------------------- */
+.auth-link {
+  text-align: center;
+  font-size: 0.87rem;
+  color: var(--text-muted);
+  margin-top: 8px;
+}
+
+.auth-link a {
+  color: var(--green);
+  font-weight: 600;
+  transition: color 0.2s;
+}
+
+.auth-link a:hover {
+  color: var(--green-dark);
+}
+
+
+/* ----------------------------------------------------------
+   RESPONSIVIDADE
+   ---------------------------------------------------------- */
+
+/* Celular — card ocupa tela inteira com menos padding */
+@media (max-width: 480px) {
+  .auth-card {
+    padding: 28px 20px;
+  }
+
+  .auth-titulo {
+    font-size: 1.8rem;
+  }
+}
+/* ==========================================================
+   NAVBAR — USUÁRIO LOGADO
+   Avatar, nome e dropdown menu
+   Adicione este bloco no final do seu style.css
+   ========================================================== */
+
+
+/* ----------------------------------------------------------
+   CONTAINER DO USUÁRIO NA NAVBAR
+   Posição relative para o dropdown se posicionar abaixo
+   ---------------------------------------------------------- */
+.nav-usuario {
+  position: relative; /* o dropdown usa isso como referência de posição */
+}
+
+
+/* ----------------------------------------------------------
+   BOTÃO DO AVATAR
+   Fundo transparente, sem borda, alinha foto + nome + seta
+   ---------------------------------------------------------- */
+.nav-avatar-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;               /* espaço entre avatar, nome e seta */
+  padding: 4px 8px;
+  border-radius: 8px;
+  transition: background 0.2s;
+}
+
+/* Hover no botão do avatar */
+.nav-avatar-btn:hover {
+  background: rgba(0, 0, 0, 0.15);
+}
+
+
+/* ----------------------------------------------------------
+   AVATAR — foto de perfil
+   ---------------------------------------------------------- */
+.nav-avatar-img {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;     /* formato circular */
+  object-fit: cover;      /* corta a imagem para caber no círculo */
+  border: 2px solid #fff;
+}
+
+
+/* ----------------------------------------------------------
+   AVATAR — boneco padrão (quando não tem foto)
+   Círculo branco com ícone SVG preto dentro
+   ---------------------------------------------------------- */
+.nav-avatar-padrao {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;     /* formato circular */
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;         /* não encolhe */
+  border: 2px solid rgba(255,255,255,0.5);
+}
+
+/* SVG do boneco dentro do círculo */
+.nav-avatar-padrao svg {
+  width: 20px;
+  height: 20px;
+  fill: #111;             /* boneco preto */
+}
+
+
+/* ----------------------------------------------------------
+   NOME DO USUÁRIO ao lado do avatar
+   ---------------------------------------------------------- */
+.nav-usuario-nome {
+  color: #fff;
+  font-size: 0.88rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+
+/* ----------------------------------------------------------
+   SETA DO DROPDOWN
+   SVG pequeno que indica que tem menu abaixo
+   ---------------------------------------------------------- */
+.nav-seta {
+  width: 18px;
+  height: 18px;
+  fill: #fff;
+  transition: transform 0.2s; /* rotaciona quando o dropdown abre */
+}
+
+/* Rotaciona a seta quando o dropdown está aberto */
+.nav-dropdown.aberto ~ .nav-avatar-btn .nav-seta,
+.nav-avatar-btn:has(+ .nav-dropdown.aberto) .nav-seta {
+  transform: rotate(180deg);
+}
+
+
+/* ----------------------------------------------------------
+   DROPDOWN MENU
+   Aparece abaixo do avatar ao clicar
+   ---------------------------------------------------------- */
+.nav-dropdown {
+  position: absolute;     /* posiciona relativo ao .nav-usuario */
+  top: calc(100% + 10px); /* 10px abaixo do botão */
+  right: 0;               /* alinhado pela direita */
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+  min-width: 200px;
+  padding: 8px;
+  z-index: 200;           /* acima de tudo */
+
+  /* Escondido por padrão */
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-8px); /* começa levemente acima */
+  transition: opacity 0.18s ease,
+              visibility 0.18s ease,
+              transform 0.18s ease;
+}
+
+/* Quando a classe .aberto é adicionada via JS — aparece */
+.nav-dropdown.aberto {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+
+/* ----------------------------------------------------------
+   ITEM DO DROPDOWN
+   Cada linha do menu com ícone + texto
+   ---------------------------------------------------------- */
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;              /* espaço entre ícone e texto */
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--text-main);
+  transition: background 0.15s;
+  text-decoration: none;
+}
+
+/* Hover nos itens */
+.dropdown-item:hover {
+  background: var(--bg);
+}
+
+/* SVG dos ícones dos itens */
+.dropdown-item svg {
+  width: 18px;
+  height: 18px;
+  fill: var(--text-muted);
+  flex-shrink: 0;
+}
+
+
+/* ----------------------------------------------------------
+   LINHA DIVISÓRIA no dropdown
+   ---------------------------------------------------------- */
+.dropdown-divider {
+  height: 1px;
+  background: #eee;
+  margin: 4px 0;
+}
+
+
+/* ----------------------------------------------------------
+   ITEM SAIR — vermelho para destacar
+   ---------------------------------------------------------- */
+.dropdown-sair {
+  color: #cc0000;         /* texto vermelho */
+}
+
+.dropdown-sair svg {
+  fill: #cc0000;          /* ícone vermelho */
+}
+
+.dropdown-sair:hover {
+  background: #fff0f0;    /* fundo vermelho claro no hover */
+}
+/* Garante cor escura nos itens do dropdown */
+.nav-dropdown .dropdown-item {
+  color: #111 !important;
+}
+
+/* ==========================================================
+   EVENTOS PAGE — pages/eventos.php
+   Centraliza header + grid de eventos
+   ========================================================== */
+.eventos-section {
+  padding: 60px 24px;
+}
+
+.eventos-header,
+.eventos-grid {
+  max-width: 1200px;
+  margin: 0 auto 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.eventos-header h1 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 2.5rem;
+  letter-spacing: 2px;
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .eventos-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 20px;
+    text-align: center;
+  }
+  
+  .eventos-header h1 {
+    font-size: 2rem;
+  }
+}
+
+/* Estado vazio da página de eventos */
+.eventos-vazio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 80px 24px;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.eventos-vazio-icone {
+  font-size: 3.5rem;
+  margin-bottom: 16px;
+}
+
+.eventos-vazio h2 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.8rem;
+  letter-spacing: 1.5px;
+  color: var(--text-main);
+  margin-bottom: 8px;
+}
+
+.eventos-vazio p {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+/* ==========================================================
+   PERFIL DO USUÁRIO — pages/perfil.php
+   Adicione este bloco no final do seu style.css
+   ========================================================== */
+
+
+/* ----------------------------------------------------------
+   SEÇÃO PRINCIPAL — centraliza o card na tela
+   ---------------------------------------------------------- */
+.perfil-section {
+  display: flex;
+  align-items: flex-start;    /* alinha pelo topo */
+  justify-content: center;
+  min-height: calc(100vh - var(--nav-height));
+  padding: 48px 24px;
+}
+
+
+/* ----------------------------------------------------------
+   CARD PRINCIPAL DO PERFIL
+   ---------------------------------------------------------- */
+.perfil-card {
+  background: #fff;
+  border-radius: var(--radius);
+  padding: 40px 36px;
+  width: 100%;
+  max-width: 480px;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+
+/* ----------------------------------------------------------
+   ÁREA DO AVATAR — foto + tipo de usuário
+   ---------------------------------------------------------- */
+.perfil-avatar-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+/* Container da foto — posição relative para o botão de editar */
+.perfil-avatar {
+  position: relative;
+  width: 110px;
+  height: 110px;
+}
+
+/* Foto de perfil real */
+.perfil-foto {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;         /* formato circular */
+  object-fit: cover;          /* corta a imagem para caber */
+  border: 4px solid var(--green);
+  display: block;
+}
+
+/* Boneco padrão quando não tem foto */
+.perfil-avatar-padrao {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  background: var(--card-bg);
+  border: 4px solid var(--green);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* SVG do boneco padrão */
+.perfil-avatar-padrao svg {
+  width: 60px;
+  height: 60px;
+  fill: var(--text-muted);
+}
+
+/* Botão de editar foto — círculo verde no canto inferior direito */
+.perfil-editar-foto {
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  width: 32px;
+  height: 32px;
+  background: var(--green);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: 2px solid #fff;
+  transition: background 0.2s, transform 0.15s;
+}
+
+/* Hover no botão de editar foto */
+.perfil-editar-foto:hover {
+  background: var(--green-dark);
+  transform: scale(1.1);
+}
+
+/* Ícone de câmera dentro do botão */
+.perfil-editar-foto svg {
+  width: 16px;
+  height: 16px;
+  fill: #fff;
+}
+
+
+/* ----------------------------------------------------------
+   BADGES DE TIPO DE USUÁRIO
+   ---------------------------------------------------------- */
+.badge-corredor,
+.badge-treinador {
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  padding: 5px 14px;
+  border-radius: 100px;
+}
+
+/* Badge corredor — verde translúcido */
+.badge-corredor {
+  background: var(--green-glow);
+  color: var(--green-dark);
+}
+
+/* Badge treinador — verde sólido */
+.badge-treinador {
+  background: var(--green);
+  color: #fff;
+}
+
+
+/* ----------------------------------------------------------
+   FORMULÁRIO DE EDIÇÃO
+   ---------------------------------------------------------- */
+.perfil-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Input desabilitado — email */
+.input-desabilitado {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Dica abaixo do input */
+.form-hint {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+
+/* ----------------------------------------------------------
+   RESPONSIVIDADE
+   ---------------------------------------------------------- */
+@media (max-width: 480px) {
+  .perfil-card {
+    padding: 28px 20px;
+  }
+}
