@@ -13,14 +13,14 @@ use PHPMailer\PHPMailer\Exception;
 require_once '../config/conexao.php'; // Carrega o vendor/autoload.php e Dotenv
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header('Location: /Strively/pages/esqueci-senha.php');
+    header('Location: /pages/esqueci-senha.php');
     exit();
 }
 
 $email = trim($_POST['email'] ?? '');
 
 if (empty($email)) {
-    header('Location: /Strively/pages/esqueci-senha.php?erro=nao_encontrado');
+    header('Location: /pages/esqueci-senha.php?erro=nao_encontrado');
     exit();
 }
 
@@ -29,7 +29,7 @@ $stmt = $pdo->prepare("SELECT id FROM usuarios WHERE email = ?");
 $stmt->execute([$email]);
 if (!$stmt->fetch()) {
     // Por segurança e UX, retorna o mesmo erro genérico
-    header('Location: /Strively/pages/esqueci-senha.php?erro=nao_encontrado');
+    header('Location: /pages/esqueci-senha.php?erro=nao_encontrado');
     exit();
 }
 
@@ -77,9 +77,9 @@ try {
     $mail->send();
     
     // Sucesso envia para a etapa do código
-    header('Location: /Strively/pages/esqueci-senha.php?etapa=codigo');
+    header('Location: /pages/esqueci-senha.php?etapa=codigo');
     exit();
 } catch (Exception $e) {
-    header('Location: /Strively/pages/esqueci-senha.php?erro=falha_email');
+    header('Location: /pages/esqueci-senha.php?erro=falha_email');
     exit();
 }

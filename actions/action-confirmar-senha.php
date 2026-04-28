@@ -9,7 +9,7 @@ require_once '../components/header.php';
 require_once '../config/conexao.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_SESSION['id'])) {
-    header('Location: /Strively/pages/configuracoes.php');
+    header('Location: /pages/configuracoes.php');
     exit();
 }
 
@@ -21,7 +21,7 @@ $novaSenhaTemp = $_SESSION['nova_senha_temp'] ?? '';
 
 // 1. Validar se o código bate
 if (empty($codigoDigitado) || $codigoDigitado !== $codigoCorreto) {
-    header('Location: /Strively/pages/configuracoes.php?etapa=verificacao&erro=codigo_invalido');
+    header('Location: /pages/configuracoes.php?etapa=verificacao&erro=codigo_invalido');
     exit();
 }
 
@@ -30,7 +30,7 @@ if (time() > $codigoExpira) {
     // Por segurança, força ele a solicitar de novo
     unset($_SESSION['codigo_verificacao'], $_SESSION['codigo_expira'], $_SESSION['nova_senha_temp']);
     
-    header('Location: /Strively/pages/configuracoes.php?etapa=verificacao&erro=codigo_expirado');
+    header('Location: /pages/configuracoes.php?etapa=verificacao&erro=codigo_expirado');
     exit();
 }
 
@@ -42,5 +42,5 @@ $stmt->execute([$novaSenhaTemp, $_SESSION['id']]);
 unset($_SESSION['codigo_verificacao'], $_SESSION['codigo_expira'], $_SESSION['nova_senha_temp']);
 
 // 5. Retorna com mensagem de sucesso
-header('Location: /Strively/pages/configuracoes.php?msg=senha_alterada');
+header('Location: /pages/configuracoes.php?msg=senha_alterada');
 exit();

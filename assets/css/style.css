@@ -1,54 +1,60 @@
 /* ==========================================================
    STRIVELY — style.css
-   Arquivo global de estilos do projeto.
-   Todas as páginas importam este arquivo via head.php
+   Design System v2 — Moderno, minimalista, refinado
    ========================================================== */
 
-
-/* ----------------------------------------------------------
-   IMPORTAÇÃO DE FONTES
-   - Bebas Neue: títulos, navbar, números grandes
-   - Outfit: textos, botões, labels, parágrafos
-   ---------------------------------------------------------- */
 @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Outfit:wght@300;400;500;600;700&display=swap');
 
-
 /* ----------------------------------------------------------
-   VARIÁVEIS GLOBAIS
-   Centraliza cores, sombras e tamanhos do projeto inteiro.
-   Para mudar uma cor basta alterar aqui — reflete em tudo.
+   DESIGN TOKENS
    ---------------------------------------------------------- */
 :root {
-  /* Cores principais */
-  --green:         #1DB954;                  /* verde principal */
-  --green-dark:    #15923e;                  /* verde escuro para hover */
-  --green-glow:    rgba(29, 185, 84, 0.25);  /* verde translúcido para badges e brilhos */
+  /* Cor primária */
+  --green:          #1DB954;
+  --green-dark:     #17a348;
+  --green-deeper:   #0f7a34;
+  --green-tint:     rgba(29, 185, 84, 0.08);
+  --green-glow:     rgba(29, 185, 84, 0.18);
 
-  /* Cores de fundo */
-  --bg:            #f0f2f0;                  /* fundo geral da página */
-  --card-bg:       #e4e7e4;                  /* fundo dos cards */
-  --card-hover:    #dce0dc;                  /* fundo dos cards no hover */
+  /* Superfícies — escala bem calibrada, não cinza demais */
+  --bg:             #f5f6f5;
+  --surface:        #ffffff;
+  --surface-2:      #f0f1f0;
+  --border:         rgba(0, 0, 0, 0.07);
+  --border-strong:  rgba(0, 0, 0, 0.13);
 
-  /* Cores de texto */
-  --text-main:     #111;                     /* texto principal */
-  --text-muted:    #555;                     /* texto secundário/discreto */
+  /* Tipografia */
+  --text-primary:   #0d0d0d;
+  --text-secondary: #4a4a4a;
+  --text-tertiary:  #8a8a8a;
 
   /* Navbar */
-  --nav-bg:        #1DB954;                  /* fundo da navbar */
-  --nav-height:    64px;                     /* altura fixa da navbar */
+  --nav-bg:         #1DB954;
+  --nav-height:     60px;
 
-  /* Utilitários */
-  --radius:        18px;                     /* arredondamento padrão dos cards */
-  --shadow:        0 4px 24px rgba(0,0,0,0.10);           /* sombra suave padrão */
-  --shadow-hover:  0 10px 40px rgba(29,185,84,0.20);      /* sombra verde no hover */
+  /* Espaçamentos */
+  --radius-xs:      6px;
+  --radius-sm:      10px;
+  --radius-md:      14px;
+  --radius-lg:      20px;
+  --radius-xl:      28px;
+  --radius-full:    9999px;
+
+  /* Sombras — sutis, modernas */
+  --shadow-xs:      0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-sm:      0 2px 8px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04);
+  --shadow-md:      0 4px 16px rgba(0,0,0,0.08), 0 2px 6px rgba(0,0,0,0.04);
+  --shadow-lg:      0 8px 32px rgba(0,0,0,0.10), 0 3px 8px rgba(0,0,0,0.05);
+  --shadow-green:   0 8px 28px rgba(29, 185, 84, 0.22);
+
+  /* Transições */
+  --ease:           cubic-bezier(0.4, 0, 0.2, 1);
+  --duration:       200ms;
+  --transition:     var(--duration) var(--ease);
 }
 
-
 /* ----------------------------------------------------------
-   RESET GLOBAL
-   Remove margin e padding padrão do navegador.
-   box-sizing: border-box faz padding/border entrarem
-   no tamanho total do elemento, evitando surpresas.
+   RESET & BASE
    ---------------------------------------------------------- */
 *, *::before, *::after {
   box-sizing: border-box;
@@ -56,996 +62,1029 @@
   padding: 0;
 }
 
+html {
+  scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
 
-/* ----------------------------------------------------------
-   BASE DO BODY
-   Define fonte padrão, cor de fundo e altura mínima
-   para a página sempre ocupar a tela inteira.
-   ---------------------------------------------------------- */
 body {
   font-family: 'Outfit', sans-serif;
   background: var(--bg);
-  color: var(--text-main);
+  color: var(--text-primary);
   min-height: 100vh;
+  line-height: 1.6;
 }
 
-
-/* ----------------------------------------------------------
-   LINKS GLOBAIS
-   Remove sublinhado padrão de todos os links.
-   ---------------------------------------------------------- */
-a {
-  text-decoration: none;
-  color: inherit;
-}
-
-
-/* ----------------------------------------------------------
-   LISTAS GLOBAIS
-   Remove marcadores padrão de todas as listas.
-   ---------------------------------------------------------- */
-ul {
-  list-style: none;
-}
-
+a    { text-decoration: none; color: inherit; }
+ul   { list-style: none; }
+img  { display: block; max-width: 100%; }
+button { font-family: 'Outfit', sans-serif; cursor: pointer; }
 
 /* ==========================================================
-   NAVBAR / HEADER
-   Barra de navegação fixa no topo da página.
-   Usada em todas as páginas via include do header.php
+   NAVBAR
    ========================================================== */
-
-/* Container principal do header —
-   ocupa toda a largura e fica colado no topo ao rolar */
 header {
-  position: sticky;       /* fica fixo no topo ao scrollar */
+  position: sticky;
   top: 0;
-  z-index: 100;           /* fica acima de todo conteúdo da página */
+  z-index: 100;
   width: 100%;
 }
 
-/* A nav dentro do header:
-   flexbox para alinhar logo à esquerda e links à direita */
 header nav {
   background: var(--nav-bg);
   display: flex;
-  align-items: center;            /* alinha verticalmente ao centro */
-  justify-content: space-between; /* logo na esquerda, links na direita */
-  padding: 0 40px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 36px;
   height: var(--nav-height);
-  box-shadow: 0 2px 16px rgba(29, 185, 84, 0.3); /* sombra verde abaixo da nav */
+  /* Sombra ultra-sutil — sem o verde berrante do antes */
+  box-shadow: 0 1px 0 rgba(0,0,0,0.08);
 }
 
-/* ----------------------------------------------------------
-   LOGO / MARCA
-   ---------------------------------------------------------- */
-
-/* Container do logo — alinha ícone e texto lado a lado */
+/* Logo */
 .nav-brand {
   display: flex;
   align-items: center;
-  gap: 10px;           /* espaço entre o ícone e o texto */
+  gap: 9px;
+  transition: opacity var(--transition);
 }
+.nav-brand:hover { opacity: 0.88; }
 
-/* Caixa branca quadrada que envolve o ícone SVG */
 .nav-brand .logo-icon {
-  width: 42px;
-  height: 42px;
-  background: #fff;
-  border-radius: 8px;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
-  position: relative;   /* necessário para o chão se posicionar dentro */
-  overflow: hidden;   
+  background: rgba(255,255,255,0.15);
+  /* Borda translúcida sutil */
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.25);
 }
 
-/* O SVG do ícone — preenchido com verde */
+.nav-brand .logo-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: var(--radius-sm);
+}
+
 .nav-brand .logo-icon svg {
-  width: 34px;
-  height: 34px;
+  width: 32px;
+  height: 32px;
   fill: var(--green);
 }
 
-/* Texto "Strively" ao lado do ícone */
 .nav-brand span {
-  font-family: 'Bebas Neue', sans-serif; /* fonte display para o nome da marca */
-  font-size: 1.45rem;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.4rem;
   letter-spacing: 1.5px;
   color: #fff;
+  line-height: 1;
 }
 
-/* ----------------------------------------------------------
-   LINKS DE NAVEGAÇÃO
-   ---------------------------------------------------------- */
-
-/* Lista horizontal dos links */
+/* Links de navegação */
 .nav-links {
   display: flex;
   align-items: center;
-  gap: 6px;             /* espaço entre os itens */
+  gap: 2px;
 }
 
-/* Estilo de cada link individual */
 .nav-links a {
-  color: #fff;
-  font-size: 0.88rem;
+  color: rgba(255,255,255,0.90);
+  font-size: 0.85rem;
   font-weight: 500;
-  padding: 6px 14px;
-  border-radius: 8px;
-  letter-spacing: 0.3px;
-  transition: background 0.2s; /* suaviza a mudança de fundo no hover */
+  padding: 6px 12px;
+  border-radius: var(--radius-sm);
+  letter-spacing: 0.2px;
+  transition: background var(--transition), color var(--transition);
 }
 
-/* Hover e estado ativo (página atual) dos links */
-.nav-links a:hover,
-.nav-links a.active {
-  background: rgba(0, 0, 0, 0.15); /* fundo levemente escurecido */
-}
+.nav-links a:hover { background: rgba(0,0,0,0.12); color: #fff; }
+.nav-links a.active { background: rgba(0,0,0,0.15); color: #fff; }
 
-/* Botão de Login — aparência invertida (fundo branco, texto verde) */
+/* Botão Login — pill branco */
 .nav-login {
-  background: #fff !important;      /* sobrescreve o fundo padrão do link */
-  color: var(--green) !important;   /* texto verde */
+  background: #fff !important;
+  color: var(--green) !important;
   font-weight: 700 !important;
-  border-radius: 8px;
+  border-radius: var(--radius-full) !important;
+  padding: 6px 18px !important;
+  letter-spacing: 0.3px !important;
+  transition: background var(--transition), box-shadow var(--transition) !important;
 }
-
-/* Hover do botão de Login */
 .nav-login:hover {
-  background: #f0f0f0 !important;
+  background: #f0faf4 !important;
+  box-shadow: 0 0 0 2px rgba(255,255,255,0.4) !important;
 }
 
+/* Avatar do usuário */
+.nav-usuario { position: relative; }
 
-/* ==========================================================
-   RESPONSIVIDADE — MEDIA QUERIES
-   Adapta o layout para tablets e celulares
-   ========================================================== */
+.nav-avatar-btn {
+  background: transparent;
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 6px 4px 4px;
+  border-radius: var(--radius-full);
+  transition: background var(--transition);
+}
+.nav-avatar-btn:hover { background: rgba(0,0,0,0.12); }
 
-/* Tablet — telas até 900px */
-@media (max-width: 900px) {
-  header nav {
-    padding: 0 24px;
-  }
+.nav-avatar-img {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255,255,255,0.6);
 }
 
-/* Celular — telas até 560px */
-@media (max-width: 560px) {
-  header nav {
-    padding: 0 18px;
-  }
+.nav-avatar-padrao {
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.2);
+  border: 2px solid rgba(255,255,255,0.4);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.nav-avatar-padrao svg { width: 18px; height: 18px; fill: #fff; }
 
-  .nav-links {
-    gap: 2px;
-  }
+.nav-usuario-nome {
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
 
-  .nav-links a {
-    padding: 6px 8px;
-    font-size: 0.78rem;
-  }
+.nav-seta {
+  width: 16px; height: 16px;
+  fill: rgba(255,255,255,0.8);
+  transition: transform var(--transition);
+}
 
-  /* Esconde "Divulgue Eventos" e "Equipamentos" no celular
-     para não lotar a navbar em tela pequena */
+/* Dropdown */
+.nav-dropdown {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  background: var(--surface);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-lg);
+  min-width: 210px;
+  padding: 6px;
+  z-index: 200;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-6px) scale(0.98);
+  transform-origin: top right;
+  transition: opacity 0.16s var(--ease), visibility 0.16s, transform 0.16s var(--ease);
+}
+
+.nav-dropdown.aberto {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0) scale(1);
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 0.86rem;
+  font-weight: 500;
+  color: var(--text-primary) !important;
+  transition: background var(--transition);
+  text-decoration: none;
+}
+.dropdown-item:hover { background: var(--surface-2); }
+
+.dropdown-item svg {
+  width: 17px; height: 17px;
+  fill: var(--text-tertiary);
+  flex-shrink: 0;
+}
+
+.dropdown-divider { height: 1px; background: var(--border); margin: 4px 0; }
+
+.dropdown-sair { color: #d63031 !important; }
+.dropdown-sair svg { fill: #d63031; }
+.dropdown-sair:hover { background: #fff5f5; }
+
+/* Responsiva */
+@media (max-width: 900px) { header nav { padding: 0 20px; } }
+
+@media (max-width: 600px) {
+  header nav { padding: 0 16px; }
+  .nav-brand span { font-size: 1.25rem; }
+  .nav-links { gap: 1px; }
+  .nav-links a { padding: 5px 8px; font-size: 0.78rem; }
   .nav-links li:nth-child(3),
-  .nav-links li:nth-child(4) {
-    display: none;
-  }
+  .nav-links li:nth-child(4) { display: none; }
 }
+
 /* ==========================================================
-   PÁGINA INICIAL — index.php
-   Hero centralizado + seção explicativa
+   BOTÕES GLOBAIS
    ========================================================== */
 
-
-/* ----------------------------------------------------------
-   HERO — seção principal centralizada
-   Ocupa a tela inteira menos a altura do navbar
-   ---------------------------------------------------------- */
-.hero {
-  display: flex;
-  flex-direction: column;   /* empilha título, slogan e botões verticalmente */
-  align-items: center;      /* centraliza horizontalmente */
-  justify-content: center;  /* centraliza verticalmente */
-  text-align: center;
-  min-height: calc(100vh - var(--nav-height)); /* tela inteira menos o navbar */
-  padding: 40px 24px;
-}
-
-/* Título principal do hero — grande e impactante */
-.hero h1 {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 5rem;          /* bem grande para impacto visual */
-  letter-spacing: 3px;
-  line-height: 1;
-  color: var(--text-main);
-}
-
-/* A palavra destacada em verde dentro do h1 */
-.hero h1 span {
-  color: var(--green);
-}
-
-/* Slogan abaixo do título */
-.hero p {
-  font-size: 1.1rem;
-  font-weight: 400;
-  color: var(--text-muted);
-  margin-top: 16px;
-  max-width: 480px;         /* limita a largura para não ficar muito espalhado */
-  line-height: 1.6;
-}
-
-/* Container dos botões do hero */
-.hero-buttons {
-  display: flex;
-  gap: 12px;                /* espaço entre os botões */
-  margin-top: 32px;
-  flex-wrap: wrap;          /* quebra linha em telas pequenas */
-  justify-content: center;
-}
-
-/* Botão primário — fundo verde */
+/* Primário */
 .btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
   background: var(--green);
   color: #fff;
   border: none;
-  border-radius: 10px;
-  padding: 13px 32px;
+  border-radius: var(--radius-full);
+  padding: 11px 26px;
   font-family: 'Outfit', sans-serif;
-  font-size: 0.95rem;
-  font-weight: 700;
-  letter-spacing: 0.5px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
   cursor: pointer;
-  transition: background 0.2s, transform 0.15s;
-  text-decoration: none;    /* para funcionar como link também */
-  display: inline-block;
+  transition: background var(--transition), box-shadow var(--transition), transform var(--transition);
+  text-decoration: none;
+  white-space: nowrap;
 }
-
-/* Hover do botão primário */
 .btn-primary:hover {
   background: var(--green-dark);
-  transform: scale(1.03);   /* cresce levemente */
+  box-shadow: var(--shadow-green);
+  transform: translateY(-1px);
 }
+.btn-primary:active { transform: translateY(0); box-shadow: none; }
 
-/* Botão secundário — contorno verde, fundo transparente */
+/* Secundário */
 .btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
   background: transparent;
   color: var(--green);
-  border: 2px solid var(--green);
-  border-radius: 10px;
-  padding: 11px 32px;       /* 2px a menos no padding para compensar a borda */
+  border: 1.5px solid var(--green);
+  border-radius: var(--radius-full);
+  padding: 10px 26px;
   font-family: 'Outfit', sans-serif;
-  font-size: 0.95rem;
-  font-weight: 700;
-  letter-spacing: 0.5px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
   cursor: pointer;
-  transition: background 0.2s, color 0.2s, transform 0.15s;
+  transition: background var(--transition), color var(--transition), box-shadow var(--transition), transform var(--transition);
   text-decoration: none;
-  display: inline-block;
+  white-space: nowrap;
 }
-
-/* Hover do botão secundário — preenche com verde */
 .btn-secondary:hover {
   background: var(--green);
   color: #fff;
-  transform: scale(1.03);
+  box-shadow: var(--shadow-green);
+  transform: translateY(-1px);
+}
+.btn-secondary:active { transform: translateY(0); box-shadow: none; }
+
+/* Modificador full-width */
+.btn-full {
+  width: 100%;
+  padding: 12px 0;
+  margin-top: 4px;
+  border-radius: var(--radius-md);
 }
 
-
-/* ----------------------------------------------------------
-   SEÇÃO EXPLICATIVA — "Como funciona o Strively"
-   Três cards lado a lado explicando as funcionalidades
-   ---------------------------------------------------------- */
-.sobre {
-  padding: 80px 60px;
+/* ==========================================================
+   HERO — index.php
+   ========================================================== */
+.hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   text-align: center;
+  min-height: calc(100vh - var(--nav-height));
+  padding: 60px 24px;
+  /* Gradiente suavíssimo de fundo */
+  background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(29,185,84,0.06) 0%, transparent 70%);
 }
 
-/* Título da seção */
+.hero h1 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(3.5rem, 8vw, 6rem);
+  letter-spacing: 3px;
+  line-height: 0.95;
+  color: var(--text-primary);
+}
+.hero h1 span { color: var(--green); }
+
+.hero p {
+  font-size: 1.05rem;
+  font-weight: 400;
+  color: var(--text-secondary);
+  margin-top: 20px;
+  max-width: 460px;
+  line-height: 1.7;
+}
+
+.hero-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 36px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* Badge/chip acima do título — detalhe premium */
+.hero-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--green-tint);
+  color: var(--green-deeper);
+  border: 1px solid rgba(29,185,84,0.2);
+  border-radius: var(--radius-full);
+  padding: 5px 14px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 600px) {
+  .hero { padding: 48px 20px; }
+  .hero p { font-size: 0.95rem; }
+}
+
+/* ==========================================================
+   SOBRE — index.php
+   ========================================================== */
+.sobre {
+  padding: 80px 24px 100px;
+  text-align: center;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.sobre-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--green);
+  margin-bottom: 10px;
+  display: block;
+}
+
 .sobre h2 {
   font-family: 'Bebas Neue', sans-serif;
-  font-size: 2.5rem;
+  font-size: clamp(2rem, 4vw, 2.8rem);
   letter-spacing: 2px;
-  color: var(--text-main);
-  margin-bottom: 8px;
+  color: var(--text-primary);
+  margin-bottom: 10px;
 }
 
-/* Subtítulo da seção */
 .sobre p.subtitulo {
-  font-size: 1rem;
-  color: var(--text-muted);
-  margin-bottom: 48px;
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  margin-bottom: 52px;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-/* Grid dos cards explicativos — 3 colunas */
 .sobre-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr); /* 3 colunas iguais */
-  gap: 24px;
-  max-width: 1000px;
-  margin: 0 auto;            /* centraliza o grid */
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  max-width: 960px;
+  margin: 0 auto;
 }
 
-/* Card individual da seção explicativa */
 .sobre-card {
-  background: var(--card-bg);
-  border-radius: var(--radius);
-  padding: 36px 28px;
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  padding: 32px 24px 28px;
   display: flex;
   flex-direction: column;
-  align-items: center;       /* centraliza o conteúdo */
+  align-items: center;
   gap: 12px;
-  box-shadow: var(--shadow);
-  transition: transform 0.22s ease, box-shadow 0.22s ease;
-}
-
-/* Hover do card — levita levemente */
-.sobre-card:hover {
-  transform: translateY(-6px);
-  box-shadow: var(--shadow-hover);
-}
-
-/* Ícone emoji ou SVG grande no topo do card */
-.sobre-card .icone {
-  font-size: 2.5rem;         /* tamanho do emoji */
-  line-height: 1;
-}
-
-/* Título do card */
-.sobre-card h3 {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 1.3rem;
-  letter-spacing: 1px;
-  color: var(--text-main);
-}
-
-/* Descrição do card */
-.sobre-card p {
-  font-size: 0.88rem;
-  color: var(--text-muted);
-  line-height: 1.6;
+  box-shadow: var(--shadow-xs);
+  transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
   text-align: center;
 }
-
-
-/* ----------------------------------------------------------
-   RESPONSIVIDADE DA PÁGINA INICIAL
-   ---------------------------------------------------------- */
-
-/* Tablet */
-@media (max-width: 900px) {
-  .hero h1 {
-    font-size: 3.5rem;       /* título menor em tablet */
-  }
-
-  .sobre {
-    padding: 60px 24px;
-  }
-
-  .sobre-grid {
-    grid-template-columns: repeat(2, 1fr); /* 2 colunas em tablet */
-  }
+.sobre-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+  border-color: rgba(29,185,84,0.2);
 }
 
-/* Celular */
-@media (max-width: 560px) {
-  .hero h1 {
-    font-size: 2.8rem;       /* título menor no celular */
-  }
-
-  .hero p {
-    font-size: 0.95rem;
-  }
-
-  .sobre-grid {
-    grid-template-columns: 1fr; /* 1 coluna no celular */
-  }
+/* Ícone com círculo verde tint */
+.sobre-card .icone-wrap {
+  width: 52px; height: 52px;
+  border-radius: var(--radius-md);
+  background: var(--green-tint);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5rem;
+  margin-bottom: 4px;
 }
+
+.sobre-card .icone { font-size: 2rem; line-height: 1; }
+
+.sobre-card h3 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.2rem;
+  letter-spacing: 1px;
+  color: var(--text-primary);
+}
+
+.sobre-card p {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.65;
+}
+
+@media (max-width: 900px) { .sobre-grid { grid-template-columns: repeat(2,1fr); } }
+@media (max-width: 560px)  { .sobre-grid { grid-template-columns: 1fr; } }
+
 /* ==========================================================
-   AUTENTICAÇÃO — login.php e cadastro.php
-   Adicione este bloco no final do seu style.css
+   AUTENTICAÇÃO — login.php / cadastro.php
    ========================================================== */
-
-
-/* ----------------------------------------------------------
-   SEÇÃO PRINCIPAL
-   Centraliza o card na tela inteira menos o navbar
-   ---------------------------------------------------------- */
 .auth-section {
   display: flex;
-  align-items: center;       /* centraliza verticalmente */
-  justify-content: center;   /* centraliza horizontalmente */
+  align-items: center;
+  justify-content: center;
   min-height: calc(100vh - var(--nav-height));
-  padding: 40px 24px;
+  padding: 48px 24px;
+  background: radial-gradient(ellipse 70% 50% at 50% 0%, rgba(29,185,84,0.05) 0%, transparent 70%);
 }
 
-
-/* ----------------------------------------------------------
-   CARD DO FORMULÁRIO
-   Container branco centralizado com sombra
-   ---------------------------------------------------------- */
 .auth-card {
-  background: #fff;
-  border-radius: var(--radius);
+  background: var(--surface);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border);
   padding: 40px 36px;
   width: 100%;
-  max-width: 420px;          /* largura máxima do card */
-  box-shadow: var(--shadow);
+  max-width: 400px;
+  box-shadow: var(--shadow-md);
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
 }
 
-
-/* ----------------------------------------------------------
-   TÍTULO E SUBTÍTULO DO CARD
-   ---------------------------------------------------------- */
 .auth-titulo {
   font-family: 'Bebas Neue', sans-serif;
   font-size: 2.2rem;
   letter-spacing: 2px;
-  color: var(--text-main);
+  color: var(--text-primary);
   line-height: 1;
 }
 
 .auth-subtitulo {
-  font-size: 0.9rem;
-  color: var(--text-muted);
-  margin-bottom: 8px;
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  margin-bottom: 10px;
 }
 
-
-/* ----------------------------------------------------------
-   MENSAGENS DE ERRO E SUCESSO
-   ---------------------------------------------------------- */
-
-/* Mensagem de erro — fundo vermelho claro */
 .auth-erro {
-  background: #fff0f0;
-  border: 1px solid #ffcccc;
-  border-radius: 8px;
+  background: #fff5f5;
+  border: 1px solid #fecaca;
+  border-radius: var(--radius-sm);
   padding: 10px 14px;
-  font-size: 0.85rem;
-  color: #cc0000;
+  font-size: 0.83rem;
+  color: #b91c1c;
 }
 
-/* Mensagem de sucesso — fundo verde claro */
 .auth-sucesso {
-  background: #f0fff4;
-  border: 1px solid #b2f5c8;
-  border-radius: 8px;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: var(--radius-sm);
   padding: 10px 14px;
-  font-size: 0.85rem;
-  color: var(--green-dark);
+  font-size: 0.83rem;
+  color: var(--green-deeper);
 }
 
-
-/* ----------------------------------------------------------
-   FORMULÁRIO
-   ---------------------------------------------------------- */
-
-/* Container do formulário — espaçamento entre os grupos */
 .auth-form {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  margin-top: 8px;
+  gap: 14px;
+  margin-top: 10px;
 }
 
-/* Grupo de campo — label + input empilhados */
-.form-grupo {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;                  /* espaço entre o label e o input */
-}
+.form-grupo { display: flex; flex-direction: column; gap: 5px; }
 
-/* Label do campo */
 .form-grupo label {
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   font-weight: 600;
-  color: var(--text-main);
+  color: var(--text-primary);
+  letter-spacing: 0.2px;
 }
 
-/* Input do campo */
-.form-grupo input {
-  background: var(--bg);
-  border: 2px solid #ddd;
-  border-radius: 10px;
+.form-grupo input,
+.form-grupo textarea {
+  background: var(--surface-2);
+  border: 1.5px solid var(--border-strong);
+  border-radius: var(--radius-sm);
   padding: 11px 14px;
   font-family: 'Outfit', sans-serif;
-  font-size: 0.92rem;
-  color: var(--text-main);
-  transition: border-color 0.2s, box-shadow 0.2s;
-  outline: none;             /* remove o contorno padrão do navegador */
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  outline: none;
   width: 100%;
+  transition: border-color var(--transition), box-shadow var(--transition), background var(--transition);
 }
-
-/* Input em foco — borda verde */
-.form-grupo input:focus {
+.form-grupo input:focus,
+.form-grupo textarea:focus {
+  background: var(--surface);
   border-color: var(--green);
-  box-shadow: 0 0 0 3px var(--green-glow); /* anel verde translúcido */
+  box-shadow: 0 0 0 3px var(--green-glow);
+}
+.form-grupo input.erro { border-color: #ef4444; }
+
+.form-hint {
+  font-size: 0.76rem;
+  color: var(--text-tertiary);
+  margin-top: 2px;
 }
 
-/* Input com erro — borda vermelha */
-.form-grupo input.erro {
-  border-color: #cc0000;
-}
+.input-desabilitado { opacity: 0.45; cursor: not-allowed; pointer-events: none; }
 
-
-/* ----------------------------------------------------------
-   BOTÃO FULL WIDTH
-   Variante do btn-primary que ocupa 100% do card
-   ---------------------------------------------------------- */
-.btn-full {
-  width: 100%;
-  text-align: center;
-  padding: 13px 0;
-  margin-top: 4px;
-}
-
-
-/* ----------------------------------------------------------
-   LINK DE RODAPÉ DO CARD
-   Ex: "Não tem uma conta? Criar conta grátis"
-   ---------------------------------------------------------- */
 .auth-link {
   text-align: center;
-  font-size: 0.87rem;
-  color: var(--text-muted);
-  margin-top: 8px;
+  font-size: 0.84rem;
+  color: var(--text-tertiary);
+  margin-top: 10px;
 }
+.auth-link a { color: var(--green); font-weight: 600; }
+.auth-link a:hover { color: var(--green-dark); }
 
-.auth-link a {
-  color: var(--green);
-  font-weight: 600;
-  transition: color 0.2s;
-}
-
-.auth-link a:hover {
-  color: var(--green-dark);
-}
-
-
-/* ----------------------------------------------------------
-   RESPONSIVIDADE
-   ---------------------------------------------------------- */
-
-/* Celular — card ocupa tela inteira com menos padding */
 @media (max-width: 480px) {
-  .auth-card {
-    padding: 28px 20px;
-  }
-
-  .auth-titulo {
-    font-size: 1.8rem;
-  }
+  .auth-card { padding: 28px 20px; border-radius: var(--radius-lg); }
+  .auth-titulo { font-size: 1.9rem; }
 }
+
 /* ==========================================================
-   NAVBAR — USUÁRIO LOGADO
-   Avatar, nome e dropdown menu
-   Adicione este bloco no final do seu style.css
+   PERFIL — pages/perfil.php
    ========================================================== */
-
-
-/* ----------------------------------------------------------
-   CONTAINER DO USUÁRIO NA NAVBAR
-   Posição relative para o dropdown se posicionar abaixo
-   ---------------------------------------------------------- */
-.nav-usuario {
-  position: relative; /* o dropdown usa isso como referência de posição */
-}
-
-
-/* ----------------------------------------------------------
-   BOTÃO DO AVATAR
-   Fundo transparente, sem borda, alinha foto + nome + seta
-   ---------------------------------------------------------- */
-.nav-avatar-btn {
-  background: transparent;
-  border: none;
-  cursor: pointer;
+.perfil-section {
   display: flex;
-  align-items: center;
-  gap: 8px;               /* espaço entre avatar, nome e seta */
-  padding: 4px 8px;
-  border-radius: 8px;
-  transition: background 0.2s;
-}
-
-/* Hover no botão do avatar */
-.nav-avatar-btn:hover {
-  background: rgba(0, 0, 0, 0.15);
-}
-
-
-/* ----------------------------------------------------------
-   AVATAR — foto de perfil
-   ---------------------------------------------------------- */
-.nav-avatar-img {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;     /* formato circular */
-  object-fit: cover;      /* corta a imagem para caber no círculo */
-  border: 2px solid #fff;
-}
-
-
-/* ----------------------------------------------------------
-   AVATAR — boneco padrão (quando não tem foto)
-   Círculo branco com ícone SVG preto dentro
-   ---------------------------------------------------------- */
-.nav-avatar-padrao {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;     /* formato circular */
-  background: #fff;
-  display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  flex-shrink: 0;         /* não encolhe */
-  border: 2px solid rgba(255,255,255,0.5);
+  min-height: calc(100vh - var(--nav-height));
+  padding: 52px 24px;
 }
 
-/* SVG do boneco dentro do círculo */
-.nav-avatar-padrao svg {
-  width: 20px;
-  height: 20px;
-  fill: #111;             /* boneco preto */
-}
-
-
-/* ----------------------------------------------------------
-   NOME DO USUÁRIO ao lado do avatar
-   ---------------------------------------------------------- */
-.nav-usuario-nome {
-  color: #fff;
-  font-size: 0.88rem;
-  font-weight: 600;
-  letter-spacing: 0.3px;
-}
-
-
-/* ----------------------------------------------------------
-   SETA DO DROPDOWN
-   SVG pequeno que indica que tem menu abaixo
-   ---------------------------------------------------------- */
-.nav-seta {
-  width: 18px;
-  height: 18px;
-  fill: #fff;
-  transition: transform 0.2s; /* rotaciona quando o dropdown abre */
-}
-
-/* Rotaciona a seta quando o dropdown está aberto */
-.nav-dropdown.aberto ~ .nav-avatar-btn .nav-seta,
-.nav-avatar-btn:has(+ .nav-dropdown.aberto) .nav-seta {
-  transform: rotate(180deg);
-}
-
-
-/* ----------------------------------------------------------
-   DROPDOWN MENU
-   Aparece abaixo do avatar ao clicar
-   ---------------------------------------------------------- */
-.nav-dropdown {
-  position: absolute;     /* posiciona relativo ao .nav-usuario */
-  top: calc(100% + 10px); /* 10px abaixo do botão */
-  right: 0;               /* alinhado pela direita */
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.15);
-  min-width: 200px;
-  padding: 8px;
-  z-index: 200;           /* acima de tudo */
-
-  /* Escondido por padrão */
-  opacity: 0;
-  visibility: hidden;
-  transform: translateY(-8px); /* começa levemente acima */
-  transition: opacity 0.18s ease,
-              visibility 0.18s ease,
-              transform 0.18s ease;
-}
-
-/* Quando a classe .aberto é adicionada via JS — aparece */
-.nav-dropdown.aberto {
-  opacity: 1;
-  visibility: visible;
-  transform: translateY(0);
-}
-
-
-/* ----------------------------------------------------------
-   ITEM DO DROPDOWN
-   Cada linha do menu com ícone + texto
-   ---------------------------------------------------------- */
-.dropdown-item {
+.perfil-card {
+  background: var(--surface);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border);
+  padding: 40px 36px;
+  width: 100%;
+  max-width: 460px;
+  box-shadow: var(--shadow-md);
   display: flex;
-  align-items: center;
-  gap: 10px;              /* espaço entre ícone e texto */
-  padding: 10px 12px;
-  border-radius: 8px;
-  font-size: 0.88rem;
-  font-weight: 500;
-  color: var(--text-main);
-  transition: background 0.15s;
-  text-decoration: none;
+  flex-direction: column;
+  gap: 28px;
 }
 
-/* Hover nos itens */
-.dropdown-item:hover {
-  background: var(--bg);
+.perfil-avatar-area { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+
+.perfil-avatar { position: relative; width: 100px; height: 100px; }
+
+.perfil-foto {
+  width: 100px; height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--green);
+  display: block;
+  box-shadow: 0 0 0 4px var(--green-tint);
 }
 
-/* SVG dos ícones dos itens */
-.dropdown-item svg {
-  width: 18px;
-  height: 18px;
-  fill: var(--text-muted);
-  flex-shrink: 0;
+.perfil-avatar-padrao {
+  width: 100px; height: 100px;
+  border-radius: 50%;
+  background: var(--surface-2);
+  border: 3px solid var(--green);
+  box-shadow: 0 0 0 4px var(--green-tint);
+  display: flex; align-items: center; justify-content: center;
 }
+.perfil-avatar-padrao svg { width: 52px; height: 52px; fill: var(--text-tertiary); }
 
-
-/* ----------------------------------------------------------
-   LINHA DIVISÓRIA no dropdown
-   ---------------------------------------------------------- */
-.dropdown-divider {
-  height: 1px;
-  background: #eee;
-  margin: 4px 0;
+.perfil-editar-foto {
+  position: absolute;
+  bottom: 2px; right: 2px;
+  width: 28px; height: 28px;
+  background: var(--green);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  border: 2px solid #fff;
+  box-shadow: var(--shadow-sm);
+  transition: background var(--transition), transform var(--transition);
 }
+.perfil-editar-foto:hover { background: var(--green-dark); transform: scale(1.1); }
+.perfil-editar-foto svg { width: 13px; height: 13px; fill: #fff; }
 
+.badge-corredor, .badge-treinador {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+}
+.badge-corredor { background: var(--green-tint); color: var(--green-deeper); border: 1px solid rgba(29,185,84,0.2); }
+.badge-treinador { background: var(--green); color: #fff; }
 
-/* ----------------------------------------------------------
-   ITEM SAIR — vermelho para destacar
-   ---------------------------------------------------------- */
-.dropdown-sair {
-  color: #cc0000;         /* texto vermelho */
-}
+.perfil-form { display: flex; flex-direction: column; gap: 14px; }
 
-.dropdown-sair svg {
-  fill: #cc0000;          /* ícone vermelho */
-}
-
-.dropdown-sair:hover {
-  background: #fff0f0;    /* fundo vermelho claro no hover */
-}
-/* Garante cor escura nos itens do dropdown */
-.nav-dropdown .dropdown-item {
-  color: #111 !important;
-}
+@media (max-width: 480px) { .perfil-card { padding: 28px 20px; } }
 
 /* ==========================================================
-   EVENTOS PAGE — pages/eventos.php
-   Centraliza header + grid de eventos
+   EVENTOS — pages/eventos.php
    ========================================================== */
-.eventos-section {
-  padding: 60px 24px;
-}
+.eventos-section { padding: 48px 24px 80px; }
 
-.eventos-header,
-.eventos-grid {
+.eventos-header {
   max-width: 1200px;
-  margin: 0 auto 40px;
+  margin: 0 auto 36px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 16px;
 }
 
 .eventos-header h1 {
   font-family: 'Bebas Neue', sans-serif;
-  font-size: 2.5rem;
+  font-size: clamp(1.8rem, 4vw, 2.5rem);
   letter-spacing: 2px;
+  color: var(--text-primary);
   margin: 0;
 }
 
-@media (max-width: 768px) {
-  .eventos-header {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 20px;
-    text-align: center;
-  }
-  
-  .eventos-header h1 {
-    font-size: 2rem;
-  }
-}
-
-/* Estado vazio da página de eventos */
-.eventos-vazio {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 80px 24px;
-  max-width: 480px;
+/* Grid */
+.eventos-grid {
+  max-width: 1200px;
   margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 20px;
 }
 
-.eventos-vazio-icone {
-  font-size: 3.5rem;
-  margin-bottom: 16px;
-}
-
-.eventos-vazio h2 {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 1.8rem;
-  letter-spacing: 1.5px;
-  color: var(--text-main);
-  margin-bottom: 8px;
-}
-
-.eventos-vazio p {
-  font-size: 0.95rem;
-  color: var(--text-muted);
-  line-height: 1.6;
-}
-/* ==========================================================
-   PERFIL DO USUÁRIO — pages/perfil.php
-   Adicione este bloco no final do seu style.css
-   ========================================================== */
-
-
-/* ----------------------------------------------------------
-   SEÇÃO PRINCIPAL — centraliza o card na tela
-   ---------------------------------------------------------- */
-.perfil-section {
-  display: flex;
-  align-items: flex-start;    /* alinha pelo topo */
-  justify-content: center;
-  min-height: calc(100vh - var(--nav-height));
-  padding: 48px 24px;
-}
-
-
-/* ----------------------------------------------------------
-   CARD PRINCIPAL DO PERFIL
-   ---------------------------------------------------------- */
-.perfil-card {
-  background: #fff;
-  border-radius: var(--radius);
-  padding: 40px 36px;
-  width: 100%;
-  max-width: 480px;
-  box-shadow: var(--shadow);
-  display: flex;
-  flex-direction: column;
-  gap: 32px;
-}
-
-
-/* ----------------------------------------------------------
-   ÁREA DO AVATAR — foto + tipo de usuário
-   ---------------------------------------------------------- */
-.perfil-avatar-area {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 16px;
-}
-
-/* Container da foto — posição relative para o botão de editar */
-.perfil-avatar {
-  position: relative;
-  width: 110px;
-  height: 110px;
-}
-
-/* Foto de perfil real */
-.perfil-foto {
-  width: 110px;
-  height: 110px;
-  border-radius: 50%;         /* formato circular */
-  object-fit: cover;          /* corta a imagem para caber */
-  border: 4px solid var(--green);
-  display: block;
-}
-
-/* Boneco padrão quando não tem foto */
-.perfil-avatar-padrao {
-  width: 110px;
-  height: 110px;
-  border-radius: 50%;
-  background: var(--card-bg);
-  border: 4px solid var(--green);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* SVG do boneco padrão */
-.perfil-avatar-padrao svg {
-  width: 60px;
-  height: 60px;
-  fill: var(--text-muted);
-}
-
-/* Botão de editar foto — círculo verde no canto inferior direito */
-.perfil-editar-foto {
-  position: absolute;
-  bottom: 4px;
-  right: 4px;
-  width: 32px;
-  height: 32px;
-  background: var(--green);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+/* Card */
+.evento-card {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  overflow: hidden;
   cursor: pointer;
-  border: 2px solid #fff;
-  transition: background 0.2s, transform 0.15s;
-}
-
-/* Hover no botão de editar foto */
-.perfil-editar-foto:hover {
-  background: var(--green-dark);
-  transform: scale(1.1);
-}
-
-/* Ícone de câmera dentro do botão */
-.perfil-editar-foto svg {
-  width: 16px;
-  height: 16px;
-  fill: #fff;
-}
-
-
-/* ----------------------------------------------------------
-   BADGES DE TIPO DE USUÁRIO
-   ---------------------------------------------------------- */
-.badge-corredor,
-.badge-treinador {
-  font-size: 0.82rem;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  padding: 5px 14px;
-  border-radius: 100px;
-}
-
-/* Badge corredor — verde translúcido */
-.badge-corredor {
-  background: var(--green-glow);
-  color: var(--green-dark);
-}
-
-/* Badge treinador — verde sólido */
-.badge-treinador {
-  background: var(--green);
-  color: #fff;
-}
-
-
-/* ----------------------------------------------------------
-   FORMULÁRIO DE EDIÇÃO
-   ---------------------------------------------------------- */
-.perfil-form {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  box-shadow: var(--shadow-xs);
+  transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+}
+.evento-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--shadow-md);
+  border-color: rgba(29,185,84,0.18);
 }
 
-/* Input desabilitado — email */
-.input-desabilitado {
-  opacity: 0.5;
-  cursor: not-allowed;
+/* Banner 4:5 */
+.evento-banner-wrap {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background: linear-gradient(145deg, var(--green) 0%, var(--green-deeper) 100%);
+  flex-shrink: 0;
 }
 
-/* Dica abaixo do input */
-.form-hint {
-  font-size: 0.78rem;
-  color: var(--text-muted);
+.evento-banner {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  display: block;
+  transition: transform 0.35s var(--ease);
+}
+.evento-card:hover .evento-banner { transform: scale(1.04); }
+
+.evento-banner-placeholder {
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  color: rgba(255,255,255,0.9);
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.3rem; letter-spacing: 1.5px;
+  text-align: center; padding: 20px; line-height: 1.3;
+}
+
+/* Corpo do card */
+.evento-body {
+  padding: 18px 18px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+  flex: 1;
+}
+
+.evento-nome {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.2rem;
+  letter-spacing: 0.8px;
+  color: var(--text-primary);
+  line-height: 1.2;
+  margin: 0;
+}
+
+.evento-meta { display: flex; flex-direction: column; gap: 4px; width: 100%; }
+
+.evento-info {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+/* Distâncias */
+.evento-distancias {
+  display: flex; flex-wrap: wrap;
+  gap: 5px; justify-content: center;
   margin-top: 2px;
 }
 
+.distancia-badge {
+  background: var(--green-tint);
+  color: var(--green-deeper);
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  letter-spacing: 0.3px;
+  border: 1px solid rgba(29,185,84,0.15);
+}
 
-/* ----------------------------------------------------------
-   RESPONSIVIDADE
-   ---------------------------------------------------------- */
+.evento-divider { width: 100%; height: 1px; background: var(--border); margin-top: 2px; }
+
+.evento-body .btn-secondary {
+  margin-top: auto;
+  width: 100%;
+  text-align: center;
+  padding: 9px 0;
+  display: block;
+  font-size: 0.85rem;
+}
+
+/* Estado vazio */
+.eventos-vazio {
+  grid-column: 1 / -1;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center; padding: 80px 24px;
+}
+.eventos-vazio-icone { font-size: 3rem; margin-bottom: 14px; }
+.eventos-vazio h2 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.7rem; letter-spacing: 1.5px;
+  color: var(--text-primary); margin-bottom: 8px;
+}
+.eventos-vazio p { font-size: 0.9rem; color: var(--text-secondary); line-height: 1.6; }
+
+@media (max-width: 768px) {
+  .eventos-header { flex-direction: column; align-items: stretch; text-align: center; }
+  .eventos-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; }
+}
 @media (max-width: 480px) {
-  .perfil-card {
-    padding: 28px 20px;
+  .eventos-section { padding: 32px 14px 80px; }
+  .eventos-grid { grid-template-columns: 1fr; gap: 12px; }
+}
+
+/* ==========================================================
+   CONFIGURAÇÕES — pages/configuracoes.php
+   ========================================================== */
+.settings-container {
+  display: flex;
+  max-width: 960px;
+  margin: 44px auto;
+  gap: 24px;
+  padding: 0 24px;
+  align-items: flex-start;
+}
+
+.settings-sidebar {
+  width: 230px;
+  flex-shrink: 0;
+  position: sticky;
+  top: calc(var(--nav-height) + 20px);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 20px 12px;
+  box-shadow: var(--shadow-xs);
+}
+
+.settings-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.6rem;
+  letter-spacing: 1px;
+  color: var(--text-primary);
+  padding-left: 10px;
+  margin-bottom: 14px;
+}
+
+.settings-menu { display: flex; flex-direction: column; gap: 2px; }
+
+.settings-menu a {
+  display: flex;
+  align-items: center;
+  padding: 9px 12px;
+  color: var(--text-secondary);
+  border-radius: var(--radius-sm);
+  font-weight: 500;
+  font-size: 0.875rem;
+  transition: all var(--transition);
+}
+.settings-menu a:hover { background: var(--surface-2); color: var(--text-primary); }
+.settings-menu a.ativo { background: var(--green-tint); color: var(--green-deeper); font-weight: 600; }
+
+.settings-content { flex: 1; min-width: 0; }
+
+.settings-pane {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  padding: 36px;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xs);
+}
+
+.settings-pane h2 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 1.8rem;
+  letter-spacing: 1px;
+  color: var(--text-primary);
+  margin-bottom: 20px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.settings-pane p {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-bottom: 22px;
+  line-height: 1.65;
+}
+
+@media (max-width: 768px) {
+  .settings-container { flex-direction: column; }
+  .settings-sidebar { width: 100%; position: static; }
+}
+
+/* ==========================================================
+   MOBILE BOTTOM NAV — PWA
+   ========================================================== */
+.bottom-nav,
+.bottom-sheet,
+.sheet-overlay { display: none; }
+
+@media (max-width: 768px) {
+
+  header { display: none; }
+
+  body { padding-bottom: 68px; }
+
+  .bottom-nav {
+    display: flex;
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: 60px;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    align-items: center;
+    justify-content: space-around;
+    z-index: 200;
+    padding: 0 4px;
+    padding-bottom: env(safe-area-inset-bottom);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
   }
+
+  .bn-item {
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 3px; flex: 1; height: 100%;
+    color: var(--text-tertiary);
+    text-decoration: none;
+    background: none; border: none; padding: 0;
+    transition: color var(--transition);
+    -webkit-tap-highlight-color: transparent;
+  }
+  .bn-item svg { width: 22px; height: 22px; fill: var(--text-tertiary); transition: fill var(--transition); }
+  .bn-item span { font-family: 'Outfit', sans-serif; font-size: 10px; font-weight: 500; }
+  .bn-item.bn-active, .bn-item.bn-active svg { color: var(--green); fill: var(--green); }
+
+  .bn-grid-icon {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 4px; width: 18px; height: 18px;
+  }
+  .bn-grid-icon span {
+    width: 7px; height: 7px; background: var(--text-tertiary);
+    border-radius: 2px; display: block; transition: background var(--transition);
+  }
+  .bn-item.bn-active .bn-grid-icon span { background: var(--green); }
+
+  .sheet-overlay {
+    display: block; position: fixed; inset: 0;
+    background: rgba(0,0,0,0); z-index: 299;
+    pointer-events: none; transition: background 0.28s ease;
+  }
+  .sheet-overlay.sheet-overlay-visible { background: rgba(0,0,0,0.4); pointer-events: all; }
+
+  .bottom-sheet {
+    display: flex; flex-direction: column;
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: var(--surface);
+    border-radius: 22px 22px 0 0;
+    padding: 12px 16px 24px;
+    padding-bottom: calc(24px + env(safe-area-inset-bottom));
+    z-index: 300;
+    transform: translateY(100%);
+    transition: transform 0.32s cubic-bezier(0.32, 0.72, 0, 1);
+    box-shadow: 0 -4px 40px rgba(0,0,0,0.12);
+  }
+  .bottom-sheet.sheet-open { transform: translateY(0); }
+
+  .sheet-handle {
+    width: 34px; height: 4px;
+    background: var(--border-strong);
+    border-radius: 2px;
+    margin: 0 auto 16px; flex-shrink: 0;
+  }
+
+  .sheet-user {
+    display: flex; align-items: center; gap: 12px;
+    padding: 0 4px 16px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 16px; order: -1;
+  }
+
+  .sheet-user-foto {
+    width: 44px; height: 44px; border-radius: 50%;
+    object-fit: cover; border: 2px solid var(--green); flex-shrink: 0;
+  }
+
+  .sheet-user-avatar {
+    width: 44px; height: 44px; border-radius: 50%;
+    background: var(--surface-2); border: 2px solid var(--green);
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .sheet-user-avatar svg { width: 26px; height: 26px; fill: var(--text-tertiary); }
+
+  .sheet-user-info { display: flex; flex-direction: column; gap: 2px; }
+  .sheet-user-info strong { font-size: 0.92rem; color: var(--text-primary); font-weight: 600; }
+  .sheet-user-info span { font-size: 0.78rem; color: var(--text-tertiary); }
+
+  .sheet-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+
+  .sheet-item {
+    display: flex; flex-direction: column;
+    align-items: center; gap: 8px;
+    padding: 14px 8px 12px;
+    background: var(--surface-2);
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    color: var(--text-primary);
+    font-size: 0.73rem; font-weight: 500; text-align: center;
+    transition: background var(--transition), transform 0.1s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .sheet-item:active { background: #e8e8e8; transform: scale(0.96); }
+
+  .sheet-icon {
+    width: 44px; height: 44px; border-radius: 50%;
+    background: var(--surface);
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: var(--shadow-xs);
+  }
+  .sheet-icon svg { width: 22px; height: 22px; fill: var(--text-primary); }
+
+  .sheet-item-sair { color: #d63031; }
+  .sheet-icon-sair { background: #fff5f5; }
+  .sheet-icon-sair svg { fill: #d63031; }
+  .sheet-item-sair:active { background: #ffe5e5; }
+
+} /* fim @media mobile */
+
+/* ==========================================================
+   UTILITÁRIOS
+   ========================================================== */
+.sr-only {
+  position: absolute; width: 1px; height: 1px;
+  padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0,0,0,0); white-space: nowrap; border: 0;
 }

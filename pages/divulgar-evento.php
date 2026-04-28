@@ -14,7 +14,7 @@ include '../components/header.php';
 unset($only_session);
 
 if (!isset($_SESSION['id'])) {
-  header('Location: /Strively/pages/login.php');
+  header('Location: /pages/login.php');
   exit();
 }
 

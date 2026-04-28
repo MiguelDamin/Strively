@@ -13,7 +13,7 @@ use PHPMailer\PHPMailer\Exception;
 require_once '../config/conexao.php'; // Já carrega autoload e Dotenv
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_SESSION['id'])) {
-    header('Location: /Strively/pages/configuracoes.php');
+    header('Location: /pages/configuracoes.php');
     exit();
 }
 
@@ -21,12 +21,12 @@ $novaSenha = $_POST['nova_senha'] ?? '';
 $confirmaSenha = $_POST['confirma_senha'] ?? '';
 
 if (strlen($novaSenha) < 6) {
-    header('Location: /Strively/pages/configuracoes.php?erro=senha_curta');
+    header('Location: /pages/configuracoes.php?erro=senha_curta');
     exit();
 }
 
 if ($novaSenha !== $confirmaSenha) {
-    header('Location: /Strively/pages/configuracoes.php?erro=senhas_diferentes');
+    header('Location: /pages/configuracoes.php?erro=senhas_diferentes');
     exit();
 }
 
@@ -84,11 +84,11 @@ try {
     $mail->send();
     
     // Redireciona para exibir o input do código na mesma tela de configuracoes
-    header('Location: /Strively/pages/configuracoes.php?etapa=verificacao');
+    header('Location: /pages/configuracoes.php?etapa=verificacao');
     exit();
     
 } catch (Exception $e) {
-    header('Location: /Strively/pages/configuracoes.php?erro=email_falhou');
+    header('Location: /pages/configuracoes.php?erro=email_falhou');
     // Para ver o erro detalhado durante desenvolvimento comente a Location e descomente:
     // echo "Mensagem não enviada. Mailer Error: {$mail->ErrorInfo}";
     exit();

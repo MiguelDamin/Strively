@@ -11,5 +11,5 @@ require_once '../components/header.php';
 session_destroy();
 
 // Redireciona para a página inicial
-header('Location: /Strively/index.php');
+header('Location: /index.php');
 exit();

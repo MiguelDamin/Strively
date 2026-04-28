@@ -10,17 +10,20 @@ require_once '../config/conexao.php';
 
 // Só aceita POST e usuário logado
 if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_SESSION['id'])) {
-  header('Location: /Strively/pages/perfil.php');
+  header('Location: /pages/perfil.php');
   exit();
 }
 
 $id     = $_SESSION['id'];
 $nome   = trim($_POST['nome']   ?? '');
 $cidade = trim($_POST['cidade'] ?? '');
+$bio    = trim($_POST['bio']    ?? '');
+$tipo_corredor = trim($_POST['tipo_corredor'] ?? '');
+$nivel  = trim($_POST['nivel']  ?? '');
 
 // Valida nome obrigatório
 if (empty($nome)) {
-  header('Location: /Strively/pages/perfil.php?erro=nome_vazio');
+  header('Location: /pages/perfil.php?erro=nome_vazio');
   exit();
 }
 
@@ -37,7 +40,7 @@ if (!empty($_FILES['foto']['tmp_name'])) {
 
   // Valida formato
   if (!in_array($extensao, $permitidos)) {
-    header('Location: /Strively/pages/perfil.php?erro=foto_invalida');
+    header('Location: /pages/perfil.php?erro=foto_invalida');
     exit();
   }
 
@@ -79,7 +82,7 @@ if (!empty($_FILES['foto']['tmp_name'])) {
   }
 
   if ($httpCode !== 200 && $httpCode !== 201) {
-    header('Location: /Strively/pages/perfil.php?erro=upload_falhou');
+    header('Location: /pages/perfil.php?erro=upload_falhou');
     exit();
   }
 
@@ -95,16 +98,16 @@ if (!empty($_FILES['foto']['tmp_name'])) {
 // PASSO 4 — Salva APENAS a URL no banco, nunca o arquivo
 // ----------------------------------------------------------
 if ($fotoUrl) {
-  $stmt = $pdo->prepare("UPDATE usuarios SET nome = ?, cidade = ?, foto = ? WHERE id = ?");
-  $stmt->execute([$nome, $cidade, $fotoUrl, $id]);
+  $stmt = $pdo->prepare("UPDATE usuarios SET nome = ?, cidade = ?, bio = ?, tipo_corredor = ?, nivel = ?, foto = ? WHERE id = ?");
+  $stmt->execute([$nome, $cidade, $bio, $tipo_corredor, $nivel, $fotoUrl, $id]);
   $_SESSION['foto'] = $fotoUrl;
 } else {
-  $stmt = $pdo->prepare("UPDATE usuarios SET nome = ?, cidade = ? WHERE id = ?");
-  $stmt->execute([$nome, $cidade, $id]);
+  $stmt = $pdo->prepare("UPDATE usuarios SET nome = ?, cidade = ?, bio = ?, tipo_corredor = ?, nivel = ? WHERE id = ?");
+  $stmt->execute([$nome, $cidade, $bio, $tipo_corredor, $nivel, $id]);
 }
 
 $_SESSION['nome'] = $nome;
 
-// Redireciona de volta para a tela inicial com sucesso
-header('Location: /Strively/index.php?msg=atualizado');
+// Redireciona de volta para o perfil com sucesso
+header('Location: /pages/perfil.php?msg=atualizado');
 exit();

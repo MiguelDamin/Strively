@@ -9,7 +9,7 @@ require_once '../components/header.php';
 
 // Protege a página — só usuários logados
 if (!isset($_SESSION['id'])) {
-  header('Location: /Strively/pages/login.php');
+  header('Location: /pages/login.php');
   exit();
 }
 
@@ -133,7 +133,7 @@ $etapa = $_GET['etapa'] ?? 'inicio';
       <h1 class="settings-title">Configurações</h1>
       <ul class="settings-menu">
         <li>
-          <a href="/Strively/pages/perfil.php">
+          <a href="/pages/perfil.php">
             Conta e Perfil
           </a>
         </li>
@@ -164,7 +164,7 @@ $etapa = $_GET['etapa'] ?? 'inicio';
               Para proteger sua conta de forma segura, enviaremos um código de verificação para o e-mail atrelado ao seu cadastro. O código tem validade de 10 minutos.
             </p>
 
-            <form action="/Strively/actions/action-enviar-codigo.php" method="POST">
+            <form action="/actions/action-enviar-codigo.php" method="POST">
 
               <?php if (isset($_GET['erro'])): ?>
                 <div class="auth-erro" style="margin-bottom: 20px;">
@@ -218,7 +218,7 @@ $etapa = $_GET['etapa'] ?? 'inicio';
               Enviamos um código exclusivo de 6 dígitos para o seu e-mail. Digite-o abaixo para confirmar e finalizar a alteração de sua senha.
             </p>
 
-            <form action="/Strively/actions/action-confirmar-senha.php" method="POST">
+            <form action="/actions/action-confirmar-senha.php" method="POST">
 
               <?php if (isset($_GET['erro'])): ?>
                 <div class="auth-erro" style="margin-bottom: 20px;">
