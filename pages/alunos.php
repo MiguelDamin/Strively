@@ -1,4 +1,5 @@
 <?php
+ob_start();
 // ==========================================================
 // STRIVELY — pages/alunos.php
 // Painel do treinador — lista de alunos vinculados

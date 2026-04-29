@@ -1,4 +1,5 @@
 <?php
+ob_start();
 $only_session = true;
 require_once '../components/header.php';
 require_once '../config/conexao.php';

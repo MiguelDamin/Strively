@@ -1,4 +1,5 @@
 <?php
+ob_start();
 // ==========================================================
 // STRIVELY — pages/cadastro.php
 // Página de cadastro de novo usuário

@@ -1,4 +1,5 @@
 <?php
+ob_start();
 // ==========================================================
 // STRIVELY — pages/detalhe-evento.php
 // Exibe detalhes completos de um evento específico

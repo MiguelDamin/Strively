@@ -1,4 +1,6 @@
 <?php
+ob_start(); // DEVE ser a primeira coisa — antes de qualquer output
+
 if (session_status() === PHP_SESSION_NONE) {
   session_start();
 }

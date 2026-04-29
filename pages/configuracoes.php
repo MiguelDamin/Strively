@@ -1,4 +1,5 @@
 <?php
+ob_start();
 // ==========================================================
 // STRIVELY — pages/configuracoes.php
 // Painel de Configurações do Usuário

@@ -1,4 +1,5 @@
 <?php
+ob_start();
 // ==========================================================
 // STRIVELY — pages/perfil.php
 // Página de perfil do usuário logado (Novo Layout Duas Colunas)

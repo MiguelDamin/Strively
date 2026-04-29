@@ -1,4 +1,5 @@
 <?php
+ob_start();
 // ==========================================================
 // STRIVELY — pages/divulgar-evento.php
 // Formulário para usuários logados divulgarem eventos

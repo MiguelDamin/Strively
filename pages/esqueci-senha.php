@@ -1,4 +1,5 @@
 <?php
+ob_start();
 // ==========================================================
 // STRIVELY — pages/esqueci-senha.php
 // Recuperação de conta via e-mail

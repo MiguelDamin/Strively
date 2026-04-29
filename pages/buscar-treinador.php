@@ -1,4 +1,5 @@
 <?php
+ob_start();
 // ==========================================================
 // STRIVELY — pages/buscar-treinador.php
 // Listagem de treinadores aprovados para corredores

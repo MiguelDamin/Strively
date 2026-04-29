@@ -1,4 +1,5 @@
 <?php
+ob_start();
 // ==========================================================
 // STRIVELY — pages/perfil-publico.php
 // Perfil público visualizado por outros usuários

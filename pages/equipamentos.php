@@ -1,4 +1,5 @@
-<?php include '../components/head.php'; ?>
+<?php
+ob_start(); include '../components/head.php'; ?>
 <?php include '../components/header.php'; ?>
 
 <div class="container mt-5">

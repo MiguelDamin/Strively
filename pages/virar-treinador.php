@@ -1,4 +1,5 @@
 <?php
+ob_start();
 // ==========================================================
 // STRIVELY — pages/virar-treinador.php
 // Formulário para corredor solicitar modo treinador

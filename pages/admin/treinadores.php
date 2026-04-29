@@ -1,4 +1,5 @@
 <?php
+ob_start();
 // ==========================================================
 // STRIVELY — pages/admin/treinadores.php
 // Painel para aprovar ou reprovar solicitações de treinadores
