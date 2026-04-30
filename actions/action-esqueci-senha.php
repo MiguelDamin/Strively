@@ -45,20 +45,20 @@ $_SESSION['recuperacao_expira'] = time() + 600; // Validade de 10 min
 $mail = new PHPMailer(true);
 try {
     $mail->isSMTP();
-    $mail->Host       = $_ENV['MAIL_HOST'];
-    $mail->SMTPAuth   = true;
-    $mail->Username   = $_ENV['MAIL_USER'];
-    $mail->Password   = $_ENV['MAIL_PASSWORD'];
-    $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-    $mail->Port       = $_ENV['MAIL_PORT'];
-    $mail->CharSet    = 'UTF-8';
+    $mail->Host = $_ENV['MAIL_HOST'];
+    $mail->SMTPAuth = true;
+    $mail->Username = $_ENV['MAIL_USER'];
+    $mail->Password = $_ENV['MAIL_PASSWORD'];
+    $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
+    $mail->Port       = 465;
+    $mail->CharSet = 'UTF-8';
 
     $mail->setFrom($_ENV['MAIL_USER'], $_ENV['MAIL_FROM_NAME']);
     $mail->addAddress($email);
 
     $mail->isHTML(true);
     $mail->Subject = 'Recuperação de Senha - Strively';
-    
+
     $htmlBody = "
     <div style='font-family: Arial, sans-serif; background-color: #121212; color: #ffffff; padding: 40px; border-radius: 8px;'>
         <h2 style='color: #1DB954; text-align: center;'>Recuperação de Senha</h2>
@@ -75,11 +75,12 @@ try {
     $mail->AltBody = "Seu código de recuperação de senha no Strively é: {$codigo}. O código expira em 10 min.";
 
     $mail->send();
-    
+
     // Sucesso envia para a etapa do código
     header('Location: /pages/esqueci-senha.php?etapa=codigo');
     exit();
 } catch (Exception $e) {
+    error_log('STRIVELY MAIL ERROR: ' . $mail->ErrorInfo);
     header('Location: /pages/esqueci-senha.php?erro=falha_email');
     exit();
 }
