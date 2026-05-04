@@ -9,11 +9,29 @@ if (!isset($_SESSION['id'])) {
 }
 
 $clientId    = $_ENV['STRAVA_CLIENT_ID'];
-$redirectUri = urlencode($_ENV['STRAVA_REDIRECT_URI']);
+$redirectUri = $_ENV['STRAVA_REDIRECT_URI'];
 $scope       = 'read,activity:read_all,profile:read_all';
 $state       = bin2hex(random_bytes(16)); // proteção CSRF
 
-$_SESSION['strava_state'] = $state;
+// Salva o state no banco (sessão PHP pode ser perdida no Render entre requests)
+try {
+  // Cria a tabela se não existir
+  $pdo->exec("
+    CREATE TABLE IF NOT EXISTS strava_states (
+      state       VARCHAR(64) PRIMARY KEY,
+      usuario_id  INTEGER NOT NULL,
+      criado_em   TIMESTAMP DEFAULT NOW()
+    )
+  ");
+  // Limpa states antigos (> 10 minutos)
+  $pdo->exec("DELETE FROM strava_states WHERE criado_em < NOW() - INTERVAL '10 minutes'");
+  // Salva o novo state
+  $stmt = $pdo->prepare("INSERT INTO strava_states (state, usuario_id) VALUES (?, ?)");
+  $stmt->execute([$state, $_SESSION['id']]);
+} catch (Exception $e) {
+  // fallback: guarda na sessão mesmo
+  $_SESSION['strava_state'] = $state;
+}
 
 $isMobile = preg_match('/Mobile|Android|BlackBerry|iPhone|iPod|iPad|Windows Phone/i', $_SERVER['HTTP_USER_AGENT'] ?? '');
 

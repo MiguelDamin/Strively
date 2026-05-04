@@ -8,12 +8,30 @@ if (!isset($_SESSION['id'])) {
   exit();
 }
 
-// 1. Valida state CSRF
-if (($_GET['state'] ?? '') !== ($_SESSION['strava_state'] ?? '')) {
+// 1. Valida state CSRF — primeiro busca no banco (mais confiável no Render),
+//    depois verifica sessão como fallback
+$stateRecebido = $_GET['state'] ?? '';
+$usuarioId     = $_SESSION['id'];
+$stateValido   = false;
+
+try {
+  $stmtState = $pdo->prepare(
+    "DELETE FROM strava_states WHERE state = ? AND usuario_id = ? AND criado_em > NOW() - INTERVAL '10 minutes' RETURNING state"
+  );
+  $stmtState->execute([$stateRecebido, $usuarioId]);
+  $deletado = $stmtState->fetch();
+  $stateValido = !empty($deletado);
+} catch (Exception $e) {
+  // Tabela pode nao existir — usa fallback de sessao
+  $stateValido = ($stateRecebido === ($_SESSION['strava_state'] ?? ''));
+}
+
+unset($_SESSION['strava_state']);
+
+if (!$stateValido) {
   header('Location: /pages/perfil.php?erro=strava_state');
   exit();
 }
-unset($_SESSION['strava_state']);
 
 // 2. Verifica se o usuário autorizou
 if (isset($_GET['error']) || empty($_GET['code'])) {

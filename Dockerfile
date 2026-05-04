@@ -17,4 +17,4 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction --verbose
 
 EXPOSE 8080
 
-CMD ["php", "-S", "0.0.0.0:8080", "-t", "."]
+CMD ["php", "-S", "0.0.0.0:8080", "-t", ".", "router.php"]
