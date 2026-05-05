@@ -35,18 +35,21 @@ try {
 
 $isMobile = preg_match('/Mobile|Android|BlackBerry|iPhone|iPod|iPad|Windows Phone/i', $_SERVER['HTTP_USER_AGENT'] ?? '');
 
-$params = [
-  'client_id'       => $clientId,
-  'redirect_uri'    => $redirectUri,
-  'response_type'   => 'code',
-  'approval_prompt' => 'auto',
-  'scope'           => $scope,
-  'state'           => $state,
-];
+// Monta a query manualmente:
+// - redirect_uri precisa de urlencode (contém ://)
+// - scope NAO pode ser encodado: Strava precisa de vírgulas literais (read,activity:read_all)
+$encodedRedirect = urlencode($redirectUri);
 
-$webUrl       = 'https://www.strava.com/oauth/authorize?'        . http_build_query($params);
-$mobileAppUrl = 'strava://oauth/mobile/authorize?'               . http_build_query($params);
-$mobileWebUrl = 'https://www.strava.com/oauth/mobile/authorize?' . http_build_query($params);
+$queryStr = "client_id={$clientId}"
+  . "&redirect_uri={$encodedRedirect}"
+  . "&response_type=code"
+  . "&approval_prompt=auto"
+  . "&scope={$scope}"
+  . "&state={$state}";
+
+$webUrl       = "https://www.strava.com/oauth/authorize?{$queryStr}";
+$mobileAppUrl = "strava://oauth/mobile/authorize?{$queryStr}";
+$mobileWebUrl = "https://www.strava.com/oauth/mobile/authorize?{$queryStr}";
 
 
 if ($isMobile) {

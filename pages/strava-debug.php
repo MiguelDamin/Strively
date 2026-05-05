@@ -19,13 +19,15 @@ $secret      = $_ENV['STRAVA_CLIENT_SECRET'] ?? 'NÃO DEFINIDO';
 $scope       = 'read,activity:read_all,profile:read_all';
 $state       = 'DEBUG_STATE_123';
 
-$urlGerada = "https://www.strava.com/oauth/authorize"
-    . "?client_id={$clientId}"
-    . "&redirect_uri=" . $redirectUri
+$encodedRedirect = urlencode($redirectUri);
+$queryStr = "client_id={$clientId}"
+    . "&redirect_uri={$encodedRedirect}"
     . "&response_type=code"
     . "&approval_prompt=auto"
     . "&scope={$scope}"
     . "&state={$state}";
+$urlGerada = "https://www.strava.com/oauth/authorize?{$queryStr}";
+
 
 // Verifica se a tabela strava_states existe
 $tabelaExiste = false;
