@@ -35,29 +35,19 @@ try {
 
 $isMobile = preg_match('/Mobile|Android|BlackBerry|iPhone|iPod|iPad|Windows Phone/i', $_SERVER['HTTP_USER_AGENT'] ?? '');
 
-$webUrl = "https://www.strava.com/oauth/authorize"
-     . "?client_id={$clientId}"
-     . "&redirect_uri={$redirectUri}"
-     . "&response_type=code"
-     . "&approval_prompt=auto"
-     . "&scope={$scope}"
-     . "&state={$state}";
+$params = [
+  'client_id'       => $clientId,
+  'redirect_uri'    => $redirectUri,
+  'response_type'   => 'code',
+  'approval_prompt' => 'auto',
+  'scope'           => $scope,
+  'state'           => $state,
+];
 
-$mobileAppUrl = "strava://oauth/mobile/authorize"
-     . "?client_id={$clientId}"
-     . "&redirect_uri={$redirectUri}"
-     . "&response_type=code"
-     . "&approval_prompt=auto"
-     . "&scope={$scope}"
-     . "&state={$state}";
+$webUrl       = 'https://www.strava.com/oauth/authorize?'        . http_build_query($params);
+$mobileAppUrl = 'strava://oauth/mobile/authorize?'               . http_build_query($params);
+$mobileWebUrl = 'https://www.strava.com/oauth/mobile/authorize?' . http_build_query($params);
 
-$mobileWebUrl = "https://www.strava.com/oauth/mobile/authorize"
-     . "?client_id={$clientId}"
-     . "&redirect_uri={$redirectUri}"
-     . "&response_type=code"
-     . "&approval_prompt=auto"
-     . "&scope={$scope}"
-     . "&state={$state}";
 
 if ($isMobile) {
     echo "<!DOCTYPE html>
