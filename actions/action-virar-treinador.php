@@ -7,9 +7,7 @@
 $only_session = true;
 require_once '../components/header.php';
 require_once '../config/conexao.php';
-
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
+require_once __DIR__ . '/../config/mailer.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_SESSION['id'])) {
   header('Location: /pages/virar-treinador.php');
@@ -147,64 +145,47 @@ $usuario = $stmtUser->fetch();
 
 $adminEmail = $_ENV['MAIL_USER']; // Você recebe no próprio email configurado
 
-$mail = new PHPMailer(true);
-try {
-  $mail->isSMTP();
-  $mail->Host       = $_ENV['MAIL_HOST'];
-  $mail->SMTPAuth   = true;
-  $mail->Username   = $_ENV['MAIL_USER'];
-  $mail->Password   = $_ENV['MAIL_PASSWORD'];
-  $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-  $mail->Port       = $_ENV['MAIL_PORT'];
-  $mail->CharSet    = 'UTF-8';
+$assunto = '🏋️ Nova solicitação de treinador — Strively';
+$linkAdmin  = 'https://' . $_SERVER['HTTP_HOST'] . '/pages/admin/treinadores.php';
+$linkDiploma = htmlspecialchars($diplomaPath);
 
-  $mail->setFrom($_ENV['MAIL_USER'], $_ENV['MAIL_FROM_NAME']);
-  $mail->addAddress($adminEmail);
-  $mail->isHTML(true);
-  $mail->Subject = '🏋️ Nova solicitação de treinador — Strively';
+$htmlBody = "
+<div style='font-family: Arial, sans-serif; background: #f4f4f4; padding: 32px;'>
+  <div style='max-width: 560px; margin: 0 auto; background: #fff; border-radius: 10px; overflow: hidden;'>
 
-  $linkAdmin  = 'https://' . $_SERVER['HTTP_HOST'] . '/pages/admin/treinadores.php';
-  $linkDiploma = htmlspecialchars($diplomaPath);
-
-  $mail->Body = "
-  <div style='font-family: Arial, sans-serif; background: #f4f4f4; padding: 32px;'>
-    <div style='max-width: 560px; margin: 0 auto; background: #fff; border-radius: 10px; overflow: hidden;'>
-
-      <div style='background: #1DB954; padding: 24px 32px;'>
-        <h2 style='color: #fff; margin: 0; font-size: 20px;'>Nova solicitação de treinador</h2>
-      </div>
-
-      <div style='padding: 32px;'>
-        <table style='width: 100%; border-collapse: collapse; font-size: 14px;'>
-          <tr><td style='padding: 8px 0; color: #666; width: 140px;'>Nome</td>         <td style='padding: 8px 0; font-weight: bold;'>" . htmlspecialchars($usuario['nome']) . "</td></tr>
-          <tr><td style='padding: 8px 0; color: #666;'>E-mail</td>        <td style='padding: 8px 0;'>" . htmlspecialchars($usuario['email']) . "</td></tr>
-          <tr><td style='padding: 8px 0; color: #666;'>CREF</td>          <td style='padding: 8px 0;'>" . htmlspecialchars($cref) . "</td></tr>
-          <tr><td style='padding: 8px 0; color: #666;'>Faculdade</td>     <td style='padding: 8px 0;'>" . htmlspecialchars($faculdade) . "</td></tr>
-          <tr><td style='padding: 8px 0; color: #666;'>Assessoria</td>    <td style='padding: 8px 0;'>" . (empty($assessoria) ? '—' : htmlspecialchars($assessoria)) . "</td></tr>
-          <tr><td style='padding: 8px 0; color: #666;'>Especialidade</td> <td style='padding: 8px 0;'>" . htmlspecialchars($especialidade) . "</td></tr>
-        </table>
-
-        <div style='margin: 24px 0;'>
-          <a href='{$linkDiploma}' style='display: inline-block; background: #f0f0f0; color: #333; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-size: 14px;'>
-            📄 Ver diploma / CREF enviado
-          </a>
-        </div>
-
-        <a href='{$linkAdmin}' style='display: block; background: #1DB954; color: #fff; text-align: center; padding: 14px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 15px;'>
-          Acessar painel de administração
-        </a>
-
-        <p style='font-size: 12px; color: #aaa; margin-top: 24px; text-align: center;'>Strively — painel administrativo</p>
-      </div>
+    <div style='background: #1DB954; padding: 24px 32px;'>
+      <h2 style='color: #fff; margin: 0; font-size: 20px;'>Nova solicitação de treinador</h2>
     </div>
-  </div>";
 
-  $mail->AltBody = "Nova solicitação de treinador de {$usuario['nome']} ({$usuario['email']}). CREF: {$cref}. Acesse o painel: {$linkAdmin}";
-  $mail->send();
+    <div style='padding: 32px;'>
+      <table style='width: 100%; border-collapse: collapse; font-size: 14px;'>
+        <tr><td style='padding: 8px 0; color: #666; width: 140px;'>Nome</td>         <td style='padding: 8px 0; font-weight: bold;'>" . htmlspecialchars($usuario['nome']) . "</td></tr>
+        <tr><td style='padding: 8px 0; color: #666;'>E-mail</td>        <td style='padding: 8px 0;'>" . htmlspecialchars($usuario['email']) . "</td></tr>
+        <tr><td style='padding: 8px 0; color: #666;'>CREF</td>          <td style='padding: 8px 0;'>" . htmlspecialchars($cref) . "</td></tr>
+        <tr><td style='padding: 8px 0; color: #666;'>Faculdade</td>     <td style='padding: 8px 0;'>" . htmlspecialchars($faculdade) . "</td></tr>
+        <tr><td style='padding: 8px 0; color: #666;'>Assessoria</td>    <td style='padding: 8px 0;'>" . (empty($assessoria) ? '—' : htmlspecialchars($assessoria)) . "</td></tr>
+        <tr><td style='padding: 8px 0; color: #666;'>Especialidade</td> <td style='padding: 8px 0;'>" . htmlspecialchars($especialidade) . "</td></tr>
+      </table>
 
-} catch (Exception $e) {
+      <div style='margin: 24px 0;'>
+        <a href='{$linkDiploma}' style='display: inline-block; background: #f0f0f0; color: #333; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-size: 14px;'>
+          📄 Ver diploma / CREF enviado
+        </a>
+      </div>
+
+      <a href='{$linkAdmin}' style='display: block; background: #1DB954; color: #fff; text-align: center; padding: 14px; border-radius: 8px; text-decoration: none; font-weight: bold; font-size: 15px;'>
+        Acessar painel de administração
+      </a>
+
+      <p style='font-size: 12px; color: #aaa; margin-top: 24px; text-align: center;'>Strively — painel administrativo</p>
+    </div>
+  </div>
+</div>";
+
+$enviado = enviarEmail($adminEmail, $assunto, $htmlBody);
+if (!$enviado) {
   // Email falhou mas não bloqueia o fluxo — só loga
-  error_log("Email admin falhou: " . $mail->ErrorInfo);
+  error_log("Email admin falhou via Resend: " . $adminEmail);
 }
 
 // ── Redireciona com sucesso ───────────────────────────────

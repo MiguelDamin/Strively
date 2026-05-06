@@ -7,9 +7,7 @@
 $only_session = true;
 require_once '../components/header.php';
 require_once '../config/conexao.php';
-
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
+require_once __DIR__ . '/../config/mailer.php';
 
 // Proteção: só o admin
 $adminId = (int)($_ENV['ADMIN_ID'] ?? 0);
@@ -148,26 +146,9 @@ try {
 }
 
 // ── Envia email para o usuário ────────────────────────────
-$mail = new PHPMailer(true);
-try {
-  $mail->isSMTP();
-  $mail->Host       = $_ENV['MAIL_HOST'];
-  $mail->SMTPAuth   = true;
-  $mail->Username   = $_ENV['MAIL_USER'];
-  $mail->Password   = $_ENV['MAIL_PASSWORD'];
-  $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-  $mail->Port       = $_ENV['MAIL_PORT'];
-  $mail->CharSet    = 'UTF-8';
-
-  $mail->setFrom($_ENV['MAIL_USER'], $_ENV['MAIL_FROM_NAME']);
-  $mail->addAddress($usuario['email']);
-  $mail->isHTML(true);
-  $mail->Subject = $assunto;
-  $mail->Body    = $htmlBody;
-  $mail->AltBody = $altBody;
-  $mail->send();
-} catch (Exception $e) {
-  error_log("Email avaliação falhou: " . $mail->ErrorInfo);
+$enviado = enviarEmail($usuario['email'], $assunto, $htmlBody);
+if (!$enviado) {
+  error_log("Email avaliação falhou via Resend: " . $usuario['email']);
 }
 
 header("Location: /pages/admin/treinadores.php?filtro=pendente&msg={$decisao}");

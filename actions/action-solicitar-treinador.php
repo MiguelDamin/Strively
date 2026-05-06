@@ -7,10 +7,8 @@
 $only_session = true;
 require_once '../components/header.php';
 
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
-
 require_once '../config/conexao.php';
+require_once __DIR__ . '/../config/mailer.php';
 
 // Validações básicas
 if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_SESSION['id'])) {
@@ -85,53 +83,32 @@ $linkRecusar = $baseUrl . "/actions/action-aceitar-vinculo.php?corredor_id={$cor
 $nomeCorredor  = htmlspecialchars($corredor['nome']);
 $nomeTreinador = htmlspecialchars($treinador['nome']);
 
-$mail = new PHPMailer(true);
+$assunto = "Nova solicitação de aluno — {$nomeCorredor} | Strively";
+$htmlBody = "
+<div style='font-family: Arial, sans-serif; background-color: #121212; color: #ffffff; padding: 40px; border-radius: 8px; max-width: 600px;'>
+  <h2 style='color: #1DB954; text-align: center;'>Nova solicitação de aluno</h2>
+  <p style='font-size: 16px; color: #b3b3b3;'>Olá, {$nomeTreinador}!</p>
+  <p style='font-size: 16px; color: #b3b3b3;'>O corredor <strong style='color:#fff;'>{$nomeCorredor}</strong> quer se vincular a você como treinador na plataforma Strively.</p>
 
-try {
-  $mail->isSMTP();
-  $mail->Host       = $_ENV['MAIL_HOST'];
-  $mail->SMTPAuth   = true;
-  $mail->Username   = $_ENV['MAIL_USER'];
-  $mail->Password   = $_ENV['MAIL_PASSWORD'];
-  $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-  $mail->Port       = $_ENV['MAIL_PORT'];
-  $mail->CharSet    = 'UTF-8';
+  <div style='margin: 30px 0; text-align: center;'>
+    <a href='{$linkAceitar}'
+       style='display:inline-block; background:#1DB954; color:#fff; padding:14px 32px; border-radius:30px; font-weight:bold; font-size:16px; text-decoration:none; margin-right:12px;'>
+      ✅ Aceitar
+    </a>
+    <a href='{$linkRecusar}'
+       style='display:inline-block; background:#333; color:#ff5555; padding:14px 32px; border-radius:30px; font-weight:bold; font-size:16px; text-decoration:none; border:1px solid #555;'>
+      ❌ Recusar
+    </a>
+  </div>
 
-  $mail->setFrom($_ENV['MAIL_USER'], $_ENV['MAIL_FROM_NAME']);
-  $mail->addAddress($treinador['email']);
+  <p style='font-size: 14px; color: #b3b3b3;'>Ao aceitar, o corredor poderá ver os treinos que você criar para ele.</p>
+  <p style='font-size: 12px; color: #535353; margin-top: 40px;'>Se você não reconhece esta solicitação, clique em Recusar ou ignore este e-mail.</p>
+</div>";
 
-  $mail->isHTML(true);
-  $mail->Subject = "Nova solicitação de aluno — {$nomeCorredor} | Strively";
-
-  $htmlBody = "
-  <div style='font-family: Arial, sans-serif; background-color: #121212; color: #ffffff; padding: 40px; border-radius: 8px; max-width: 600px;'>
-    <h2 style='color: #1DB954; text-align: center;'>Nova solicitação de aluno</h2>
-    <p style='font-size: 16px; color: #b3b3b3;'>Olá, {$nomeTreinador}!</p>
-    <p style='font-size: 16px; color: #b3b3b3;'>O corredor <strong style='color:#fff;'>{$nomeCorredor}</strong> quer se vincular a você como treinador na plataforma Strively.</p>
-
-    <div style='margin: 30px 0; text-align: center;'>
-      <a href='{$linkAceitar}'
-         style='display:inline-block; background:#1DB954; color:#fff; padding:14px 32px; border-radius:30px; font-weight:bold; font-size:16px; text-decoration:none; margin-right:12px;'>
-        ✅ Aceitar
-      </a>
-      <a href='{$linkRecusar}'
-         style='display:inline-block; background:#333; color:#ff5555; padding:14px 32px; border-radius:30px; font-weight:bold; font-size:16px; text-decoration:none; border:1px solid #555;'>
-        ❌ Recusar
-      </a>
-    </div>
-
-    <p style='font-size: 14px; color: #b3b3b3;'>Ao aceitar, o corredor poderá ver os treinos que você criar para ele.</p>
-    <p style='font-size: 12px; color: #535353; margin-top: 40px;'>Se você não reconhece esta solicitação, clique em Recusar ou ignore este e-mail.</p>
-  </div>";
-
-  $mail->Body    = $htmlBody;
-  $mail->AltBody = "Olá, {$nomeTreinador}! O corredor {$nomeCorredor} solicitou vínculo como seu aluno. Aceitar: {$linkAceitar} | Recusar: {$linkRecusar}";
-
-  $mail->send();
-
-} catch (Exception $e) {
+$enviado = enviarEmail($treinador['email'], $assunto, $htmlBody);
+if (!$enviado) {
   // E-mail falhou mas o vínculo já foi criado — continua normalmente
-  // Para debug: error_log("Mailer Error: " . $mail->ErrorInfo);
+  error_log("Email de solicitação de treinador falhou via Resend API");
 }
 
 header('Location: /pages/buscar-treinador.php?msg=solicitado');

@@ -7,10 +7,8 @@
 $only_session = true;
 require_once '../components/header.php';
 
-use PHPMailer\PHPMailer\PHPMailer;
-use PHPMailer\PHPMailer\Exception;
-
 require_once '../config/conexao.php'; // Carrega o vendor/autoload.php e Dotenv
+require_once __DIR__ . '/../config/mailer.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: /pages/esqueci-senha.php');
@@ -41,46 +39,29 @@ $_SESSION['recuperacao_email'] = $email;
 $_SESSION['recuperacao_codigo'] = $codigo;
 $_SESSION['recuperacao_expira'] = time() + 600; // Validade de 10 min
 
-// 3. Configurar PHPMailer
-$mail = new PHPMailer(true);
-try {
-    $mail->isSMTP();
-    $mail->Host = $_ENV['MAIL_HOST'];
-    $mail->SMTPAuth = true;
-    $mail->Username = $_ENV['MAIL_USER'];
-    $mail->Password = $_ENV['MAIL_PASSWORD'];
-    $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;
-    $mail->Port       = 465;
-    $mail->CharSet = 'UTF-8';
+// 3. Enviar e-mail com código
+$assunto = 'Recuperação de Senha - Strively';
+$htmlBody = "
+<div style='font-family: Arial, sans-serif; background-color: #121212; color: #ffffff; padding: 40px; border-radius: 8px;'>
+    <h2 style='color: #1DB954; text-align: center;'>Recuperação de Senha</h2>
+    <p style='font-size: 16px; color: #b3b3b3;'>Olá,</p>
+    <p style='font-size: 16px; color: #b3b3b3;'>Recebemos um pedido de recuperação de senha vinculado à sua conta no Strively.</p>
+    <div style='margin: 30px 0; text-align: center;'>
+        <span style='background-color: #282828; color: #ffffff; font-size: 32px; font-weight: bold; padding: 10px 20px; border-radius: 6px; letter-spacing: 4px;'>{$codigo}</span>
+    </div>
+    <p style='font-size: 14px; color: #b3b3b3;'>Acesse o site novamente e insira este código para continuar com o processo. Ele irá expirar em 10 minutos.</p>
+    <p style='font-size: 12px; color: #535353; margin-top: 40px;'>Se você não solicitou recuperação de conta recentemente, basta ignorar este e-mail. Não passe este código para ninguém.</p>
+</div>";
 
-    $mail->setFrom($_ENV['MAIL_USER'], $_ENV['MAIL_FROM_NAME']);
-    $mail->addAddress($email);
+$enviado = enviarEmail($email, $assunto, $htmlBody);
 
-    $mail->isHTML(true);
-    $mail->Subject = 'Recuperação de Senha - Strively';
-
-    $htmlBody = "
-    <div style='font-family: Arial, sans-serif; background-color: #121212; color: #ffffff; padding: 40px; border-radius: 8px;'>
-        <h2 style='color: #1DB954; text-align: center;'>Recuperação de Senha</h2>
-        <p style='font-size: 16px; color: #b3b3b3;'>Olá,</p>
-        <p style='font-size: 16px; color: #b3b3b3;'>Recebemos um pedido de recuperação de senha vinculado à sua conta no Strively.</p>
-        <div style='margin: 30px 0; text-align: center;'>
-            <span style='background-color: #282828; color: #ffffff; font-size: 32px; font-weight: bold; padding: 10px 20px; border-radius: 6px; letter-spacing: 4px;'>{$codigo}</span>
-        </div>
-        <p style='font-size: 14px; color: #b3b3b3;'>Acesse o site novamente e insira este código para continuar com o processo. Ele irá expirar em 10 minutos.</p>
-        <p style='font-size: 12px; color: #535353; margin-top: 40px;'>Se você não solicitou recuperação de conta recentemente, basta ignorar este e-mail. Não passe este código para ninguém.</p>
-    </div>";
-
-    $mail->Body = $htmlBody;
-    $mail->AltBody = "Seu código de recuperação de senha no Strively é: {$codigo}. O código expira em 10 min.";
-
-    $mail->send();
-
+if ($enviado) {
     // Sucesso envia para a etapa do código
     header('Location: /pages/esqueci-senha.php?etapa=codigo');
     exit();
-} catch (Exception $e) {
-    error_log('STRIVELY MAIL ERROR: ' . $mail->ErrorInfo);
+} else {
+    error_log('STRIVELY MAIL ERROR: Resend API falhou');
     header('Location: /pages/esqueci-senha.php?erro=falha_email');
     exit();
 }
+
