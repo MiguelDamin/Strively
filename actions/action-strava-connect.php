@@ -47,9 +47,16 @@ $queryStr = "client_id={$clientId}"
   . "&scope={$scope}"
   . "&state={$state}";
 
+$queryStrMobile = "client_id={$clientId}"
+  . "&redirect_uri={$redirectUri}"
+  . "&response_type=code"
+  . "&approval_prompt=auto"
+  . "&scope={$scope}"
+  . "&state={$state}";
+
 $webUrl       = "https://www.strava.com/oauth/authorize?{$queryStr}";
-$mobileAppUrl = "strava://oauth/mobile/authorize?{$queryStr}";
-$mobileWebUrl = "https://www.strava.com/oauth/mobile/authorize?{$queryStr}";
+$mobileAppUrl = "strava://oauth/mobile/authorize?{$queryStrMobile}";
+$mobileWebUrl = "https://www.strava.com/oauth/mobile/authorize?{$queryStrMobile}";
 
 
 if ($isMobile) {
