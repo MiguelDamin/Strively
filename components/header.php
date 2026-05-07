@@ -1,6 +1,28 @@
 <?php
 require_once __DIR__ . '/../config/conexao.php';
-require_once __DIR__ . '/../config/session.php';
+
+// Auto-login via cookie
+if (!isset($_SESSION['id']) && isset($_COOKIE['remember_token'])) {
+    $stmt = $pdo->prepare("SELECT * FROM usuarios WHERE remember_token = ? AND remember_expira > NOW()");
+    $stmt->execute([$_COOKIE['remember_token']]);
+    $u = $stmt->fetch();
+    if ($u) {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+        $_SESSION['id']     = $u['id'];
+        $_SESSION['nome']   = $u['nome'];
+        $_SESSION['perfil'] = $u['perfil'];
+        $_SESSION['foto']   = $u['foto'];
+        // renovar cookie
+        $novoToken = bin2hex(random_bytes(32));
+        $novaExpira = date('Y-m-d H:i:s', time() + 30 * 24 * 60 * 60);
+        $stmt2 = $pdo->prepare("UPDATE usuarios SET remember_token = ?, remember_expira = ? WHERE id = ?");
+        $stmt2->execute([$novoToken, $novaExpira, $u['id']]);
+        setcookie('remember_token', $novoToken, time() + 30 * 24 * 60 * 60, '/', '', true, true);
+    }
+}
+
 if (session_status() === PHP_SESSION_NONE) {
   session_start();
 }

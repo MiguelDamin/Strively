@@ -983,15 +983,7 @@ body {
 
             <div class="form-grupo">
                 <label for="tipo_corredor">Tipo de corredor</label>
-                <input type="text" id="tipo_corredor" name="tipo_corredor" list="opcoesTipoCorredor" value="<?= htmlspecialchars($usuario['tipo_corredor'] ?? '') ?>" placeholder="Ex: Trail Runner, Maratonista..." />
-                <datalist id="opcoesTipoCorredor">
-                    <option value="Trail Runner">
-                    <option value="Maratonista">
-                    <option value="Velocista">
-                    <option value="Fundista">
-                    <option value="Triatleta">
-                    <option value="Ciclista">
-                </datalist>
+                <input type="text" id="tipo_corredor" name="tipo_corredor" value="<?= htmlspecialchars($usuario['tipo_corredor'] ?? '') ?>" placeholder="Ex: Velocista, Maratonista, Triatleta..." />
             </div>
 
             <div class="form-grupo">

@@ -41,6 +41,13 @@ $_SESSION['nome']   = $usuario['nome'];
 $_SESSION['perfil'] = $usuario['perfil'];
 $_SESSION['foto']   = $usuario['foto'];
 
+// Remember-me cookie
+$token = bin2hex(random_bytes(32));
+$expira = date('Y-m-d H:i:s', time() + 30 * 24 * 60 * 60);
+$stmt = $pdo->prepare("UPDATE usuarios SET remember_token = ?, remember_expira = ? WHERE id = ?");
+$stmt->execute([$token, $expira, $usuario['id']]);
+setcookie('remember_token', $token, time() + 30 * 24 * 60 * 60, '/', '', true, true);
+
 // Redireciona para home
 header('Location: ../index.php');
 exit();
