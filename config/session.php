@@ -3,7 +3,10 @@ class PdoSessionHandler implements SessionHandlerInterface {
     private $pdo;
 
     public function __construct() {
-        require __DIR__ . '/conexao.php';
+        global $pdo;
+        if (!isset($pdo)) {
+            require_once __DIR__ . '/conexao.php';
+        }
         $this->pdo = $pdo;
     }
 
@@ -25,19 +28,33 @@ class PdoSessionHandler implements SessionHandlerInterface {
     }
 
     public function write(string $id, string $data): bool {
-        $usuario_id = $_SESSION['id'] ?? null;
+        // Extrair usuario_id dos dados da sessão
+        $sessionData = [];
+        $decoded = session_decode($data);
+        if ($decoded) {
+            $sessionData = $_SESSION;
+        }
+        $usuario_id = $sessionData['id'] ?? null;
+        
+        // Só salvar no banco se tiver usuario logado
+        if ($usuario_id === null) {
+            return true; // sessão de visitante, ignora
+        }
+        
+        $expira = date('Y-m-d H:i:s', time() + 30 * 24 * 60 * 60);
         $stmt = $this->pdo->prepare("
-            INSERT INTO sessoes (id, usuario_id, dados, criado_em, expira_em) 
-            VALUES (:id, :usuario_id, :dados, NOW(), NOW() + INTERVAL '30 days')
+            INSERT INTO sessoes (id, usuario_id, dados, expira_em) 
+            VALUES (:id, :usuario_id, :dados, :expira)
             ON CONFLICT (id) DO UPDATE SET 
             usuario_id = EXCLUDED.usuario_id,
             dados = EXCLUDED.dados,
-            expira_em = NOW() + INTERVAL '30 days'
+            expira_em = EXCLUDED.expira_em
         ");
         return $stmt->execute([
             ':id' => $id,
             ':usuario_id' => $usuario_id,
-            ':dados' => $data
+            ':dados' => $data,
+            ':expira' => $expira
         ]);
     }
 
