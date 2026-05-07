@@ -1,10 +1,9 @@
+Header topo · PHP
 <?php
-ob_start(); // DEVE ser a primeira coisa — antes de qualquer output
-
 if (session_status() === PHP_SESSION_NONE) {
   session_start();
 }
-
+ 
 // Busca dados do usuário logado para menus condicionais
 if (isset($_SESSION['id']) && !isset($me)) {
   require_once __DIR__ . '/../config/conexao.php';
@@ -12,11 +11,12 @@ if (isset($_SESSION['id']) && !isset($me)) {
   $stmtMe->execute([$_SESSION['id']]);
   $me = $stmtMe->fetch();
 }
-
+ 
 if (isset($only_session) && $only_session === true) {
   return;
 }
 ?>
+
 
 <header>
   <nav>
@@ -39,6 +39,7 @@ if (isset($only_session) && $only_session === true) {
       <?php if (isset($_SESSION['id']) && isset($me)): ?>
         <?php if ($me['perfil'] === 'treinador'): ?>
           <li><a href="/pages/alunos.php">Alunos</a></li>
+          <li><a href="/pages/treinos.php">Meus Treinos</a></li>
         <?php else: ?>
           <li><a href="/pages/treinos.php">Treinos</a></li>
         <?php endif; ?>
