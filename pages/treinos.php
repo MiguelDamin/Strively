@@ -9,11 +9,7 @@ if (!isset($_SESSION['id'])) {
   exit();
 }
 
-// Treinadores vão para alunos.php
-if ($_SESSION['perfil'] === 'treinador') {
-  header('Location: /pages/alunos.php');
-  exit();
-}
+// Treinador agora possui acesso livre aos seus próprios treinos.
 
 // Treinos do corredor
 $stmt = $pdo->prepare("SELECT * FROM treinos WHERE aluno_id = ? ORDER BY data_treino ASC");
