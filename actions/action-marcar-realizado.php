@@ -17,8 +17,18 @@ if (!$treino_id) {
 }
 
 // Atualiza somente se o treino pertence ao aluno logado
-$stmt = $pdo->prepare("UPDATE treinos SET status = 'realizado' WHERE id = ? AND aluno_id = ?");
+$stmt = $pdo->prepare("SELECT status FROM treinos WHERE id = ? AND aluno_id = ?");
 $stmt->execute([$treino_id, $_SESSION['id']]);
+$treino = $stmt->fetch();
 
-header("Location: /pages/treinos.php?aba={$aba}&msg=realizado");
+$novoStatus = 'pendente';
+if ($treino) {
+  $novoStatus = ($treino['status'] === 'realizado') ? 'pendente' : 'realizado';
+  $stmt = $pdo->prepare("UPDATE treinos SET status = ? WHERE id = ? AND aluno_id = ?");
+  $stmt->execute([$novoStatus, $treino_id, $_SESSION['id']]);
+}
+
+$msg = ($novoStatus === 'realizado') ? 'realizado' : 'desmarcado';
+
+header("Location: /pages/treinos.php?aba={$aba}&msg={$msg}");
 exit();

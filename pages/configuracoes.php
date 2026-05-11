@@ -14,6 +14,8 @@ if (!isset($_SESSION['id'])) {
   exit();
 }
 
+unset($only_session);
+
 $secao = $_GET['secao'] ?? 'seguranca'; // Padrão será Segurança
 $etapa = $_GET['etapa'] ?? 'inicio';
 

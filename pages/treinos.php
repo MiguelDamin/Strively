@@ -115,8 +115,10 @@ include '../components/header.php';
 .modal-treino-desc{font-size:.84rem;color:var(--text-muted);line-height:1.5;margin-bottom:10px}
 .badge-realizado{background:rgba(29,185,84,.2);color:#166534;font-size:.78rem;font-weight:700;padding:4px 10px;border-radius:6px;display:inline-block}
 .badge-proprio{background:#e0f2fe;color:#0369a1;font-size:.72rem;font-weight:700;padding:3px 8px;border-radius:6px;display:inline-block;margin-left:6px}
-.btn-marcar{background:var(--green);color:#fff;border:none;border-radius:8px;padding:8px 16px;font-family:'Outfit',sans-serif;font-size:.85rem;font-weight:700;cursor:pointer;transition:opacity .15s}
-.btn-marcar:hover{opacity:.85}
+.btn-marcar{background:#f5f5f5;color:#333;border:1px solid #ddd;border-radius:8px;padding:8px 16px;font-family:'Outfit',sans-serif;font-size:.85rem;font-weight:700;cursor:pointer;transition:all .15s}
+.btn-marcar:hover{background:#e0e0e0;border-color:#ccc}
+.btn-desmarcar{background:var(--green);color:#fff;border:none;border-radius:8px;padding:8px 16px;font-family:'Outfit',sans-serif;font-size:.85rem;font-weight:700;cursor:pointer;transition:opacity .15s}
+.btn-desmarcar:hover{opacity:.85}
 .btn-remover-treino{background:#fff0f0;border:none;color:#c0392b;border-radius:7px;padding:6px 14px;font-size:.8rem;font-weight:600;cursor:pointer;font-family:'Outfit',sans-serif;transition:background .18s;margin-left:8px}
 .btn-remover-treino:hover{background:#ffd5d5}
 /* Planilha */
@@ -175,6 +177,7 @@ include '../components/header.php';
       <?php
         $msgs = [
           'realizado'        => '✅ Treino marcado como realizado!',
+          'desmarcado'       => '✅ Treino desmarcado com sucesso!',
           'criado'           => '✅ Treino adicionado com sucesso!',
           'removido'         => '🗑️ Treino removido.',
           'evento_adicionado'=> '🏅 Evento adicionado ao calendário!',
@@ -271,12 +274,16 @@ include '../components/header.php';
             </div>
             <div class="planilha-acoes">
               <?php if($realizado): ?>
-                <span class="badge-realizado">✅ Realizado</span>
+                <form action="/actions/action-marcar-realizado.php" method="POST" style="display:inline">
+                  <input type="hidden" name="treino_id" value="<?=(int)$item['id']?>">
+                  <input type="hidden" name="aba" value="planilha">
+                  <button type="submit" class="btn-desmarcar">✅ Realizado</button>
+                </form>
               <?php else: ?>
                 <form action="/actions/action-marcar-realizado.php" method="POST" style="display:inline">
                   <input type="hidden" name="treino_id" value="<?=(int)$item['id']?>">
                   <input type="hidden" name="aba" value="planilha">
-                  <button type="submit" class="btn-marcar">Realizado</button>
+                  <button type="submit" class="btn-marcar">Marcar como realizado</button>
                 </form>
               <?php endif; ?>
               <?php if ($item['_proprio']): ?>
@@ -504,9 +511,9 @@ function abrirModalDia(ds,items){
       const proprio=it._proprio;
       let acoes='';
       if(realizado){
-        acoes='<span class="badge-realizado">✅ Realizado</span>';
+        acoes='<form method="POST" action="/actions/action-marcar-realizado.php" style="display:inline"><input type="hidden" name="treino_id" value="'+it.id+'"><input type="hidden" name="aba" value="calendario"><button type="submit" class="btn-desmarcar">✅ Realizado</button></form>';
       } else {
-        acoes='<form method="POST" action="/actions/action-marcar-realizado.php" style="display:inline"><input type="hidden" name="treino_id" value="'+it.id+'"><input type="hidden" name="aba" value="calendario"><button type="submit" class="btn-marcar">Marcar Realizado</button></form>';
+        acoes='<form method="POST" action="/actions/action-marcar-realizado.php" style="display:inline"><input type="hidden" name="treino_id" value="'+it.id+'"><input type="hidden" name="aba" value="calendario"><button type="submit" class="btn-marcar">Marcar como realizado</button></form>';
       }
       if(proprio){
         acoes+=' <form method="POST" action="/actions/action-remover-treino-proprio.php" style="display:inline" onsubmit="return confirm(\'Remover este treino?\')"><input type="hidden" name="treino_id" value="'+it.id+'"><input type="hidden" name="aba" value="calendario"><button type="submit" class="btn-remover-treino">Remover</button></form>';
