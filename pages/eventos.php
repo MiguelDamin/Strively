@@ -21,6 +21,29 @@ include '../components/head.php';
 include '../components/header.php';
 ?>
 
+<style>
+.card-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+.card-autor {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  color: var(--text-muted, #666);
+}
+.card-autor img {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+</style>
+
 <body>
 
   <section class="eventos-section">
@@ -86,23 +109,23 @@ include '../components/header.php';
 
               <div class="evento-divider"></div>
 
-              <div style="display:flex; justify-content:space-between; align-items:center;">
-                <div style="display:flex; align-items:center; gap:8px; font-size:0.85rem; color:var(--text-muted);">
-                  <?php if (!empty($evento['autor_nome'])): ?>
-                    <?php if (!empty($evento['autor_foto'])): ?>
-                      <img src="<?= htmlspecialchars($evento['autor_foto']) ?>" style="width:24px;height:24px;border-radius:50%;object-fit:cover;" alt="autor">
-                    <?php else: ?>
-                      <span style="font-size:16px;">👤</span>
-                    <?php endif; ?>
-                    <span><?= htmlspecialchars(explode(' ', $evento['autor_nome'])[0]) ?></span>
+              <div class="card-footer">
+                <?php if (!empty($evento['autor_nome'])): ?>
+                <div class="card-autor">
+                  <?php if (!empty($evento['autor_foto'])): ?>
+                    <img src="<?= htmlspecialchars($evento['autor_foto']) ?>" alt="autor">
+                  <?php else: ?>
+                    <span style="font-size:16px;">👤</span>
                   <?php endif; ?>
+                  <span><?= htmlspecialchars(explode(' ', $evento['autor_nome'])[0]) ?></span>
                 </div>
+                <?php endif; ?>
 
-                <div style="display:flex; gap:8px;">
+                <div style="display:flex; gap:8px; width:100%;">
                   <?php if (isset($_SESSION['id']) && ($_SESSION['id'] == $evento['usuario_id'] || $_SESSION['perfil'] === 'admin')): ?>
-                    <a href="/pages/editar-evento.php?id=<?= $evento['id'] ?>" class="btn-secondary" style="padding:4px 10px; font-size:0.8rem; background:#f5f5f5; border-color:#ccc; color:#333" onclick="event.stopPropagation()">Editar</a>
+                    <a href="/pages/editar-evento.php?id=<?= $evento['id'] ?>" class="btn-secondary" style="flex:1; padding:8px 10px; font-size:0.85rem; background:#f5f5f5; border-color:#ccc; color:#333; text-align:center" onclick="event.stopPropagation()">Editar</a>
                   <?php endif; ?>
-                  <a href="<?= htmlspecialchars($evento['link_oficial']) ?>" target="_blank" rel="noopener" class="btn-secondary" style="padding:4px 10px; font-size:0.8rem;" onclick="event.stopPropagation()">Detalhes</a>
+                  <a href="<?= htmlspecialchars($evento['link_oficial']) ?>" target="_blank" rel="noopener" class="btn-secondary" style="flex:1; padding:8px 10px; font-size:0.85rem; text-align:center" onclick="event.stopPropagation()">Detalhes</a>
                 </div>
               </div>
 
