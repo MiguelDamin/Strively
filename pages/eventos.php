@@ -26,19 +26,22 @@ include '../components/header.php';
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 12px;
   width: 100%;
+  padding-top: 8px;
 }
 .card-autor {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
   font-size: 0.85rem;
   color: var(--text-muted, #666);
 }
 .card-autor img {
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   object-fit: cover;
 }
@@ -121,11 +124,11 @@ include '../components/header.php';
                 </div>
                 <?php endif; ?>
 
-                <div style="display:flex; gap:8px; width:100%;">
+                <div style="display:flex; justify-content:center; gap:8px; width:100%;">
                   <?php if (isset($_SESSION['id']) && ($_SESSION['id'] == $evento['usuario_id'] || $_SESSION['perfil'] === 'admin')): ?>
-                    <a href="/pages/editar-evento.php?id=<?= $evento['id'] ?>" class="btn-secondary" style="flex:1; padding:8px 10px; font-size:0.85rem; background:#f5f5f5; border-color:#ccc; color:#333; text-align:center" onclick="event.stopPropagation()">Editar</a>
+                    <a href="/pages/editar-evento.php?id=<?= $evento['id'] ?>" class="btn-secondary" style="flex:1; padding:8px 10px; font-size:0.85rem; background:#f5f5f5; border-color:#ccc; color:#333; text-align:center; max-width:140px; display:inline-block" onclick="event.stopPropagation()">Editar</a>
                   <?php endif; ?>
-                  <a href="<?= htmlspecialchars($evento['link_oficial']) ?>" target="_blank" rel="noopener" class="btn-secondary" style="flex:1; padding:8px 10px; font-size:0.85rem; text-align:center" onclick="event.stopPropagation()">Detalhes</a>
+                  <a href="<?= htmlspecialchars($evento['link_oficial']) ?>" target="_blank" rel="noopener" class="btn-secondary" style="flex:1; padding:8px 10px; font-size:0.85rem; text-align:center; max-width:140px; display:inline-block" onclick="event.stopPropagation()">Detalhes</a>
                 </div>
               </div>
 

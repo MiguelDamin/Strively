@@ -24,6 +24,34 @@ include '../components/head.php';
 include '../components/header.php';
 ?>
 
+<style>
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.distancias-grid { display: flex; gap: 16px; flex-wrap: wrap; margin: 8px 0; }
+.distancia-item { display: flex; align-items: center; gap: 6px; font-weight: 400; cursor: pointer; }
+
+@media (max-width: 768px) {
+  .form-row { display: flex; flex-direction: column; gap: 16px; }
+  .form-grupo input, .form-grupo select, .form-grupo textarea {
+    font-size: 16px;
+    padding: 12px;
+    box-sizing: border-box;
+  }
+  .distancias-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .distancia-item {
+    font-size: 15px;
+  }
+  .btn-primary, .btn-secondary {
+    padding: 14px;
+    font-size: 16px;
+    width: 100%;
+  }
+}
+</style>
+
 <body>
 
   <section class="auth-section" style="min-height: auto; padding: 60px 24px;">
@@ -56,7 +84,7 @@ include '../components/header.php';
         </div>
 
         <!-- DATA E CIDADE -->
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+        <div class="form-row">
           <div class="form-grupo">
             <label for="data_evento">Data do Evento *</label>
             <input type="date" id="data_evento" name="data_evento" required>
@@ -70,17 +98,17 @@ include '../components/header.php';
         <!-- DISTÂNCIAS -->
         <div class="form-grupo">
           <label>Distâncias Disponíveis * (marque pelo menos uma)</label>
-          <div style="display: flex; gap: 16px; flex-wrap: wrap; margin: 8px 0;">
-            <label style="display: flex; align-items: center; gap: 6px; font-weight: 400; cursor: pointer;">
+          <div class="distancias-grid">
+            <label class="distancia-item">
               <input type="checkbox" name="distancias_pre[]" value="5km"> 5km
             </label>
-            <label style="display: flex; align-items: center; gap: 6px; font-weight: 400; cursor: pointer;">
+            <label class="distancia-item">
               <input type="checkbox" name="distancias_pre[]" value="10km"> 10km
             </label>
-            <label style="display: flex; align-items: center; gap: 6px; font-weight: 400; cursor: pointer;">
+            <label class="distancia-item">
               <input type="checkbox" name="distancias_pre[]" value="21km"> 21km
             </label>
-            <label style="display: flex; align-items: center; gap: 6px; font-weight: 400; cursor: pointer;">
+            <label class="distancia-item">
               <input type="checkbox" name="distancias_pre[]" value="42km"> 42km
             </label>
           </div>
@@ -105,8 +133,8 @@ include '../components/header.php';
           <input type="file" id="banner" name="banner" accept="image/jpeg, image/png, image/webp" required>
         </div>
 
-        <button type="submit" class="btn-primary btn-full" style="margin-top: 16px;">Publicar Evento</button>
-        <a href="eventos.php" class="btn-secondary" style="width: 100%; text-align: center; padding: 12px 0;">Cancelar</a>
+        <button type="submit" class="btn-primary" style="margin-top: 16px; width: 100%;">Publicar Evento</button>
+        <a href="eventos.php" class="btn-secondary" style="display: block; width: 100%; text-align: center; margin-top: 8px;">Cancelar</a>
 
       </form>
 

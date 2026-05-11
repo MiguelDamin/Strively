@@ -34,6 +34,59 @@ include '../components/head.php';
 include '../components/header.php';
 ?>
 
+<style>
+.detalhe-body {
+  max-width: 700px;
+  margin: 0 auto;
+}
+.detalhe-banner {
+  border-radius: 12px;
+  width: 100%;
+}
+.detalhe-acoes {
+  display: flex;
+  gap: 16px;
+}
+.detalhe-acoes a {
+  flex: 1;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .detalhe-body {
+    padding: 16px;
+    max-width: 100%;
+  }
+  .detalhe-titulo {
+    font-size: 1.4rem;
+    margin-top: 16px;
+  }
+  .detalhe-acoes {
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
+  }
+  .detalhe-acoes a {
+    width: 100%;
+    padding: 14px;
+    font-size: 15px;
+    border-radius: 10px;
+  }
+  .evento-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 0.95rem;
+  }
+  .evento-distancias {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 12px 0;
+  }
+}
+</style>
+
 <body>
 
   <section class="detalhe-section">
@@ -67,7 +120,7 @@ include '../components/header.php';
       </div>
       <?php endif; ?>
 
-      <div class="evento-meta" style="font-size: 1.1rem; margin: 16px 0;">
+      <div class="evento-meta">
         <div class="evento-info">
           <span>📍</span> <?= htmlspecialchars($evento['cidade']) ?>
         </div>
@@ -99,14 +152,13 @@ include '../components/header.php';
 
       <!-- AÇÕES -->
       <div class="detalhe-acoes">
+        <a href="eventos.php" class="btn-secondary">← Voltar para eventos</a>
         <?php if (isset($_SESSION['id']) && ($_SESSION['id'] == $evento['usuario_id'] || $_SESSION['perfil'] === 'admin')): ?>
           <a href="/pages/editar-evento.php?id=<?= $evento['id'] ?>" class="btn-secondary" style="background:#f5f5f5; color:#333; border-color:#ccc;">✏️ Editar</a>
         <?php endif; ?>
         <?php if (!empty($evento['link_oficial'])): ?>
           <a href="<?= htmlspecialchars($evento['link_oficial']) ?>" target="_blank" class="btn-primary">Acessar Site Oficial</a>
         <?php endif; ?>
-        
-        <a href="eventos.php" class="btn-secondary">← Voltar para eventos</a>
       </div>
 
     </div>
