@@ -15,7 +15,12 @@ if (!is_numeric($id) || $id <= 0) {
 }
 
 // Busca o evento
-$stmt = $pdo->prepare("SELECT * FROM eventos WHERE id = ?");
+$stmt = $pdo->prepare("
+  SELECT e.*, u.nome AS autor_nome, u.foto AS autor_foto 
+  FROM eventos e 
+  LEFT JOIN usuarios u ON e.usuario_id = u.id 
+  WHERE e.id = ?
+");
 $stmt->execute([$id]);
 $evento = $stmt->fetch();
 
@@ -44,8 +49,23 @@ include '../components/header.php';
         </div>
       <?php endif; ?>
 
-      <!-- CONTEÚDO -->
       <h1 class="detalhe-titulo"><?= htmlspecialchars($evento['nome']) ?></h1>
+      <?php if (isset($_GET['msg']) && $_GET['msg'] === 'edit_sucesso'): ?>
+        <div style="background:#f0fff4;border:1px solid #b2f5c8;border-radius:10px;padding:12px 16px;font-size:0.88rem;color:#166534;margin-bottom:20px;text-align:center">
+          ✅ Evento atualizado com sucesso!
+        </div>
+      <?php endif; ?>
+
+      <?php if (!empty($evento['autor_nome'])): ?>
+      <div style="display:flex; align-items:center; gap:8px; margin-top:-4px; margin-bottom:12px; color:var(--text-muted); font-size:0.95rem;">
+        <?php if (!empty($evento['autor_foto'])): ?>
+          <img src="<?= htmlspecialchars($evento['autor_foto']) ?>" alt="Foto" style="width:26px;height:26px;border-radius:50%;object-fit:cover;">
+        <?php else: ?>
+          <span>👤</span>
+        <?php endif; ?>
+        <span>Criado por <strong><?= htmlspecialchars($evento['autor_nome']) ?></strong></span>
+      </div>
+      <?php endif; ?>
 
       <div class="evento-meta" style="font-size: 1.1rem; margin: 16px 0;">
         <div class="evento-info">
@@ -79,6 +99,9 @@ include '../components/header.php';
 
       <!-- AÇÕES -->
       <div class="detalhe-acoes">
+        <?php if (isset($_SESSION['id']) && ($_SESSION['id'] == $evento['usuario_id'] || $_SESSION['perfil'] === 'admin')): ?>
+          <a href="/pages/editar-evento.php?id=<?= $evento['id'] ?>" class="btn-secondary" style="background:#f5f5f5; color:#333; border-color:#ccc;">✏️ Editar</a>
+        <?php endif; ?>
         <?php if (!empty($evento['link_oficial'])): ?>
           <a href="<?= htmlspecialchars($evento['link_oficial']) ?>" target="_blank" class="btn-primary">Acessar Site Oficial</a>
         <?php endif; ?>

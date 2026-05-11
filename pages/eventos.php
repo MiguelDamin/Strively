@@ -6,7 +6,13 @@ try {
   $pdo->exec("DELETE FROM eventos WHERE data_evento < CURRENT_DATE - INTERVAL '2 days'");
 } catch (PDOException $e) {}
 
-$stmt = $pdo->prepare("SELECT * FROM eventos WHERE status = 'ativo' ORDER BY data_evento ASC");
+$stmt = $pdo->prepare("
+  SELECT e.*, u.nome AS autor_nome, u.foto AS autor_foto 
+  FROM eventos e 
+  LEFT JOIN usuarios u ON e.usuario_id = u.id 
+  WHERE e.status = 'ativo' 
+  ORDER BY e.data_evento ASC
+");
 $stmt->execute();
 $eventos = $stmt->fetchAll();
 
@@ -80,12 +86,25 @@ include '../components/header.php';
 
               <div class="evento-divider"></div>
 
-              <a
-                href="<?= htmlspecialchars($evento['link_oficial']) ?>"
-                target="_blank" rel="noopener"
-                class="btn-secondary"
-                onclick="event.stopPropagation()"
-              >Ver detalhes</a>
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <div style="display:flex; align-items:center; gap:8px; font-size:0.85rem; color:var(--text-muted);">
+                  <?php if (!empty($evento['autor_nome'])): ?>
+                    <?php if (!empty($evento['autor_foto'])): ?>
+                      <img src="<?= htmlspecialchars($evento['autor_foto']) ?>" style="width:24px;height:24px;border-radius:50%;object-fit:cover;" alt="autor">
+                    <?php else: ?>
+                      <span style="font-size:16px;">👤</span>
+                    <?php endif; ?>
+                    <span><?= htmlspecialchars(explode(' ', $evento['autor_nome'])[0]) ?></span>
+                  <?php endif; ?>
+                </div>
+
+                <div style="display:flex; gap:8px;">
+                  <?php if (isset($_SESSION['id']) && ($_SESSION['id'] == $evento['usuario_id'] || $_SESSION['perfil'] === 'admin')): ?>
+                    <a href="/pages/editar-evento.php?id=<?= $evento['id'] ?>" class="btn-secondary" style="padding:4px 10px; font-size:0.8rem; background:#f5f5f5; border-color:#ccc; color:#333" onclick="event.stopPropagation()">Editar</a>
+                  <?php endif; ?>
+                  <a href="<?= htmlspecialchars($evento['link_oficial']) ?>" target="_blank" rel="noopener" class="btn-secondary" style="padding:4px 10px; font-size:0.8rem;" onclick="event.stopPropagation()">Detalhes</a>
+                </div>
+              </div>
 
             </div>
 
