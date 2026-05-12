@@ -45,6 +45,13 @@ include '../components/header.php';
   border-radius: 50%;
   object-fit: cover;
 }
+.evento-distancias {
+  min-height: 38px; /* reserva espaco quando nao ha badges */
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 6px;
+}
 </style>
 
 <body>

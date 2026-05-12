@@ -56,8 +56,27 @@ include '../components/header.php';
 
 <style>
 .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-.distancias-grid { display: flex; gap: 16px; flex-wrap: wrap; margin: 8px 0; }
-.distancia-item { display: flex; align-items: center; gap: 6px; font-weight: 400; cursor: pointer; }
+.distancias-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin: 8px 0;
+}
+.distancia-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 400;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.distancia-item input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  cursor: pointer;
+}
 
 @media (max-width: 768px) {
   .form-row { display: flex; flex-direction: column; gap: 16px; }
@@ -67,12 +86,11 @@ include '../components/header.php';
     box-sizing: border-box;
   }
   .distancias-grid {
-    display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 10px;
+    gap: 12px;
   }
   .distancia-item {
-    font-size: 15px;
+    font-size: 16px;
   }
   .btn-primary, .btn-secondary {
     padding: 14px;
