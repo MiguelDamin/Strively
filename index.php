@@ -218,6 +218,7 @@ $eventos_carrossel = $stmt->fetchAll();
 @media(max-width: 768px) {
   .nc-left { transform: translateX(-120px) scale(0.85); opacity: 0.3; }
   .nc-right { transform: translateX(120px) scale(0.85); opacity: 0.3; }
+  .nc-nav { display: none; }
 }
 </style>
 <body>
@@ -382,6 +383,20 @@ function ncIrPara(i) {
 
 if (ncTotal > 0) {
   renderNcCarousel();
+  
+  // Touch Swipe para Mobile
+  const track = document.getElementById('ncTrack');
+  let startX = 0;
+  
+  track.addEventListener('touchstart', e => {
+    startX = e.changedTouches[0].screenX;
+  }, {passive: true});
+  
+  track.addEventListener('touchend', e => {
+    const endX = e.changedTouches[0].screenX;
+    if (endX < startX - 40) ncMover(1); // Swipe Left = Próximo
+    if (endX > startX + 40) ncMover(-1); // Swipe Right = Anterior
+  }, {passive: true});
 }
 </script>
 
