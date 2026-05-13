@@ -174,8 +174,8 @@ if (isset($only_session) && $only_session === true) {
   <!-- Menu / Sheet -->
   <?php if (isset($_SESSION['id'])): ?>
     <button class="bn-item" onclick="abrirSheet()">
-      <svg viewBox="0 0 24 24"><path d="M6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
-      <!-- Opção de menu sem nome conforme pedido -->
+      <svg viewBox="0 0 24 24"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+      <span>Menu</span>
     </button>
   <?php else: ?>
     <!-- Visitantes não possuem sheet menu, mantemos o login simples -->
@@ -187,7 +187,7 @@ if (isset($only_session) && $only_session === true) {
 
   <!-- Equipamentos -->
   <a href="/pages/equipamentos.php" class="bn-item">
-    <svg viewBox="0 0 24 24"><path d="M22 18v-1.1c0-1-.6-1.9-1.5-2.2l-3.4-.9V11c0-1.1-.9-2-2-2H9L4.8 6.5C4.5 6.2 4 6 3.5 6H2v2h1.5l4 2.3v3.7L3.4 15.2C2.6 15.4 2 16.1 2 17v2h20v-1z"/></svg>
+    <svg viewBox="0 0 24 24"><path d="M21 13.5l-3.5-7A2 2 0 0 0 15.7 5.5H12l2.6 5.1h2.6l-1.3-2.6-.4.2-1.4-2.8-4.2 1v1.9l-2 .5v2.8c0 .5-.4 1-1 1H4A1.5 1.5 0 0 0 2.5 14v3.4c0 1.1.9 2 2 2h13a2 2 0 0 0 2-2v-1.4l1.6-1.6c.3-.3.3-.8-.1-1zm-19-4h2.5v1.5H2v-1.5zm1 6h2.5v1.5H3v-1.5z"/></svg>
     <span>Equipamentos</span>
   </a>
 

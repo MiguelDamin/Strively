@@ -956,13 +956,13 @@ header nav {
 
   header { display: none; }
 
-  body { padding-bottom: 68px; }
+  body { padding-bottom: 80px; }
 
   .bottom-nav {
     display: flex;
     position: fixed;
     bottom: 0; left: 0; right: 0;
-    height: 60px;
+    height: 72px;
     background: var(--surface);
     border-top: 1px solid var(--border);
     align-items: center;
