@@ -4,7 +4,7 @@ require_once 'config/conexao.php';
 $tituloPagina = "Início";
 
 // Fetch upcoming active events for the carousel
-$stmt = $pdo->prepare("SELECT id, nome, cidade, data_evento, banner FROM eventos WHERE status = 'ativo' ORDER BY data_evento ASC LIMIT 10");
+$stmt = $pdo->prepare("SELECT id, nome, cidade, data_evento, banner FROM eventos WHERE status = 'ativo' AND data_evento >= CURRENT_DATE ORDER BY data_evento ASC LIMIT 10");
 $stmt->execute();
 $eventos_carrossel = $stmt->fetchAll();
 ?>

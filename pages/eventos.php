@@ -3,7 +3,7 @@ ob_start();
 require_once '../config/conexao.php';
 
 try {
-  $pdo->exec("DELETE FROM eventos WHERE data_evento < CURRENT_DATE - INTERVAL '2 days'");
+  $pdo->exec("DELETE FROM eventos WHERE data_evento < CURRENT_DATE");
 } catch (PDOException $e) {}
 
 $stmt = $pdo->prepare("

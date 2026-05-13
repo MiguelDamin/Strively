@@ -5,8 +5,8 @@
 // Site: https://inspiraeventos.com.br
 //
 // COMO RODAR:
-// Manual:  php /var/www/html/scripts/scraper-inspira.php
-// Cron:    0 8 * * 1 php /var/www/html/scripts/scraper-inspira.php
+// Manual:  php /var/www/html/Strively/scripts/scraper-inspira.php
+// Cron:    0 8 * * 1 php /var/www/html/Strively/scripts/scraper-inspira.php
 //          (roda toda segunda-feira às 08h)
 //
 // ANTES DE RODAR PELA PRIMEIRA VEZ:
