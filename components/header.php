@@ -163,30 +163,39 @@ if (isset($only_session) && $only_session === true) {
     <span>Início</span>
   </a>
 
-  <!-- Eventos -->
-  <a href="/pages/eventos.php" class="bn-item">
-    <svg viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zM5 8V6h14v2H5z"/></svg>
-    <span>Eventos</span>
-  </a>
+  <!-- Treinos -->
+  <?php if (isset($_SESSION['id'])): ?>
+    <a href="/pages/treinos.php" class="bn-item">
+      <svg viewBox="0 0 24 24"><path d="M13.49 5.48c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm-3.6 13.9l1-4.4 2.1 2v6h2v-7.5l-2.1-2 .6-3c1.3 1.5 3.3 2.5 5.5 2.5v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1l-5.2 2.2v4.7h2v-3.4l1.8-.7-1.6 8.1-4.9-1-.4 2 7 1.4z"/></svg>
+      <span>Treinos</span>
+    </a>
+  <?php endif; ?>
 
-  <!-- Equipamentos -->
-  <a href="/pages/equipamentos.php" class="bn-item">
-    <svg viewBox="0 0 24 24"><path d="M18.6 6.62c-1.44 0-2.8.56-3.77 1.53L7.8 14.39c-.64.64-1.49.99-2.4.99-1.87 0-3.39-1.51-3.39-3.38S3.53 8.62 5.4 8.62c.91 0 1.76.35 2.44 1.03l1.13 1 1.51-1.34L9.22 8.2A5.37 5.37 0 0 0 5.4 6.62C2.42 6.62 0 9.04 0 12s2.42 5.38 5.4 5.38c1.44 0 2.8-.56 3.77-1.53l7.03-6.24c.64-.64 1.49-.99 2.4-.99 1.87 0 3.39 1.51 3.39 3.38s-1.52 3.38-3.39 3.38c-.9 0-1.76-.35-2.44-1.03l-1.14-1.01-1.51 1.34 1.27 1.12a5.386 5.386 0 0 0 3.82 1.57c2.98 0 5.4-2.41 5.4-5.38s-2.42-5.37-5.4-5.37z"/></svg>
-    <span>Equipamentos</span>
-  </a>
-
-  <!-- Perfil / Login -->
+  <!-- Menu / Sheet -->
   <?php if (isset($_SESSION['id'])): ?>
     <button class="bn-item" onclick="abrirSheet()">
-      <svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
-      <span>Perfil</span>
+      <svg viewBox="0 0 24 24"><path d="M6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
+      <!-- Opção de menu sem nome conforme pedido -->
     </button>
   <?php else: ?>
+    <!-- Visitantes não possuem sheet menu, mantemos o login simples -->
     <a href="/pages/login.php" class="bn-item">
       <svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
       <span>Login</span>
     </a>
   <?php endif; ?>
+
+  <!-- Equipamentos -->
+  <a href="/pages/equipamentos.php" class="bn-item">
+    <svg viewBox="0 0 24 24"><path d="M22 18v-1.1c0-1-.6-1.9-1.5-2.2l-3.4-.9V11c0-1.1-.9-2-2-2H9L4.8 6.5C4.5 6.2 4 6 3.5 6H2v2h1.5l4 2.3v3.7L3.4 15.2C2.6 15.4 2 16.1 2 17v2h20v-1z"/></svg>
+    <span>Equipamentos</span>
+  </a>
+
+  <!-- Eventos -->
+  <a href="/pages/eventos.php" class="bn-item">
+    <svg viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zM5 8V6h14v2H5z"/></svg>
+    <span>Eventos</span>
+  </a>
 
 </nav>
 
