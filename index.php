@@ -216,8 +216,42 @@ $eventos_carrossel = $stmt->fetchAll();
 }
 
 @media(max-width: 768px) {
-  .nc-left { transform: translateX(-120px) scale(0.85); opacity: 0.3; }
-  .nc-right { transform: translateX(120px) scale(0.85); opacity: 0.3; }
+  .nc-container {
+    height: auto;
+    padding: 20px;
+    display: block;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    /* Esconde barra de rolagem mas mantém função */
+    scrollbar-width: none; 
+    -ms-overflow-style: none;
+  }
+  .nc-container::-webkit-scrollbar {
+    display: none;
+  }
+  .nc-track {
+    display: flex;
+    position: relative;
+    width: max-content;
+    gap: 16px;
+    perspective: none;
+    align-items: stretch;
+    justify-content: flex-start;
+  }
+  .nc-card, .nc-left, .nc-right, .nc-center, .nc-hidden {
+    position: relative;
+    transform: none !important;
+    opacity: 1 !important;
+    filter: none !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08) !important;
+    scroll-snap-align: center;
+    border: none;
+    flex-shrink: 0;
+    pointer-events: auto !important;
+    z-index: 1 !important;
+  }
   .nc-nav { display: none; }
 }
 </style>
@@ -383,20 +417,6 @@ function ncIrPara(i) {
 
 if (ncTotal > 0) {
   renderNcCarousel();
-  
-  // Touch Swipe para Mobile
-  const track = document.getElementById('ncTrack');
-  let startX = 0;
-  
-  track.addEventListener('touchstart', e => {
-    startX = e.changedTouches[0].screenX;
-  }, {passive: true});
-  
-  track.addEventListener('touchend', e => {
-    const endX = e.changedTouches[0].screenX;
-    if (endX < startX - 40) ncMover(1); // Swipe Left = Próximo
-    if (endX > startX + 40) ncMover(-1); // Swipe Right = Anterior
-  }, {passive: true});
 }
 </script>
 
