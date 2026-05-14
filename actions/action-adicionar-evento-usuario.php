@@ -25,7 +25,7 @@ if (empty($data_evento)) {
 
 if ($evento_id > 0) {
   // Evento do Strively — validar que existe e que a data bate
-  $stmt = $pdo->prepare("SELECT data_evento FROM eventos WHERE id = ? AND status = 'ativo'");
+  $stmt = $pdo->prepare("SELECT data_evento, nome, banner FROM eventos WHERE id = ? AND status = 'ativo'");
   $stmt->execute([$evento_id]);
   $evento = $stmt->fetch();
 
@@ -52,13 +52,6 @@ if ($evento_id > 0) {
   $stmt = $pdo->prepare("INSERT INTO usuario_eventos (usuario_id, evento_id, data_evento) VALUES (?, ?, ?)");
   $stmt->execute([$_SESSION['id'], $evento_id, $data_evento]);
 
-  // Criar post automático
-  $primeiroNome = explode(' ', $_SESSION['nome'])[0];
-  $tituloPost = $primeiroNome . " reservou presença na corrida: " . $evento['nome'];
-  $fotoPost = $evento['banner'] ?? null;
-  $stmtPost = $pdo->prepare("INSERT INTO posts (usuario_id, tipo, titulo, foto, evento_id, criado_em) VALUES (?, 'evento', ?, ?, ?, NOW())");
-  $stmtPost->execute([$_SESSION['id'], $tituloPost, $fotoPost, $evento_id]);
-
 } else {
   // Evento manual
   if (empty($nome_manual)) {
@@ -68,7 +61,26 @@ if ($evento_id > 0) {
 
   $stmt = $pdo->prepare("INSERT INTO usuario_eventos (usuario_id, nome_manual, data_evento) VALUES (?, ?, ?)");
   $stmt->execute([$_SESSION['id'], $nome_manual, $data_evento]);
+  
+  $evento = ['nome' => $nome_manual, 'banner' => null];
 }
+
+// -------- Gatilho Automático Feed --------
+$rawNome = $_SESSION['nome'] ?? $_SESSION['id'] ?? 'Usuário';
+$primeiroNome = explode(' ', $rawNome)[0];
+
+if (!empty($evento['banner'])) {
+    $foto = $evento['banner'];
+    $titulo = $primeiroNome . " vai participar de " . $evento['nome'];
+} else {
+    $foto = null;
+    $titulo = $primeiroNome . " vai participar de " . ($evento['nome'] ?? 'um evento');
+}
+
+$eventoParam = ($evento_id > 0) ? $evento_id : null;
+
+$stmtPost = $pdo->prepare("INSERT INTO posts (usuario_id, tipo, titulo, foto, evento_id, criado_em) VALUES (?, 'evento', ?, ?, ?, NOW())");
+$stmtPost->execute([$_SESSION['id'], $titulo, $foto, $eventoParam]);
 
 header("Location: /pages/treinos.php?aba={$aba}&msg=evento_adicionado");
 exit();
