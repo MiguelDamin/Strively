@@ -10,60 +10,45 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_SESSION['id'])) {
 
 $id = $_SESSION['id'];
 $post_id = $_POST['post_id'] ?? null;
-$titulo = trim($_POST['titulo'] ?? '');
+$titulo  = trim($_POST['titulo'] ?? '');
 $descricao = trim($_POST['descricao'] ?? '');
 
-if (empty($post_id)) {
-  header('Location: /pages/comunidade.php');
-  exit();
-}
+if (!$post_id) { header('Location: /pages/comunidade.php'); exit(); }
 
-$fotoUrl = null;
+// Verificar ownership SEMPRE
+$stmt = $pdo->prepare("SELECT * FROM posts WHERE id = ? AND usuario_id = ?");
+$stmt->execute([$post_id, $_SESSION['id']]);
+$post = $stmt->fetch();
+if (!$post) { header('Location: /pages/comunidade.php?erro=sem_permissao'); exit(); }
 
+// Upload de nova foto (opcional)
+$foto = $post['foto']; // mantém foto atual se não enviar nova
 if (!empty($_FILES['foto']['tmp_name'])) {
-  $arquivo = $_FILES['foto'];
-  $extensao = strtolower(pathinfo($arquivo['name'], PATHINFO_EXTENSION));
-  $permitidos = ['jpg', 'jpeg', 'png', 'webp'];
-  
-  if (in_array($extensao, $permitidos)) {
-    $nomeArquivo = 'post-' . $id . '-' . time() . '-' . uniqid() . '.' . $extensao;
-    $bucket = 'posts-feed';
+    $ext = pathinfo($_FILES['foto']['name'], PATHINFO_EXTENSION);
+    $nomeArquivo = 'post_' . $post_id . '_' . time() . '.' . $ext;
+    $fileBinary = file_get_contents($_FILES['foto']['tmp_name']);
     $supabaseUrl = $_ENV['SUPABASE_URL'];
-    $serviceKey = $_ENV['SUPABASE_SERVICE_ROLE_KEY'];
-    $conteudo = file_get_contents($arquivo['tmp_name']);
-    $endpoint = $supabaseUrl . '/storage/v1/object/' . $bucket . '/' . $nomeArquivo;
-    
-    $opcoes = [
-      'http' => [
-        'method'  => 'POST',
-        'header'  => "Authorization: Bearer " . $serviceKey . "\r\n" .
-                     "Content-Type: image/" . ($extensao === 'jpg' ? 'jpeg' : $extensao) . "\r\n" .
-                     "x-upsert: true\r\n",
-        'content' => $conteudo,
-        'ignore_errors' => true
-      ]
-    ];
-    $contexto = stream_context_create($opcoes);
-    $resposta = file_get_contents($endpoint, false, $contexto);
-    $httpCode = 500;
-    if (!empty($http_response_header)) {
-      preg_match('#HTTP/\d+\.\d+ (\d+)#', $http_response_header[0], $matches);
-      if (isset($matches[1])) $httpCode = (int)$matches[1];
-    }
-    
-    if ($httpCode === 200 || $httpCode === 201) {
-      $fotoUrl = $supabaseUrl . '/storage/v1/object/public/' . $bucket . '/' . $nomeArquivo;
-    }
-  }
+    $key = $_ENV['SUPABASE_SERVICE_ROLE_KEY'];
+    $endpoint = "{$supabaseUrl}/storage/v1/object/posts-feed/{$nomeArquivo}";
+    $ctx = stream_context_create([
+        'http' => [
+            'method' => 'POST',
+            'header' => "Authorization: Bearer {$key}\r\nContent-Type: image/{$ext}\r\nx-upsert: true\r\n",
+            'content' => $fileBinary,
+            'ignore_errors' => true,
+            'timeout' => 30,
+        ],
+    ]);
+    @file_get_contents($endpoint, false, $ctx);
+    $foto = "{$supabaseUrl}/storage/v1/object/public/posts-feed/{$nomeArquivo}";
 }
 
-if ($fotoUrl) {
-    $stmt = $pdo->prepare("UPDATE posts SET titulo = ?, descricao = ?, foto = ?, editado_em = NOW() WHERE id = ? AND usuario_id = ?");
-    $stmt->execute([$titulo, $descricao, $fotoUrl, $post_id, $id]);
-} else {
-    $stmt = $pdo->prepare("UPDATE posts SET titulo = ?, descricao = ?, editado_em = NOW() WHERE id = ? AND usuario_id = ?");
-    $stmt->execute([$titulo, $descricao, $post_id, $id]);
-}
+// Atualizar post
+$stmt = $pdo->prepare("UPDATE posts SET titulo = ?, descricao = ?, foto = ?, editado_em = NOW() WHERE id = ? AND usuario_id = ?");
+$stmt->execute([$titulo, $descricao, $foto, $post_id, $_SESSION['id']]);
+
+header('Location: /pages/comunidade.php?sucesso=post_editado');
+exit();
 
 header('Location: /pages/comunidade.php');
 exit();

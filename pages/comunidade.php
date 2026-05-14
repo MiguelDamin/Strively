@@ -161,6 +161,7 @@ $runnerIcon = '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path
 
             <?php if ($p['usuario_id'] === $_SESSION['id']): ?>
               <div class="post-actions">
+                <button type="button" title="Editar" onclick="abrirModalEditar(<?= $p['id'] ?>)">✏️</button>
                 <form action="/actions/action-excluir-post.php" method="POST" onsubmit="return confirm('Apagar este post?');">
                   <input type="hidden" name="post_id" value="<?= $p['id'] ?>">
                   <button type="submit" title="Excluir">🗑️</button>
@@ -202,6 +203,29 @@ $runnerIcon = '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path
     </form>
   </div>
 </div>
+
+<!-- Modais de edição -->
+<?php foreach ($posts as $post): ?>
+  <?php if ($post['usuario_id'] === $_SESSION['id']): ?>
+    <div id="modal-editar-<?= $post['id'] ?>" class="modal-overlay">
+      <div class="modal-box">
+        <div class="m-close" onclick="fecharModal(<?= $post['id'] ?>)">&times;</div>
+        <h3>Editar publicação</h3>
+        <form action="/actions/action-editar-post.php" method="POST" enctype="multipart/form-data">
+          <input type="hidden" name="post_id" value="<?= $post['id'] ?>">
+          <input type="text" name="titulo" value="<?= htmlspecialchars($post['titulo'] ?? '') ?>" placeholder="Título" required>
+          <textarea name="descricao" placeholder="Descrição (opcional)"><?= htmlspecialchars($post['descricao'] ?? '') ?></textarea>
+          <label style="display:block;margin-bottom:8px;font-size:0.9rem;font-weight:600;color:var(--text-secondary);">Nova foto (opcional):</label>
+          <input type="file" name="foto" accept="image/*">
+          <?php if (!empty($post['foto'])): ?>
+            <img src="<?= htmlspecialchars(strpos($post['foto'], 'http') === 0 ? $post['foto'] : '/'.$post['foto']) ?>" style="width:100px;height:100px;object-fit:cover;border-radius:10px;margin-bottom:12px;border:1px solid #ddd;">
+          <?php endif; ?>
+          <button type="submit" class="btn-submit">Salvar Alterações</button>
+        </form>
+      </div>
+    </div>
+  <?php endif; ?>
+<?php endforeach; ?>
 
 <script>
 function switchTab(tab) {
@@ -250,6 +274,21 @@ async function toggleLike(postId, btn) {
 // Fechar modal no overlay
 document.getElementById('modalCriar').addEventListener('click', function(e) {
   if (e.target === this) this.classList.remove('open');
+});
+
+// Funções do Modal de Edição
+function abrirModalEditar(postId) {
+    const el = document.getElementById('modal-editar-' + postId);
+    if(el) el.classList.add('open');
+}
+function fecharModal(postId) {
+    const el = document.getElementById('modal-editar-' + postId);
+    if(el) el.classList.remove('open');
+}
+document.querySelectorAll('.modal-overlay').forEach(el => {
+    el.addEventListener('click', function(e) {
+        if (e.target === this) this.classList.remove('open');
+    });
 });
 </script>
 </body>
