@@ -629,12 +629,38 @@ body {
 /* ------------------------------------------------ */
 /* ESTILOS DO STRAVA */
 /* ------------------------------------------------ */
-.strava-bloco {
+.strava-card {
   background: #fff;
   border: 1px solid rgba(0,0,0,0.07);
   border-radius: 16px;
-  padding: 20px;
+  padding: 16px;
   margin-top: 16px;
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.strava-btns {
+    display: flex;
+    flex-wrap: wrap; /* quebra linha se não couber */
+    gap: 8px;
+    width: 100%;
+    margin-top: 12px;
+}
+
+.strava-btns a,
+.strava-btns button,
+.strava-btns form button {
+    flex: 1;
+    min-width: 0; /* permite encolher */
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 8px 12px;
+    font-size: 0.85rem;
+    border-radius: 20px;
+    box-sizing: border-box;
 }
 
 .strava-conectado {
@@ -697,6 +723,17 @@ body {
 .btn-strava:hover {
   background: #e04400;
   transform: translateY(-1px);
+}
+
+@media (max-width: 480px) {
+    .strava-btns {
+        flex-direction: column;
+    }
+    .strava-btns a,
+    .strava-btns button,
+    .strava-btns form button {
+        width: 100%;
+    }
 }
 </style>
 
@@ -780,7 +817,7 @@ body {
         <?php endif; ?>
 
         <!-- BLOCO STRAVA -->
-        <div class="strava-bloco">
+        <div class="strava-card">
           <?php if ($usuario['strava_conectado']): ?>
             <!-- CONECTADO -->
             <div class="strava-conectado">
@@ -805,13 +842,13 @@ body {
             </div>
 
             <!-- AÇÕES -->
-            <div style="display:flex; gap:8px; margin-top:12px;">
-              <a href="/actions/action-strava-sync.php" class="btn-secondary" style="font-size:.82rem; padding:8px 16px;">
+            <div class="strava-btns">
+              <a href="/actions/action-strava-sync.php" class="btn-secondary">
                 🔄 Atualizar dados
               </a>
               <a href="/actions/action-strava-disconnect.php"
                  onclick="return confirm('Desconectar o Strava? Seus dados de km serão zerados.')"
-                 style="font-size:.82rem; padding:8px 16px; color:#cc0000; border:1.5px solid #cc0000; border-radius:999px; display:inline-flex; align-items:center;">
+                 style="color:#cc0000; border:1.5px solid #cc0000;">
                 Desconectar
               </a>
             </div>
