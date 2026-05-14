@@ -34,6 +34,15 @@ if (isset($_SESSION['id']) && !isset($me)) {
   $stmtMe->execute([$_SESSION['id']]);
   $me = $stmtMe->fetch();
 }
+
+$unread_notif = 0;
+if (isset($_SESSION['id'])) {
+    try {
+        $stmt_n = $pdo->prepare("SELECT COUNT(*) FROM notificacoes WHERE usuario_id = ? AND lida = false");
+        $stmt_n->execute([$_SESSION['id']]);
+        $unread_notif = $stmt_n->fetchColumn();
+    } catch(Exception $e) {}
+}
  
 if (isset($only_session) && $only_session === true) {
   return;
@@ -57,7 +66,7 @@ if (isset($only_session) && $only_session === true) {
       <li><a href="/index.php">Início</a></li>
       <li><a href="/pages/eventos.php">Eventos</a></li>
       <li><a href="/pages/divulgar-evento.php">Divulgue Eventos</a></li>
-      <li><a href="/pages/equipamentos.php">Equipamentos</a></li>
+      <li><a href="/pages/comunidade.php">Comunidade</a></li>
 
       <?php if (isset($_SESSION['id']) && isset($me)): ?>
         <?php if ($me['perfil'] === 'treinador'): ?>
@@ -69,6 +78,16 @@ if (isset($only_session) && $only_session === true) {
       <?php endif; ?>
 
       <?php if (isset($_SESSION['id'])): ?>
+
+      <!-- Notificações Desktop -->
+      <li style="display:flex;align-items:center;margin-right:15px;">
+        <a href="/pages/notificacoes.php" style="position:relative;display:flex;align-items:center;color:#fff;">
+          <svg viewBox="0 0 24 24" style="width:24px;height:24px;fill:currentColor;"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-4c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v4z"/></svg>
+          <?php if ($unread_notif > 0): ?>
+            <span style="position:absolute;top:-4px;right:-4px;background:red;color:#fff;font-size:10px;font-weight:bold;width:16px;height:16px;display:flex;align-items:center;justify-content:center;border-radius:50%;"><?= $unread_notif ?></span>
+          <?php endif; ?>
+        </a>
+      </li>
 
       <!-- USUÁRIO LOGADO — avatar + dropdown -->
       <li class="nav-usuario">
@@ -185,10 +204,10 @@ if (isset($only_session) && $only_session === true) {
     </a>
   <?php endif; ?>
 
-  <!-- Equipamentos -->
-  <a href="/pages/equipamentos.php" class="bn-item">
+  <!-- Comunidade -->
+  <a href="/pages/comunidade.php" class="bn-item">
     <svg viewBox="0 0 24 24"><path d="M21 13.5l-3.5-7A2 2 0 0 0 15.7 5.5H12l2.6 5.1h2.6l-1.3-2.6-.4.2-1.4-2.8-4.2 1v1.9l-2 .5v2.8c0 .5-.4 1-1 1H4A1.5 1.5 0 0 0 2.5 14v3.4c0 1.1.9 2 2 2h13a2 2 0 0 0 2-2v-1.4l1.6-1.6c.3-.3.3-.8-.1-1zm-19-4h2.5v1.5H2v-1.5zm1 6h2.5v1.5H3v-1.5z"/></svg>
-    <span>Equipamentos</span>
+    <span>Comunidade</span>
   </a>
 
   <!-- Eventos -->
@@ -228,6 +247,15 @@ if (isset($only_session) && $only_session === true) {
           <svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
         </div>
         Perfil
+      </a>
+      <a href="/pages/notificacoes.php" class="sheet-item">
+        <div class="sheet-icon" style="position:relative;">
+          <svg viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-4c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v4z"/></svg>
+          <?php if ($unread_notif > 0): ?>
+            <span style="position:absolute;top:2px;right:2px;width:12px;height:12px;background:#ef4444;border-radius:50%;border:2px solid var(--surface);"></span>
+          <?php endif; ?>
+        </div>
+        Avisos
       </a>
       <a href="/pages/configuracoes.php" class="sheet-item">
         <div class="sheet-icon">

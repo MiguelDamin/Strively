@@ -52,6 +52,13 @@ if ($evento_id > 0) {
   $stmt = $pdo->prepare("INSERT INTO usuario_eventos (usuario_id, evento_id, data_evento) VALUES (?, ?, ?)");
   $stmt->execute([$_SESSION['id'], $evento_id, $data_evento]);
 
+  // Criar post automático
+  $primeiroNome = explode(' ', $_SESSION['nome'])[0];
+  $tituloPost = $primeiroNome . " reservou presença na corrida: " . $evento['nome'];
+  $fotoPost = $evento['banner'] ?? null;
+  $stmtPost = $pdo->prepare("INSERT INTO posts (usuario_id, tipo, titulo, foto, evento_id, criado_em) VALUES (?, 'evento', ?, ?, ?, NOW())");
+  $stmtPost->execute([$_SESSION['id'], $tituloPost, $fotoPost, $evento_id]);
+
 } else {
   // Evento manual
   if (empty($nome_manual)) {
