@@ -1,14 +1,18 @@
 <?php
+$only_session = true;
+require_once '../components/header.php';
 require_once '../config/conexao.php';
-// Requer login
-if (session_status() === PHP_SESSION_NONE) { session_start(); }
+
 if (!isset($_SESSION['id'])) {
     header('Location: /pages/login.php');
     exit();
 }
 
+unset($only_session);
+
 $tituloPagina = "Comunidade";
-require_once '../components/header.php';
+include '../components/head.php';
+include '../components/header.php';
 
 // Fetch Posts
 $stmtPosts = $pdo->prepare("
