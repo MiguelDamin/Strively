@@ -91,8 +91,6 @@ if (!$statsResp) {
 }
 
 $stats           = json_decode($statsResp, true);
-error_log("Strava Stats DEBUG: " . print_r($stats, true)); // Debugging dos zeros
-
 $kmTotal         = round(($stats['all_run_totals']['distance'] ?? 0) / 1000, 2);
 $kmAno           = round(($stats['ytd_run_totals']['distance'] ?? 0) / 1000, 2);
 $atividadesTotal = $stats['all_run_totals']['count'] ?? 0;
@@ -107,38 +105,76 @@ $stmt = $pdo->prepare("
 ");
 $stmt->execute([$kmTotal, $kmAno, $atividadesTotal, $_SESSION['id']]);
 
-// 3. Sincroniza as ultimas atividades para a tabela de treinos (calendário do usuário)
-$actResp = @file_get_contents('https://www.strava.com/api/v3/athlete/activities?per_page=15', false, $ctx);
+// 3. Busca atividades recentes e cria/atualiza treinos no calendário
+$actResp = @file_get_contents(
+  'https://www.strava.com/api/v3/athlete/activities?per_page=15',
+  false,
+  $ctx
+);
+
 if ($actResp) {
     $activities = json_decode($actResp, true);
+
+    // Mapeamento de tipo Strava → tipo legível
+    $tipoMap = [
+        'Run'        => 'Corrida',
+        'TrailRun'   => 'Trail Run',
+        'VirtualRun' => 'Corrida Virtual',
+    ];
+    $tiposCorreda = array_keys($tipoMap);
+
     if (is_array($activities)) {
         foreach ($activities as $act) {
-            $tipoAtiv = $act['type'] ?? $act['sport_type'] ?? 'Run';
-            $dataTreino = date('Y-m-d', strtotime($act['start_date_local']));
-            $distanciaKm = round(($act['distance'] ?? 0) / 1000, 2);
-            $distDesc = "Distância percorrida: {$distanciaKm} km";
+            $tipoAtivStr = $act['type'] ?? $act['sport_type'] ?? '';
 
-            // Verifica se tem treino marcado pra essa data
-            $stmtCheck = $pdo->prepare("SELECT id, descricao FROM treinos WHERE aluno_id = ? AND data_treino = ? LIMIT 1");
-            $stmtCheck->execute([$_SESSION['id'], $dataTreino]);
-            $treinoExistente = $stmtCheck->fetch();
+            // Só processar atividades de corrida
+            if (!in_array($tipoAtivStr, $tiposCorreda)) continue;
+
+            $activityId  = (int)($act['id'] ?? 0);
+            $dataTreino  = date('Y-m-d', strtotime($act['start_date_local']));
+            $km          = round(($act['distance'] ?? 0) / 1000, 2);
+            $kmFormatado = number_format($km, 2, '.', '') . 'KM';
+            $titulo      = $kmFormatado;
+            $descricao   = "TREINO DE {$kmFormatado} NO STRAVA.";
+            $tipo        = $tipoMap[$tipoAtivStr] ?? 'Corrida';
+
+            // Verificar duplicata por strava_activity_id (evita re-inserção em syncs repetidos)
+            $stmtVerifica = $pdo->prepare("
+                SELECT id FROM treinos WHERE strava_activity_id = ?
+            ");
+            $stmtVerifica->execute([$activityId]);
+            if ($stmtVerifica->fetch()) continue;
+
+            // Verificar se já há treino do treinador nessa data
+            $stmtTreino = $pdo->prepare("
+                SELECT id FROM treinos
+                WHERE aluno_id = ?
+                  AND data_treino = ?
+                  AND treinador_id IS NOT NULL
+                LIMIT 1
+            ");
+            $stmtTreino->execute([$_SESSION['id'], $dataTreino]);
+            $treinoExistente = $stmtTreino->fetch();
 
             if ($treinoExistente) {
-                // Adiciona o km percorrido na descricao se não existir
-                $novaDesc = $treinoExistente['descricao'];
-                if (strpos($novaDesc, 'Distância percorrida:') === false) {
-                    $novaDesc .= "\n\n" . $distDesc . " (Strava)";
-                }
-                
-                $stmtUp = $pdo->prepare("UPDATE treinos SET status = 'realizado', descricao = ? WHERE id = ?");
-                $stmtUp->execute([$novaDesc, $treinoExistente['id']]);
+                // Marcar treino do treinador como realizado
+                $pdo->prepare("UPDATE treinos SET status = 'realizado', strava_activity_id = ? WHERE id = ?")
+                    ->execute([$activityId, $treinoExistente['id']]);
             } else {
-                // Cria um novo caso nao tinha planejamento pra hoje
+                // Criar novo treino automático do Strava
                 $stmtIn = $pdo->prepare("
-                    INSERT INTO treinos (aluno_id, treinador_id, titulo, descricao, data_treino, tipo, status)
-                    VALUES (?, NULL, 'Corrida via Strava', ?, ?, ?, 'realizado')
+                    INSERT INTO treinos (aluno_id, treinador_id, titulo, descricao, data_treino, tipo, status, strava_activity_id)
+                    VALUES (?, NULL, ?, ?, ?, ?, 'realizado', ?)
                 ");
-                $stmtIn->execute([$_SESSION['id'], $distDesc, $dataTreino, $tipoAtiv]);
+                $stmtIn->execute([$_SESSION['id'], $titulo, $descricao, $dataTreino, $tipo, $activityId]);
+                $novoTreinoId = $pdo->lastInsertId();
+
+                // Criar post automático na comunidade
+                $stmtPost = $pdo->prepare("
+                    INSERT INTO posts (usuario_id, tipo, titulo, descricao, treino_id, criado_em)
+                    VALUES (?, 'treino', ?, ?, ?, NOW())
+                ");
+                $stmtPost->execute([$_SESSION['id'], $titulo, $descricao, $novoTreinoId]);
             }
         }
     }

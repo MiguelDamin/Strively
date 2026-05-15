@@ -6,13 +6,68 @@
 
 require_once '../config/conexao.php';
 
+// Helper: processa uma atividade e cria/atualiza treino + post
+function processarAtividadeStrava(PDO $pdo, int $usuarioId, array $act): void
+{
+    $tipoMap = [
+        'Run'        => 'Corrida',
+        'TrailRun'   => 'Trail Run',
+        'VirtualRun' => 'Corrida Virtual',
+    ];
+    $tiposCorreda = array_keys($tipoMap);
+
+    $tipoAtivStr = $act['type'] ?? $act['sport_type'] ?? '';
+    if (!in_array($tipoAtivStr, $tiposCorreda)) return;
+
+    $activityId  = (int)($act['id'] ?? 0);
+    $dataTreino  = date('Y-m-d', strtotime($act['start_date_local']));
+    $km          = round(($act['distance'] ?? 0) / 1000, 2);
+    $kmFormatado = number_format($km, 2, '.', '') . 'KM';
+    $titulo      = $kmFormatado;
+    $descricao   = "TREINO DE {$kmFormatado} NO STRAVA.";
+    $tipo        = $tipoMap[$tipoAtivStr] ?? 'Corrida';
+
+    // Verificar duplicata por strava_activity_id
+    $stmtVerifica = $pdo->prepare("SELECT id FROM treinos WHERE strava_activity_id = ?");
+    $stmtVerifica->execute([$activityId]);
+    if ($stmtVerifica->fetch()) return;
+
+    // Verificar se já há treino do treinador nessa data
+    $stmtTreino = $pdo->prepare("
+        SELECT id FROM treinos
+        WHERE aluno_id = ?
+          AND data_treino = ?
+          AND treinador_id IS NOT NULL
+        LIMIT 1
+    ");
+    $stmtTreino->execute([$usuarioId, $dataTreino]);
+    $treinoExistente = $stmtTreino->fetch();
+
+    if ($treinoExistente) {
+        // Marcar treino do treinador como realizado
+        $pdo->prepare("UPDATE treinos SET status = 'realizado', strava_activity_id = ? WHERE id = ?")
+            ->execute([$activityId, $treinoExistente['id']]);
+    } else {
+        // Criar novo treino automático do Strava
+        $stmtIn = $pdo->prepare("
+            INSERT INTO treinos (aluno_id, treinador_id, titulo, descricao, data_treino, tipo, status, strava_activity_id)
+            VALUES (?, NULL, ?, ?, ?, ?, 'realizado', ?)
+        ");
+        $stmtIn->execute([$usuarioId, $titulo, $descricao, $dataTreino, $tipo, $activityId]);
+        $novoTreinoId = $pdo->lastInsertId();
+
+        // Criar post automático na comunidade
+        $stmtPost = $pdo->prepare("
+            INSERT INTO posts (usuario_id, tipo, titulo, descricao, treino_id, criado_em)
+            VALUES (?, 'treino', ?, ?, ?, NOW())
+        ");
+        $stmtPost->execute([$usuarioId, $titulo, $descricao, $novoTreinoId]);
+    }
+}
+
 // 1. Verificação do Webhook (Strava envia GET com hub.challenge na criação da subscription)
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     $hubChallenge = $_GET['hub.challenge'] ?? '';
-    $hubVerifyToken = $_GET['hub.verify_token'] ?? '';
-    
-    // Podemos verificar o hubVerifyToken se tivermos definido ao criar a subscription,
-    // Mas o mais importante é responder o hub.challenge
     header('Content-Type: application/json');
     echo json_encode(['hub.challenge' => $hubChallenge]);
     exit();
@@ -20,23 +75,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 
 // 2. Processamento dos Eventos (Strava notifica via POST)
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Lê o body do request
     $jsonBase = file_get_contents('php://input');
-    $evento = json_decode($jsonBase, true);
-    
-    // Sempre responder 200 OK rapidamente pro Strava até uns 2 segs
+    $evento   = json_decode($jsonBase, true);
+
+    // Sempre responder 200 OK rapidamente pro Strava
     http_response_code(200);
     echo "OK";
-    
+
     if (!$evento) exit();
 
-    $object_type = $evento['object_type'] ?? ''; // ex: 'activity' ou 'athlete'
-    $aspect_type = $evento['aspect_type'] ?? ''; // ex: 'create', 'update', 'delete'
-    $owner_id    = $evento['owner_id'] ?? '';    // strava_id do atleta
+    $object_type = $evento['object_type'] ?? '';
+    $aspect_type = $evento['aspect_type'] ?? '';
+    $owner_id    = $evento['owner_id']    ?? '';
 
     if ($object_type === 'activity' && ($aspect_type === 'create' || $aspect_type === 'update')) {
         $activityId = $evento['object_id'] ?? '';
-        
+
         // Busca o usuário no banco pelo Strava ID
         $stmt = $pdo->prepare("
             SELECT id, strava_access_token, strava_refresh_token, strava_token_expira
@@ -44,11 +98,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ");
         $stmt->execute([$owner_id]);
         $user = $stmt->fetch();
-        
+
         if (!$user) exit();
-        
+
         $accessToken = $user['strava_access_token'];
-        
+
         // Renova o token caso expirado
         if (time() > (int)$user['strava_token_expira']) {
             $payload = json_encode([
@@ -57,70 +111,55 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'refresh_token' => $user['strava_refresh_token'],
                 'grant_type'    => 'refresh_token',
             ]);
-            $ctx = stream_context_create(['http' => ['method' => 'POST', 'header' => "Content-Type: application/json\r\n", 'content' => $payload]]);
+            $ctx  = stream_context_create(['http' => ['method' => 'POST', 'header' => "Content-Type: application/json\r\n", 'content' => $payload, 'ignore_errors' => true, 'timeout' => 15]]);
             $resp = @file_get_contents('https://www.strava.com/oauth/token', false, $ctx);
             $data = json_decode((string)$resp, true);
-            
+
             if (!empty($data['access_token'])) {
                 $accessToken = $data['access_token'];
-                $stmtUpd = $pdo->prepare("UPDATE usuarios SET strava_access_token=?, strava_refresh_token=?, strava_token_expira=? WHERE id=?");
-                $stmtUpd->execute([$accessToken, $data['refresh_token'], $data['expires_at'], $user['id']]);
+                $pdo->prepare("UPDATE usuarios SET strava_access_token=?, strava_refresh_token=?, strava_token_expira=? WHERE id=?")
+                    ->execute([$accessToken, $data['refresh_token'], $data['expires_at'], $user['id']]);
             } else {
                 exit();
             }
         }
-        
-        $ctxAuth = stream_context_create(['http' => ['method' => 'GET', 'header' => "Authorization: Bearer {$accessToken}\r\nAccept: application/json\r\n"]]);
-        
-        // Busca dados ESPECÍFICOS dessa atividade para colocar no calendário
+
+        $ctxAuth = stream_context_create([
+            'http' => [
+                'method'        => 'GET',
+                'header'        => "Authorization: Bearer {$accessToken}\r\nAccept: application/json\r\n",
+                'ignore_errors' => true,
+                'timeout'       => 15,
+            ],
+        ]);
+
+        // Busca dados específicos da atividade e cria treino
         if ($aspect_type === 'create') {
             $actResp = @file_get_contents("https://www.strava.com/api/v3/activities/{$activityId}", false, $ctxAuth);
             if ($actResp) {
                 $act = json_decode($actResp, true);
-                $tipoAtiv = $act['type'] ?? $act['sport_type'] ?? 'Run';
-                $dataTreino = date('Y-m-d', strtotime($act['start_date_local']));
-                $distanciaKm = round(($act['distance'] ?? 0) / 1000, 2);
-                $distDesc = "Distância percorrida: {$distanciaKm} km";
-
-                // Integra com o treinos do banco
-                $stmtCheck = $pdo->prepare("SELECT id, descricao FROM treinos WHERE aluno_id = ? AND data_treino = ? LIMIT 1");
-                $stmtCheck->execute([$user['id'], $dataTreino]);
-                $treinoExistente = $stmtCheck->fetch();
-
-                if ($treinoExistente) {
-                    $novaDesc = $treinoExistente['descricao'];
-                    if (strpos($novaDesc, 'Distância percorrida:') === false) {
-                        $novaDesc .= "\n\n" . $distDesc . " (Strava Webhook)";
-                        $stmtTrein = $pdo->prepare("UPDATE treinos SET status = 'realizado', descricao = ? WHERE id = ?");
-                        $stmtTrein->execute([$novaDesc, $treinoExistente['id']]);
-                    }
-                } else {
-                    $stmtIn = $pdo->prepare("
-                        INSERT INTO treinos (aluno_id, treinador_id, titulo, descricao, data_treino, tipo, status)
-                        VALUES (?, NULL, 'Corrida via Strava', ?, ?, ?, 'realizado')
-                    ");
-                    $stmtIn->execute([$user['id'], $distDesc, $dataTreino, $tipoAtiv]);
+                if (is_array($act)) {
+                    processarAtividadeStrava($pdo, (int)$user['id'], $act);
                 }
             }
         }
-        
-        // Agora busca os STATS TOTAIS do atleta para atualizar os paineis (km total, etc)
+
+        // Atualiza stats totais do atleta
         $statsResp = @file_get_contents("https://www.strava.com/api/v3/athletes/{$owner_id}/stats", false, $ctxAuth);
         if ($statsResp) {
-            $stats = json_decode($statsResp, true);
+            $stats           = json_decode($statsResp, true);
             $kmTotal         = round(($stats['all_run_totals']['distance'] ?? 0) / 1000, 2);
             $kmAno           = round(($stats['ytd_run_totals']['distance'] ?? 0) / 1000, 2);
             $atividadesTotal = $stats['all_run_totals']['count'] ?? 0;
 
-            $stmtUpdateStats = $pdo->prepare("
+            $pdo->prepare("
                 UPDATE usuarios SET
                     strava_km_total         = ?,
                     strava_km_ano           = ?,
                     strava_atividades_total = ?,
                     strava_sincronizado_em  = NOW()
                 WHERE id = ?
-            ");
-            $stmtUpdateStats->execute([$kmTotal, $kmAno, $atividadesTotal, $user['id']]);
+            ")->execute([$kmTotal, $kmAno, $atividadesTotal, $user['id']]);
         }
     }
 }
