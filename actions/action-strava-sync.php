@@ -133,10 +133,11 @@ if ($actResp) {
             $activityId  = (int)($act['id'] ?? 0);
             $dataTreino  = date('Y-m-d', strtotime($act['start_date_local']));
             $km          = round(($act['distance'] ?? 0) / 1000, 2);
-            $kmFormatado = number_format($km, 2, '.', '') . 'KM';
-            $titulo      = $kmFormatado;
-            $descricao   = "TREINO DE {$kmFormatado} NO STRAVA.";
+            $kmFormatado = number_format($km, 2, '.', '') . 'km';
             $tipo        = $tipoMap[$tipoAtivStr] ?? 'Corrida';
+            // Formato: "Corrida — 5.20km" (badge no calendário lê o tipo pelo split em ' — ')
+            $titulo      = "{$tipo} — {$kmFormatado}";
+            $descricao   = "{$tipo} {$kmFormatado} no Strava.";
 
             // Verificar duplicata por strava_activity_id (evita re-inserção em syncs repetidos)
             $stmtVerifica = $pdo->prepare("

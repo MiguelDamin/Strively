@@ -163,10 +163,10 @@ if ($actResp) {
             $activityId  = (int)($act['id'] ?? 0);
             $dataTreino  = date('Y-m-d', strtotime($act['start_date_local']));
             $km          = round(($act['distance'] ?? 0) / 1000, 2);
-            $kmFormatado = number_format($km, 2, '.', '') . 'KM';
-            $titulo      = $kmFormatado;
-            $descricao   = "TREINO DE {$kmFormatado} NO STRAVA.";
+            $kmFormatado = number_format($km, 2, '.', '') . 'km';
             $tipo        = $tipoMap[$tipoAtivStr] ?? 'Corrida';
+            $titulo      = "{$tipo} — {$kmFormatado}";
+            $descricao   = "{$tipo} {$kmFormatado} no Strava.";
 
             // Evitar duplicatas por strava_activity_id
             $stmtVerifica = $pdo->prepare("SELECT id FROM treinos WHERE strava_activity_id = ?");
