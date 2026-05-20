@@ -12,7 +12,7 @@ if (!isset($_SESSION['id'])) {
 // Treinador agora possui acesso livre aos seus próprios treinos.
 
 // Treinos do corredor
-$stmt = $pdo->prepare("SELECT * FROM treinos WHERE aluno_id = ? ORDER BY data_treino ASC");
+$stmt = $pdo->prepare("SELECT * FROM treinos WHERE aluno_id = ? ORDER BY data_treino DESC");
 $stmt->execute([$_SESSION['id']]);
 $treinos = $stmt->fetchAll();
 
@@ -248,7 +248,7 @@ include '../components/header.php';
         $ev['_tipo_item'] = 'evento';
         $todos[] = $ev;
       }
-      usort($todos, fn($a, $b) => ($a['data_treino'] ?? $a['data_evento']) <=> ($b['data_treino'] ?? $b['data_evento']));
+      usort($todos, fn($a, $b) => ($b['data_treino'] ?? $b['data_evento']) <=> ($a['data_treino'] ?? $a['data_evento']));
     ?>
 
     <?php if (empty($todos)): ?>
@@ -286,13 +286,12 @@ include '../components/header.php';
                   <button type="submit" class="btn-marcar">Marcar como realizado</button>
                 </form>
               <?php endif; ?>
-              <?php if ($item['_proprio']): ?>
-                <form action="/actions/action-remover-treino-proprio.php" method="POST" style="display:inline" onsubmit="return confirm('Remover este treino?')">
-                  <input type="hidden" name="treino_id" value="<?=(int)$item['id']?>">
-                  <input type="hidden" name="aba" value="planilha">
-                  <button type="submit" class="btn-remover-treino">✕</button>
-                </form>
-              <?php endif; ?>
+              <button 
+                  class="btn-remover-treino" 
+                  onclick="confirmarDeletar(<?= (int)$item['id'] ?>, '<?= htmlspecialchars($item['titulo'] ?? '') ?>')"
+                  title="Remover treino">
+                  ✕
+              </button>
             </div>
           </div>
         <?php else: ?>
@@ -515,9 +514,7 @@ function abrirModalDia(ds,items){
       } else {
         acoes='<form method="POST" action="/actions/action-marcar-realizado.php" style="display:inline"><input type="hidden" name="treino_id" value="'+it.id+'"><input type="hidden" name="aba" value="calendario"><button type="submit" class="btn-marcar">Marcar como realizado</button></form>';
       }
-      if(proprio){
-        acoes+=' <form method="POST" action="/actions/action-remover-treino-proprio.php" style="display:inline" onsubmit="return confirm(\'Remover este treino?\')"><input type="hidden" name="treino_id" value="'+it.id+'"><input type="hidden" name="aba" value="calendario"><button type="submit" class="btn-remover-treino">Remover</button></form>';
-      }
+      acoes+=' <button type="button" class="btn-remover-treino" onclick="confirmarDeletar('+it.id+', \''+esc(it.titulo)+'\')">Remover</button>';
       div.className='modal-treino-item'+(realizado?' realizado':'');
       div.innerHTML=
         '<div class="modal-treino-tipo">'+esc(tipo)+'</div>'+
@@ -555,4 +552,68 @@ function trocarAbaEvento(tab,btn){
 
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){fecharModal('modalDia');fecharModal('modalAdicionar');fecharModal('modalEvento');}});
 renderCalendario();
+
+function confirmarDeletar(treinoId, titulo) {
+    // Criar overlay de confirmação
+    const overlay = document.createElement('div');
+    overlay.style.cssText = `
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.5); z-index: 9999;
+        display: flex; align-items: center; justify-content: center;
+    `;
+    
+    overlay.innerHTML = `
+        <div style="
+            background: #fff; border-radius: 16px; padding: 28px 24px;
+            max-width: 340px; width: 90%; text-align: center;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+        ">
+            <div style="font-size: 2rem; margin-bottom: 12px;">🗑️</div>
+            <h3 style="font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; margin: 0 0 8px;">
+                Remover treino?
+            </h3>
+            <p style="color: #4a4a4a; font-size: 0.9rem; margin: 0 0 24px;">
+                "<strong>${titulo}</strong>" será removido permanentemente.
+            </p>
+            <div style="display: flex; gap: 10px; justify-content: center;">
+                <button onclick="this.closest('div[style*=fixed]').remove()" style="
+                    flex: 1; padding: 12px; border: 2px solid #ddd;
+                    border-radius: 10px; background: #fff; cursor: pointer;
+                    font-size: 0.95rem; font-weight: 600; color: #4a4a4a;
+                ">Cancelar</button>
+                <button onclick="deletarTreino(${treinoId})" style="
+                    flex: 1; padding: 12px; border: none;
+                    border-radius: 10px; background: #e53935; cursor: pointer;
+                    font-size: 0.95rem; font-weight: 600; color: #fff;
+                ">Sim, remover</button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(overlay);
+    
+    // Fechar clicando fora
+    overlay.addEventListener('click', function(e) {
+        if (e.target === overlay) overlay.remove();
+    });
+}
+
+function deletarTreino(treinoId) {
+    // Fechar o popup
+    document.querySelector('div[style*="position: fixed"]')?.remove();
+    
+    // Enviar para o action de remover
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = '/actions/action-remover-treino.php';
+    
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = 'treino_id';
+    input.value = treinoId;
+    
+    form.appendChild(input);
+    document.body.appendChild(form);
+    form.submit();
+}
 </script>
