@@ -264,10 +264,14 @@ include '../components/header.php';
               <div class="mes"><?=$meses[(int)$dt->format('m')-1]?></div>
             </div>
             <div class="planilha-info">
-              <div class="planilha-tipo-badge"><?php
-                $partes = explode(' — ', $item['titulo'], 2);
-                echo htmlspecialchars($partes[0]);
-              ?></div>
+              <?php if (isset($item['tipo']) && $item['tipo'] === 'strava'): ?>
+                  <div style="background:#FC4C02;color:#fff;font-size:0.72rem;font-weight:700;padding:3px 9px;border-radius:20px;letter-spacing:0.5px;font-family:'Outfit',sans-serif;display:inline-block;margin-bottom:5px;">STRAVA</div>
+              <?php else: ?>
+                  <div class="planilha-tipo-badge"><?php
+                    $partes = explode(' — ', $item['titulo'], 2);
+                    echo htmlspecialchars($partes[0]);
+                  ?></div>
+              <?php endif; ?>
               <?php if ($item['_proprio']): ?><span class="badge-proprio">Meu treino</span><?php endif; ?>
               <div class="planilha-titulo"><?=htmlspecialchars($item['titulo'])?></div>
               <?php if(!empty($item['descricao'])): ?><div class="planilha-desc"><?=htmlspecialchars($item['descricao'])?></div><?php endif; ?>
@@ -515,9 +519,13 @@ function abrirModalDia(ds,items){
         acoes='<form method="POST" action="/actions/action-marcar-realizado.php" style="display:inline"><input type="hidden" name="treino_id" value="'+it.id+'"><input type="hidden" name="aba" value="calendario"><button type="submit" class="btn-marcar">Marcar como realizado</button></form>';
       }
       acoes+=' <button type="button" class="btn-remover-treino" onclick="confirmarDeletar('+it.id+', \''+esc(it.titulo)+'\')">Remover</button>';
+      const badgeStrava = '<div style="background:#FC4C02;color:#fff;font-size:0.72rem;font-weight:700;padding:3px 8px;border-radius:20px;letter-spacing:0.5px;font-family:\'Outfit\',sans-serif;display:inline-block;margin-bottom:6px;">STRAVA</div>';
+      const badgeNormal = '<div class="modal-treino-tipo">'+esc(tipo)+'</div>';
+      const badgeRenderizado = it.tipo === 'strava' ? badgeStrava : badgeNormal;
+
       div.className='modal-treino-item'+(realizado?' realizado':'');
       div.innerHTML=
-        '<div class="modal-treino-tipo">'+esc(tipo)+'</div>'+
+        badgeRenderizado+
         (proprio?'<span class="badge-proprio">Meu treino</span>':'')+
         '<div class="modal-treino-titulo">'+esc(it.titulo)+'</div>'+
         (it.descricao?'<div class="modal-treino-desc">'+esc(it.descricao)+'</div>':'')+

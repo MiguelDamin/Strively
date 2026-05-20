@@ -11,6 +11,7 @@ $stmt = $pdo->prepare("
   FROM eventos e 
   LEFT JOIN usuarios u ON e.usuario_id = u.id 
   WHERE e.status = 'ativo' 
+  AND e.data_evento >= CURRENT_DATE
   ORDER BY e.data_evento ASC
 ");
 $stmt->execute();
