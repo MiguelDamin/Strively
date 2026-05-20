@@ -35,17 +35,18 @@ if (isset($_SESSION['id']) && !isset($me)) {
   $me = $stmtMe->fetch();
 }
 
-$unread_notif = 0;
-if (isset($_SESSION['id'])) {
-    try {
-        $stmt_n = $pdo->prepare("SELECT COUNT(*) FROM notificacoes WHERE usuario_id = ? AND lida = false");
-        $stmt_n->execute([$_SESSION['id']]);
-        $unread_notif = $stmt_n->fetchColumn();
-    } catch(Exception $e) {}
-}
- 
 if (isset($only_session) && $only_session === true) {
   return;
+}
+
+// Otimizando: Contar notificações não lidas APENAS para os scripts visuais da UI
+$notifCount = 0;
+if (isset($_SESSION['id']) && isset($pdo)) {
+    try {
+        $stmt_n = $pdo->prepare("SELECT COUNT(*) as total FROM notificacoes WHERE usuario_id = ? AND lida = false");
+        $stmt_n->execute([$_SESSION['id']]);
+        $notifCount = (int)($stmt_n->fetch()['total'] ?? 0);
+    } catch(Exception $e) {}
 }
 ?>
 
@@ -81,10 +82,10 @@ if (isset($only_session) && $only_session === true) {
 
       <!-- Notificações Desktop -->
       <li style="display:flex;align-items:center;margin-right:15px;">
-        <a href="/pages/notificacoes.php" style="position:relative;display:flex;align-items:center;color:#fff;">
+        <a href="/pages/notificacoes.php" style="position:relative;display:inline-flex;align-items:center;color:#fff;padding:4px;text-decoration:none;">
           <svg viewBox="0 0 24 24" style="width:24px;height:24px;fill:currentColor;"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-4c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v4z"/></svg>
-          <?php if ($unread_notif > 0): ?>
-            <span style="position:absolute;top:-4px;right:-4px;background:red;color:#fff;font-size:10px;font-weight:bold;width:16px;height:16px;display:flex;align-items:center;justify-content:center;border-radius:50%;"><?= $unread_notif ?></span>
+          <?php if (!empty($notifCount) && $notifCount > 0): ?>
+            <span style="position:absolute;top:-4px;right:-4px;background:#e53935;color:#fff;font-size:10px;font-weight:700;border-radius:50%;min-width:18px;height:18px;display:flex;align-items:center;justify-content:center;padding:0 3px;line-height:1;"><?= $notifCount ?></span>
           <?php endif; ?>
         </a>
       </li>
@@ -248,14 +249,14 @@ if (isset($only_session) && $only_session === true) {
         </div>
         Perfil
       </a>
-      <a href="/pages/notificacoes.php" class="sheet-item">
-        <div class="sheet-icon" style="position:relative;">
+      <a href="/pages/notificacoes.php" class="sheet-item" style="position:relative;">
+        <div class="sheet-icon">
           <svg viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-4c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v4z"/></svg>
-          <?php if ($unread_notif > 0): ?>
-            <span style="position:absolute;top:2px;right:2px;width:12px;height:12px;background:#ef4444;border-radius:50%;border:2px solid var(--surface);"></span>
-          <?php endif; ?>
         </div>
         Avisos
+        <?php if (!empty($notifCount) && $notifCount > 0): ?>
+            <span style="position:absolute;top:6px;right:10px;background:#e53935;color:#fff;font-size:9px;font-weight:700;border-radius:50%;min-width:16px;height:16px;display:flex;align-items:center;justify-content:center;padding:0 2px;"><?= $notifCount ?></span>
+        <?php endif; ?>
       </a>
       <a href="/pages/configuracoes.php" class="sheet-item">
         <div class="sheet-icon">

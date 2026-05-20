@@ -844,7 +844,7 @@ body {
             <!-- AÇÕES -->
             <div class="strava-btns">
               <a href="/actions/action-strava-sync.php" class="btn-secondary">
-                🔄 Atualizar dados
+                🔄Atualizar
               </a>
               <a href="/actions/action-strava-disconnect.php"
                  onclick="return confirm('Desconectar o Strava? Seus dados de km serão zerados.')"

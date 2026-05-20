@@ -38,8 +38,8 @@ try {
             $textoAviso = $primeiroNome . " curtiu seu post 💪";
             $linkAviso = "/pages/comunidade.php#post-" . $post_id;
             try {
-                $stmtNotif = $pdo->prepare("INSERT INTO notificacoes (usuario_id, texto, link, lida) VALUES (?, ?, ?, false)");
-                $stmtNotif->execute([$dono, $textoAviso, $linkAviso]);
+                $stmtNotif = $pdo->prepare("INSERT INTO notificacoes (usuario_id, texto, link, lida, remetente_id) VALUES (?, ?, ?, false, ?)");
+                $stmtNotif->execute([$dono, $textoAviso, $linkAviso, $usuario_id]);
             } catch(Exception $e) {
                 // error_log("Failed to insert notification: " . $e->getMessage());
             }

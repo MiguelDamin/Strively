@@ -18,7 +18,14 @@ include '../components/header.php';
 
 // Busca as notificacoes
 try {
-    $stmt = $pdo->prepare("SELECT * FROM notificacoes WHERE usuario_id = ? ORDER BY id DESC LIMIT 50");
+    $stmt = $pdo->prepare("
+        SELECT n.*, u.foto as foto_remetente, u.nome as nome_remetente
+        FROM notificacoes n
+        LEFT JOIN usuarios u ON n.remetente_id = u.id
+        WHERE n.usuario_id = ?
+        ORDER BY n.id DESC
+        LIMIT 50
+    ");
     $stmt->execute([$_SESSION['id']]);
     $notificacoes = $stmt->fetchAll();
 } catch(Exception $e) {
@@ -50,9 +57,17 @@ try {
     <?php else: ?>
         <?php foreach ($notificacoes as $n): ?>
             <a href="<?= htmlspecialchars($n['link']) ?>" class="notif-card">
-                <div class="notif-icon">💪</div>
-                <div class="notif-content">
-                    <div class="notif-info"><?= htmlspecialchars($n['texto']) ?></div>
+                <div class="notif-avatar" style="flex-shrink:0;">
+                    <?php if (!empty($n['foto_remetente'])): ?>
+                        <img src="<?= htmlspecialchars(strpos($n['foto_remetente'], 'http') === 0 ? $n['foto_remetente'] : '/'.$n['foto_remetente']) ?>" 
+                             alt="<?= htmlspecialchars($n['nome_remetente'] ?? '') ?>"
+                             style="width:44px;height:44px;border-radius:50%;object-fit:cover;">
+                    <?php else: ?>
+                        <div style="width:44px;height:44px;border-radius:50%;background:#1DB954;display:flex;align-items:center;justify-content:center;font-size:20px;">💪</div>
+                    <?php endif; ?>
+                </div>
+                <div class="notif-info">
+                    <div class="notif-info-text" style="font-weight: 500; font-size: 0.95rem; color: var(--text-primary); line-height: 1.4;"><?= htmlspecialchars($n['texto']) ?></div>
                     <?php if (!empty($n['data_criacao'])): ?>
                         <?php 
                             $dt = new DateTime($n['data_criacao']);
