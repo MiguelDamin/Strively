@@ -53,6 +53,88 @@ include '../components/header.php';
   align-items: flex-start;
   gap: 6px;
 }
+
+.evento-card {
+    display: flex;
+    flex-direction: column; /* empilha conteúdo verticalmente */
+    height: 100%; /* ocupa altura total do grid */
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background: var(--surface);
+    box-shadow: var(--shadow-md);
+}
+
+.evento-card .evento-banner {
+    width: 100%;
+    aspect-ratio: 3/4; /* proporção fixa para TODOS os banners */
+    object-fit: cover;  /* corta a imagem sem distorcer */
+    display: block;
+}
+
+.evento-card .evento-body {
+    flex: 1; /* cresce para preencher espaço */
+    display: flex;
+    flex-direction: column;
+    padding: 16px;
+}
+
+.evento-card .evento-nome {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1rem;
+    margin: 0 0 8px;
+    min-height: 2.5em; /* reserva espaço mínimo para títulos de 1-2 linhas */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.evento-card .evento-info {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+}
+
+.evento-card .evento-distancias {
+    min-height: 28px; /* altura fixa mesmo quando vazio */
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin: 8px 0;
+}
+
+.evento-card .card-footer {
+    margin-top: auto; /* EMPURRA para o fundo do card */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding-top: 12px;
+    border-top: 1px solid #f0f0f0;
+}
+
+.evento-card .card-autor {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8rem;
+    color: var(--text-tertiary);
+}
+
+.evento-card .card-autor img {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+/* Grid dos eventos */
+.eventos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 20px;
+    align-items: stretch; /* IMPORTANTE: faz todos os cards terem mesma altura */
+}
 </style>
 
 <body>

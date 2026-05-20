@@ -258,7 +258,16 @@ include '../components/header.php';
       <?php foreach($todos as $item): ?>
         <?php if ($item['_tipo_item'] === 'treino'): ?>
           <?php $dt=new DateTime($item['data_treino']); $realizado=($item['status']==='realizado'); ?>
-          <div class="planilha-item <?= $realizado?'realizado':'' ?>">
+          <div class="planilha-item <?= $realizado?'realizado':'' ?>" 
+               onclick="abrirDetalhesTreino(
+                   '<?= htmlspecialchars($item['titulo'] ?? '', ENT_QUOTES) ?>',
+                   '<?= htmlspecialchars($item['descricao'] ?? '', ENT_QUOTES) ?>',
+                   '<?= htmlspecialchars($item['tipo'] ?? '') ?>',
+                   '<?= date('d/m/Y', strtotime($item['data_treino'])) ?>',
+                   '<?= $item['status'] ?>',
+                   <?= !empty($item['treinador_id']) ? 'true' : 'false' ?>
+               )"
+               style="cursor: pointer;">
             <div class="planilha-data">
               <div class="dia"><?=$dt->format('d')?></div>
               <div class="mes"><?=$meses[(int)$dt->format('m')-1]?></div>
@@ -276,7 +285,7 @@ include '../components/header.php';
               <div class="planilha-titulo"><?=htmlspecialchars($item['titulo'])?></div>
               <?php if(!empty($item['descricao'])): ?><div class="planilha-desc"><?=htmlspecialchars($item['descricao'])?></div><?php endif; ?>
             </div>
-            <div class="planilha-acoes">
+            <div class="planilha-acoes" onclick="event.stopPropagation()">
               <?php if($realizado): ?>
                 <form action="/actions/action-marcar-realizado.php" method="POST" style="display:inline">
                   <input type="hidden" name="treino_id" value="<?=(int)$item['id']?>">
@@ -624,4 +633,115 @@ function deletarTreino(treinoId) {
     document.body.appendChild(form);
     form.submit();
 }
+function abrirDetalhesTreino(titulo, descricao, tipo, data, status, temTreinador) {
+    const modal = document.getElementById('modal-treino-detalhe');
+    
+    // Badge tipo
+    const corBadge = tipo === 'strava' ? '#FC4C02' : '#1DB954';
+    const textoBadge = tipo === 'strava' ? 'STRAVA' : tipo.toUpperCase();
+    document.getElementById('modal-treino-badge').innerHTML = `
+        <span style="background:${corBadge};color:#fff;font-size:0.7rem;font-weight:700;padding:4px 10px;border-radius:20px;">${textoBadge}</span>
+        ${temTreinador ? '<span style="background:#e8f5e9;color:#1DB954;font-size:0.7rem;font-weight:600;padding:4px 10px;border-radius:20px;margin-left:6px;">Do treinador</span>' : ''}
+    `;
+    
+    document.getElementById('modal-treino-titulo').textContent = titulo;
+    document.getElementById('modal-treino-data').textContent = '📅 ' + data;
+    
+    // Descrição
+    const wrapper = document.getElementById('modal-treino-descricao-wrapper');
+    if (descricao && descricao.trim() !== '') {
+        document.getElementById('modal-treino-descricao').textContent = descricao;
+        wrapper.style.display = 'block';
+    } else {
+        wrapper.style.display = 'none';
+    }
+    
+    // Status
+    document.getElementById('modal-treino-status').innerHTML = status === 'realizado'
+        ? '<span style="color:#1DB954;font-weight:600;font-size:0.9rem;">✅ Treino realizado</span>'
+        : '<span style="color:#8a8a8a;font-size:0.9rem;">⏳ Pendente</span>';
+    
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
+
+function fecharDetalhesTreino() {
+    document.getElementById('modal-treino-detalhe').style.display = 'none';
+    document.body.style.overflow = '';
+}
+
+// Fechar clicando fora
+document.getElementById('modal-treino-detalhe')?.addEventListener('click', function(e) {
+    if (e.target === this) fecharDetalhesTreino();
+});
 </script>
+
+<!-- Modal detalhes do treino -->
+<div id="modal-treino-detalhe" style="
+    display: none;
+    position: fixed; top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    box-sizing: border-box;
+">
+    <div style="
+        background: #fff;
+        border-radius: 20px;
+        padding: 28px 24px;
+        max-width: 420px;
+        width: 100%;
+        position: relative;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+    ">
+        <!-- Botão fechar -->
+        <button onclick="fecharDetalhesTreino()" style="
+            position: absolute; top: 16px; right: 16px;
+            background: none; border: none;
+            font-size: 1.4rem; cursor: pointer;
+            color: #8a8a8a; line-height: 1;
+        ">✕</button>
+
+        <!-- Badge tipo -->
+        <div id="modal-treino-badge" style="margin-bottom: 12px;"></div>
+
+        <!-- Título -->
+        <h2 id="modal-treino-titulo" style="
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.6rem;
+            margin: 0 0 8px;
+            color: #0d0d0d;
+            padding-right: 32px;
+        "></h2>
+
+        <!-- Data -->
+        <p id="modal-treino-data" style="
+            color: #8a8a8a;
+            font-size: 0.85rem;
+            margin: 0 0 16px;
+        "></p>
+
+        <!-- Descrição -->
+        <div id="modal-treino-descricao-wrapper" style="
+            background: #f5f6f5;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+        ">
+            <p style="font-size: 0.75rem; color: #8a8a8a; margin: 0 0 6px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Descrição</p>
+            <p id="modal-treino-descricao" style="
+                margin: 0;
+                color: #0d0d0d;
+                font-size: 0.95rem;
+                white-space: pre-line;
+                line-height: 1.6;
+            "></p>
+        </div>
+
+        <!-- Status -->
+        <div id="modal-treino-status"></div>
+    </div>
+</div>
