@@ -229,5 +229,71 @@ try {
     error_log("Erro ao importar atividades Strava: " . $e->getMessage());
 }
 
+try {
+    // ============================================================
+    // VERIFICAR ATIVIDADES DELETADAS NO STRAVA
+    // ============================================================
+
+    // 1. Buscar todos os strava_activity_ids importados desse usuário
+    $stmtIds = $pdo->prepare("
+        SELECT id, strava_activity_id 
+        FROM treinos 
+        WHERE aluno_id = ? 
+        AND tipo = 'strava'
+        AND strava_activity_id IS NOT NULL
+    ");
+    $stmtIds->execute([$usuarioId]);
+    $treinosImportados = $stmtIds->fetchAll();
+
+    if (!empty($treinosImportados)) {
+        // 2. Para cada treino importado, verificar se ainda existe no Strava
+        foreach ($treinosImportados as $treinoLocal) {
+            $activityId = $treinoLocal['strava_activity_id'];
+            
+            $ctxCheck = stream_context_create([
+                'http' => [
+                    'method' => 'GET',
+                    'header' => "Authorization: Bearer {$accessToken}\r\n",
+                    'ignore_errors' => true,
+                    'timeout' => 10,
+                ],
+            ]);
+            
+            $respostaCheck = @file_get_contents(
+                "https://www.strava.com/api/v3/activities/{$activityId}",
+                false, $ctxCheck
+            );
+            
+            $dadosAtividade = json_decode($respostaCheck, true);
+            
+            // Se a atividade não existir mais (404) ou retornar erro, deletar do Strively
+            $atividadeDeletada = (
+                $dadosAtividade === null ||
+                isset($dadosAtividade['errors']) ||
+                (isset($dadosAtividade['message']) && str_contains(strtolower($dadosAtividade['message'] ?? ''), 'not found'))
+            );
+            
+            if ($atividadeDeletada) {
+                $treinoId = $treinoLocal['id'];
+                
+                // Deletar post do feed associado
+                $pdo->prepare("
+                    DELETE FROM posts 
+                    WHERE treino_id = ? AND usuario_id = ?
+                ")->execute([$treinoId, $usuarioId]);
+                
+                // Deletar o treino do calendário/planilha
+                $pdo->prepare("
+                    DELETE FROM treinos 
+                    WHERE id = ? AND aluno_id = ? AND tipo = 'strava'
+                ")->execute([$treinoId, $usuarioId]);
+            }
+        }
+    }
+    // ============================================================
+} catch (Exception $e) {
+    error_log("Erro ao verificar exclusões Strava: " . $e->getMessage());
+}
+
 header('Location: /pages/perfil.php?msg=strava_sincronizado');
 exit();
