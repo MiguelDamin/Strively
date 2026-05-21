@@ -152,7 +152,87 @@ include '../components/header.php';
 .evento-tabs{display:flex;gap:4px;margin-bottom:16px;background:#f5f5f5;border-radius:10px;padding:4px}
 .evento-tab{flex:1;padding:9px 8px;border:none;border-radius:8px;font-family:'Outfit',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;background:transparent;color:#888;transition:all .18s;text-align:center}
 .evento-tab.ativo{background:#DAA520;color:#fff}
-@media(max-width:640px){.abas{width:100%}.aba-btn{flex:1;justify-content:center;padding:10px 12px;font-size:.82rem}.cal-dia{min-height:40px;padding:4px}.cal-dia-num{font-size:.78rem}.planilha-item{flex-wrap:wrap}.treinos-btns{width:100%}.treinos-btns .btn-primary,.treinos-btns .btn-secondary{flex:1;text-align:center;justify-content:center;font-size:.82rem;padding:10px 8px}.modal-form-grid{grid-template-columns:1fr}}
+@media(max-width:640px){
+  .abas{width:100%}
+  .aba-btn{flex:1;justify-content:center;padding:10px 12px;font-size:.82rem}
+  .treinos-btns{width:100%}
+  .treinos-btns .btn-primary,.treinos-btns .btn-secondary{flex:1;text-align:center;justify-content:center;font-size:.82rem;padding:10px 8px}
+  .modal-form-grid{grid-template-columns:1fr}
+  .cal-dia{min-height:40px;padding:4px}
+  .cal-dia-num{font-size:.78rem}
+
+  .planilha-item{
+    display:grid !important;
+    grid-template-columns:52px 1fr auto !important;
+    grid-template-rows:auto auto !important;
+    grid-template-areas:"data info acoes" "data desc acoes" !important;
+    gap:2px 10px !important;
+    padding:12px 10px !important;
+    align-items:center !important;
+  }
+  .planilha-data{
+    grid-area:data !important;
+    min-width:48px !important;
+    text-align:center !important;
+    padding:6px 4px !important;
+  }
+  .planilha-data .dia{font-size:1.5rem !important}
+  .planilha-data .mes{font-size:.62rem !important}
+  .planilha-info{
+    grid-area:info !important;
+    min-width:0 !important;
+    overflow:hidden !important;
+  }
+  .planilha-tipo-badge{
+    font-size:.62rem !important;
+    padding:2px 6px !important;
+    margin-bottom:3px !important;
+    display:inline-block !important;
+    max-width:100% !important;
+    white-space:nowrap !important;
+    overflow:hidden !important;
+    text-overflow:ellipsis !important;
+  }
+  .planilha-titulo{
+    font-size:.85rem !important;
+    white-space:nowrap !important;
+    overflow:hidden !important;
+    text-overflow:ellipsis !important;
+    max-width:100% !important;
+    display:block !important;
+  }
+  .planilha-desc{
+    grid-area:desc !important;
+    font-size:.72rem !important;
+    white-space:nowrap !important;
+    overflow:hidden !important;
+    text-overflow:ellipsis !important;
+    max-width:100% !important;
+  }
+  .planilha-acoes{
+    grid-area:acoes !important;
+    display:flex !important;
+    flex-direction:column !important;
+    align-items:center !important;
+    gap:5px !important;
+    flex-shrink:0 !important;
+  }
+  .btn-desmarcar,.btn-marcar{
+    font-size:.68rem !important;
+    padding:5px 8px !important;
+    border-radius:20px !important;
+    white-space:nowrap !important;
+    min-width:70px !important;
+    text-align:center !important;
+  }
+  .btn-remover-treino{
+    padding:4px 8px !important;
+    font-size:.72rem !important;
+    border-radius:8px !important;
+    margin-left:0 !important;
+  }
+  .treinos-page{padding:20px 12px 100px !important}
+}
 </style>
 
 <section class="treinos-page">
