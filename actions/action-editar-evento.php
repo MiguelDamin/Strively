@@ -31,6 +31,10 @@ $distancias_pre = $_POST['distancias_pre']      ?? [];
 $dist_livre     = trim($_POST['distancia_livre'] ?? '');
 $descricao      = trim($_POST['descricao']      ?? '');
 $link_oficial   = trim($_POST['link_oficial']   ?? '');
+
+if (!empty($link_oficial) && !preg_match('/^https?:\/\//i', $link_oficial)) {
+    $link_oficial = 'https://' . $link_oficial;
+}
 $banner_file    = $_FILES['banner']             ?? null;
 
 if (empty($nome) || empty($data_evento) || empty($cidade) || empty($descricao) || empty($link_oficial)) {

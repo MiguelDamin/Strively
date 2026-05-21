@@ -190,5 +190,14 @@ include '../components/header.php';
 
   </section>
 
+  <script>
+  document.getElementById('link_oficial')?.addEventListener('blur', function() {
+      var val = this.value.trim();
+      if (val && !val.match(/^https?:\/\//i)) {
+          this.value = 'https://' + val;
+      }
+  });
+  </script>
+
 </body>
 </html>
