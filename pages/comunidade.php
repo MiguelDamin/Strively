@@ -85,6 +85,124 @@ $runnerIcon = '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path
   .modal-box input[type="file"] { width: 100%; padding: 10px 0; margin-bottom: 16px; font-size: 0.9rem; }
   .btn-submit { background: var(--green); color: #fff; border: none; padding: 14px; width: 100%; border-radius: 10px; font-weight: 700; font-size: 1rem; cursor: pointer; transition: 0.2s; }
   .btn-submit:hover { background: var(--green-dark); }
+
+  /* Modal Criar Post - Estilos Novos */
+  .modal-criar-post-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 9999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      box-sizing: border-box;
+  }
+
+  .modal-criar-post {
+      background: #fff;
+      border-radius: 20px;
+      padding: 24px;
+      width: 100%;
+      max-width: 400px;
+      max-height: 85vh;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      position: relative;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+  }
+
+  .modal-criar-post h3 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.4rem;
+      letter-spacing: 1px;
+      margin: 0 0 16px;
+      color: #0d0d0d;
+  }
+
+  .modal-criar-post label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 5px;
+      font-family: 'Outfit', sans-serif;
+  }
+
+  .modal-criar-post input[type="text"],
+  .modal-criar-post input[type="file"],
+  .modal-criar-post textarea,
+  .modal-criar-post select {
+      width: 100%;
+      box-sizing: border-box;
+      background: #f5f6f5;
+      border: 1.5px solid #e0e0e0;
+      border-radius: 10px;
+      padding: 10px 13px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.9rem;
+      outline: none;
+      margin-bottom: 12px;
+      color: #111;
+  }
+
+  .modal-criar-post input[type="file"] {
+      padding: 8px;
+      cursor: pointer;
+  }
+
+  .modal-criar-post select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24'%3E%3Cpath fill='%23666' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 32px;
+      -webkit-appearance: none;
+      appearance: none;
+  }
+
+  .modal-criar-post .btn-publicar {
+      width: 100%;
+      padding: 14px;
+      background: var(--green, #1DB954);
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 4px;
+      transition: background 0.2s;
+  }
+
+  .modal-criar-post .btn-publicar:hover {
+      background: var(--green-dark);
+  }
+
+  .modal-criar-post .btn-fechar-modal {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: #f5f5f5;
+      border: none;
+      border-radius: 8px;
+      width: 30px;
+      height: 30px;
+      cursor: pointer;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #666;
+  }
+
+  @media (max-width: 640px) {
+      .modal-criar-post {
+          width: 95%;
+          padding: 20px 16px;
+          max-height: 80vh;
+      }
+  }
 </style>
 
 <div class="comunidade-wrapper">
@@ -183,27 +301,34 @@ $runnerIcon = '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path
     </div>
   </div>
 
-  <button class="fab-add" onclick="abrirModalCriar()">+</button>
+  <button class="fab-add" onclick="abrirModalCriarPost()">+</button>
+  <?php endif; ?>
 
-</div>
-
-<!-- Modal Criar -->
-  <div class="modal-overlay" id="modalCriar">
-  <div class="modal-card">
-    <div class="m-close" onclick="fecharModalCriar()">&times;</div>
-    <form action="/actions/action-criar-post.php" method="POST" enctype="multipart/form-data">
+  <!-- Modal Criar -->
+  <div class="modal-criar-post-overlay" id="modalCriarPost">
+    <div class="modal-criar-post">
+      <button class="btn-fechar-modal" onclick="fecharModalCriarPost()">✕</button>
       <h3>Nova publicação</h3>
-      <input type="text" name="titulo" placeholder="Nome da publicação (ex: Desconto na Centauro)" required>
-      <input type="file" name="foto" accept="image/*">
-      <textarea name="descricao" placeholder="Escreva os detalhes (opcional)"></textarea>
-      <select name="tipo">
-        <option value="manual">Post geral</option>
-        <option value="equipamento">Equipamento/Cupom</option>
-      </select>
-      <button type="submit" class="btn-submit">Publicar</button>
-    </form>
+      <form action="/actions/action-criar-post.php" method="POST" enctype="multipart/form-data">
+        <label>Nome da publicação</label>
+        <input type="text" name="titulo" placeholder="Ex: Cupom de desconto" required>
+        
+        <label>Foto (opcional)</label>
+        <input type="file" name="foto" accept="image/*">
+        
+        <label>Descrição (opcional)</label>
+        <textarea name="descricao" placeholder="Adicione detalhes..."></textarea>
+        
+        <label>Tipo</label>
+        <select name="tipo">
+          <option value="manual">Post geral</option>
+          <option value="equipamento">Equipamento/Cupom</option>
+        </select>
+        
+        <button type="submit" class="btn-publicar">Publicar</button>
+      </form>
+    </div>
   </div>
-</div>
 
 <!-- Modais de edição -->
 <?php foreach ($posts as $post): ?>
@@ -273,18 +398,18 @@ async function toggleLike(postId, btn) {
 }
 
 // Funções do Modal de Criar
-function abrirModalCriar() {
-    document.getElementById('modalCriar').classList.add('open');
+function abrirModalCriarPost() {
+    document.getElementById('modalCriarPost').style.display = 'flex';
     lockScroll();
 }
-function fecharModalCriar() {
-    document.getElementById('modalCriar').classList.remove('open');
+function fecharModalCriarPost() {
+    document.getElementById('modalCriarPost').style.display = 'none';
     unlockScroll();
 }
 
 // Fechar modal no overlay
-document.getElementById('modalCriar').addEventListener('click', function(e) {
-  if (e.target === this) fecharModalCriar();
+document.getElementById('modalCriarPost')?.addEventListener('click', function(e) {
+  if (e.target === this) fecharModalCriarPost();
 });
 
 // Funções do Modal de Edição
