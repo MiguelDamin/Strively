@@ -475,14 +475,16 @@ function abrirModalDia(ds, tt) {
     body.appendChild(item);
   });
   document.getElementById('modalDia').classList.add('aberto');
+  lockScroll();
 }
 
 function abrirModalAdicionar(d) {
   if (d) document.getElementById('f-data').value = d;
   document.getElementById('modalAdicionar').classList.add('aberto');
+  lockScroll();
 }
 
-function fecharModal(id) { document.getElementById(id).classList.remove('aberto'); }
+function fecharModal(id) { document.getElementById(id).classList.remove('aberto'); unlockScroll(); }
 function fecharModalSeFora(e, id) { if (e.target.id === id) fecharModal(id); }
 
 function toggleOutro(s) {

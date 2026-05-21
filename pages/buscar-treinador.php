@@ -388,9 +388,11 @@ include '../components/header.php';
     document.getElementById('modalTreinadorId').value = id;
     document.getElementById('modalNome').textContent = nome;
     document.getElementById('modalContratar').classList.add('ativo');
+    lockScroll();
   }
   function fecharModal() {
     document.getElementById('modalContratar').classList.remove('ativo');
+    unlockScroll();
   }
   // Fechar ao clicar no overlay
   document.getElementById('modalContratar').addEventListener('click', function(e) {

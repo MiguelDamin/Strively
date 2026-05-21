@@ -314,6 +314,25 @@ if (isset($_SESSION['id']) && isset($pdo)) {
   function toggleDropdown() {
     document.getElementById('navDropdown').classList.toggle('aberto');
   }
+
+  // Utilitários globais de scroll lock para modais
+  function lockScroll() {
+      var scrollY = window.scrollY;
+      document.body.style.overflow = 'hidden';
+      document.body.style.position = 'fixed';
+      document.body.style.top = '-' + scrollY + 'px';
+      document.body.style.width = '100%';
+      document.body.dataset.scrollY = scrollY;
+  }
+  function unlockScroll() {
+      var scrollY = document.body.dataset.scrollY || 0;
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
+      window.scrollTo(0, parseInt(scrollY));
+  }
+
   document.addEventListener('click', function(e) {
     const usuario = document.querySelector('.nav-usuario');
     if (usuario && !usuario.contains(e.target)) {
@@ -325,10 +344,12 @@ if (isset($_SESSION['id']) && isset($pdo)) {
   function abrirSheet() {
     document.getElementById('bottomSheet').classList.add('sheet-open');
     document.getElementById('sheetOverlay').classList.add('sheet-overlay-visible');
+    lockScroll();
   }
   function fecharSheet() {
     document.getElementById('bottomSheet').classList.remove('sheet-open');
     document.getElementById('sheetOverlay').classList.remove('sheet-overlay-visible');
+    unlockScroll();
   }
 
   /* Marca aba ativa baseado na URL */

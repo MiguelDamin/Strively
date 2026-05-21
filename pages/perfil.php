@@ -1070,11 +1070,13 @@ const modal = document.getElementById('modalEdicao');
 
 function abrirModal() {
     modal.classList.add('show');
+    lockScroll();
     // Força o contador atualizar ao abrir se houver texto
     updateCharCount(document.getElementById('bio'));
 }
 function fecharModal() {
     modal.classList.remove('show');
+    unlockScroll();
 }
 
 // Fechar com ESC e click fora

@@ -623,10 +623,11 @@ function abrirModalDia(ds,items){
     body.appendChild(div);
   });
   document.getElementById('modalDia').classList.add('aberto');
+  lockScroll();
 }
 
-function abrirModal(id){document.getElementById(id).classList.add('aberto');}
-function fecharModal(id){document.getElementById(id).classList.remove('aberto');}
+function abrirModal(id){document.getElementById(id).classList.add('aberto'); lockScroll();}
+function fecharModal(id){document.getElementById(id).classList.remove('aberto'); unlockScroll();}
 function fecharModalSeFora(e,id){if(e.target.id===id)fecharModal(id);}
 function esc(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 
@@ -688,16 +689,18 @@ function confirmarDeletar(treinoId, titulo) {
     `;
     
     document.body.appendChild(overlay);
+    lockScroll();
     
     // Fechar clicando fora
     overlay.addEventListener('click', function(e) {
-        if (e.target === overlay) overlay.remove();
+        if (e.target === overlay) { overlay.remove(); unlockScroll(); }
     });
 }
 
 function deletarTreino(treinoId) {
     // Fechar o popup
     document.querySelector('div[style*="position: fixed"]')?.remove();
+    unlockScroll();
     
     // Enviar para o action de remover
     const form = document.createElement('form');
@@ -742,12 +745,12 @@ function abrirDetalhesTreino(titulo, descricao, tipo, data, status, temTreinador
         : '<span style="color:#8a8a8a;font-size:0.9rem;">⏳ Pendente</span>';
     
     modal.style.display = 'flex';
-    document.body.style.overflow = 'hidden';
+    lockScroll();
 }
 
 function fecharDetalhesTreino() {
     document.getElementById('modal-treino-detalhe').style.display = 'none';
-    document.body.style.overflow = '';
+    unlockScroll();
 }
 
 // Fechar clicando fora

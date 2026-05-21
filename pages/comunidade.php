@@ -183,13 +183,14 @@ $runnerIcon = '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path
     </div>
   </div>
 
-  <button class="fab-add" onclick="document.getElementById('modalCriar').classList.add('open')">+</button>
+  <button class="fab-add" onclick="abrirModalCriar()">+</button>
 
 </div>
 
-<div class="modal-overlay" id="modalCriar">
-  <div class="modal-box">
-    <div class="m-close" onclick="document.getElementById('modalCriar').classList.remove('open')">&times;</div>
+<!-- Modal Criar -->
+  <div class="modal-overlay" id="modalCriar">
+  <div class="modal-card">
+    <div class="m-close" onclick="fecharModalCriar()">&times;</div>
     <form action="/actions/action-criar-post.php" method="POST" enctype="multipart/form-data">
       <h3>Nova publicação</h3>
       <input type="text" name="titulo" placeholder="Nome da publicação (ex: Desconto na Centauro)" required>
@@ -271,23 +272,36 @@ async function toggleLike(postId, btn) {
   }
 }
 
+// Funções do Modal de Criar
+function abrirModalCriar() {
+    document.getElementById('modalCriar').classList.add('open');
+    lockScroll();
+}
+function fecharModalCriar() {
+    document.getElementById('modalCriar').classList.remove('open');
+    unlockScroll();
+}
+
 // Fechar modal no overlay
 document.getElementById('modalCriar').addEventListener('click', function(e) {
-  if (e.target === this) this.classList.remove('open');
+  if (e.target === this) fecharModalCriar();
 });
 
 // Funções do Modal de Edição
 function abrirModalEditar(postId) {
     const el = document.getElementById('modal-editar-' + postId);
-    if(el) el.classList.add('open');
+    if(el) { el.classList.add('open'); lockScroll(); }
 }
 function fecharModal(postId) {
     const el = document.getElementById('modal-editar-' + postId);
-    if(el) el.classList.remove('open');
+    if(el) { el.classList.remove('open'); unlockScroll(); }
 }
 document.querySelectorAll('.modal-overlay').forEach(el => {
     el.addEventListener('click', function(e) {
-        if (e.target === this) this.classList.remove('open');
+        if (e.target === this) {
+            this.classList.remove('open');
+            unlockScroll();
+        }
     });
 });
 </script>
