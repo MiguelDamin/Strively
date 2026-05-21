@@ -1,6 +1,10 @@
 <?php
 require_once __DIR__ . '/../config/conexao.php';
 
+// Detectar se é home para o botão voltar mobile
+$uri = $_SERVER['REQUEST_URI'] ?? '/';
+$isHome = ($uri === '/' || $uri === '/index.php' || strpos($uri, 'index.php') !== false);
+
 // Auto-login via cookie
 if (!isset($_SESSION['id']) && isset($_COOKIE['remember_token'])) {
     $stmt = $pdo->prepare("SELECT * FROM usuarios WHERE remember_token = ? AND remember_expira > NOW()");
@@ -52,10 +56,33 @@ if (isset($_SESSION['id']) && isset($pdo)) {
 
 
 <header>
-  <nav>
+  <nav style="display: flex; align-items: center;">
+
+    <!-- Botão voltar mobile -->
+    <?php if (!$isHome): ?>
+    <button 
+        onclick="history.back()" 
+        aria-label="Voltar"
+        style="
+            display: none;
+            background: none;
+            border: none;
+            padding: 8px 12px 8px 0;
+            cursor: pointer;
+            color: #fff;
+            font-size: 1.8rem;
+            line-height: 1;
+            opacity: 0.9;
+            -webkit-tap-highlight-color: transparent;
+            flex-shrink: 0;
+        "
+        class="btn-voltar-mobile">
+        ‹
+    </button>
+    <?php endif; ?>
 
     <!-- Logo -->
-    <a class="nav-brand" href="/index.php">
+    <a class="nav-brand" href="/index.php" style="display: flex; align-items: center;">
       <div class="logo-icon">
         <img src="/images/logo_branca.webp" alt="Strively" style="width:38px;height:38px;object-fit:contain;border-radius:10px;" />
       </div>
@@ -312,8 +339,9 @@ if (isset($_SESSION['id']) && isset($pdo)) {
 <style>
 @media (max-width: 768px) {
     .btn-voltar-mobile {
-        display: flex !important;
+        display: inline-flex !important;
         align-items: center;
+        visibility: visible !important;
     }
 }
 @media (min-width: 769px) {
