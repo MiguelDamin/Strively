@@ -310,6 +310,18 @@ if (isset($_SESSION['id']) && isset($pdo)) {
 
 <!-- Scripts: dropdown desktop + bottom sheet mobile + PWA -->
 <style>
+@media (max-width: 768px) {
+    .btn-voltar-mobile {
+        display: flex !important;
+        align-items: center;
+    }
+}
+@media (min-width: 769px) {
+    .btn-voltar-mobile {
+        display: none !important;
+    }
+}
+
 /* Bloquear scroll do fundo quando modal aberto */
 body.modal-aberto {
     overflow: hidden !important;
@@ -407,6 +419,20 @@ body.modal-aberto {
     document.getElementById('btn-instalar').style.display = 'block';
   });
   document.getElementById('btn-instalar')?.addEventListener('click', () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then((choiceResult) => {
+        if (choiceResult.outcome === 'accepted') {
+          console.log('User accepted the A2HS prompt');
+        } else {
+          console.log('User dismissed the A2HS prompt');
+        }
+        deferredPrompt = null;
+        document.getElementById('btn-instalar').style.display = 'none';
+      });
+    }
+  });
+</script> => {
     if (deferredPrompt) {
       deferredPrompt.prompt();
       deferredPrompt.userChoice.then((choiceResult) => {
