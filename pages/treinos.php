@@ -661,7 +661,7 @@ function confirmarDeletar(treinoId, titulo) {
     `;
     
     overlay.innerHTML = `
-        <div style="
+        <div class="modal-box-confirm" style="
             background: #fff; border-radius: 16px; padding: 28px 24px;
             max-width: 340px; width: 90%; text-align: center;
             box-shadow: 0 8px 32px rgba(0,0,0,0.2);
@@ -771,7 +771,7 @@ document.getElementById('modal-treino-detalhe')?.addEventListener('click', funct
     padding: 16px;
     box-sizing: border-box;
 ">
-    <div style="
+    <div class="modal-box-detalhes" style="
         background: #fff;
         border-radius: 20px;
         padding: 28px 24px;

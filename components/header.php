@@ -309,6 +309,36 @@ if (isset($_SESSION['id']) && isset($pdo)) {
 </button>
 
 <!-- Scripts: dropdown desktop + bottom sheet mobile + PWA -->
+<style>
+/* Bloquear scroll do fundo quando modal aberto */
+body.modal-aberto {
+    overflow: hidden !important;
+    height: 100% !important;
+}
+
+/* Overlay dos modais — garantir que absorve todos os eventos de toque */
+.modal-overlay,
+[id*="modal"],
+.sheet-overlay,
+.bottom-sheet-overlay {
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* O conteúdo interno do modal pode scrollar */
+.modal-box,
+.modal-body,
+.modal-content,
+.modal-card,
+.modal-box-detalhes,
+.modal-box-confirm,
+.bottom-sheet {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+}
+</style>
+
 <script>
   /* Desktop dropdown */
   function toggleDropdown() {
@@ -317,20 +347,25 @@ if (isset($_SESSION['id']) && isset($pdo)) {
 
   // Utilitários globais de scroll lock para modais
   function lockScroll() {
-      var scrollY = window.scrollY;
+      document.documentElement.style.overflow = 'hidden';
       document.body.style.overflow = 'hidden';
-      document.body.style.position = 'fixed';
-      document.body.style.top = '-' + scrollY + 'px';
-      document.body.style.width = '100%';
-      document.body.dataset.scrollY = scrollY;
+      document.body.classList.add('modal-aberto');
+      // Bloquear touchmove no body para iOS
+      document.body.addEventListener('touchmove', preventTouch, { passive: false });
   }
+
   function unlockScroll() {
-      var scrollY = document.body.dataset.scrollY || 0;
+      document.documentElement.style.overflow = '';
       document.body.style.overflow = '';
-      document.body.style.position = '';
-      document.body.style.top = '';
-      document.body.style.width = '';
-      window.scrollTo(0, parseInt(scrollY));
+      document.body.classList.remove('modal-aberto');
+      document.body.removeEventListener('touchmove', preventTouch);
+  }
+
+  function preventTouch(e) {
+      // Permitir scroll APENAS dentro de elementos de conteúdo do modal
+      if (!e.target.closest('.modal-box, .modal-body, .modal-content, .modal-card, .modal-box-detalhes, .modal-box-confirm, .bottom-sheet')) {
+          e.preventDefault();
+      }
   }
 
   document.addEventListener('click', function(e) {
