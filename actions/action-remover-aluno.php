@@ -4,6 +4,7 @@
 // Remove a vinculação de um corredor com o treinador logado
 // ==========================================================
 
+$only_session = true;
 require_once '../components/header.php';
 
 if (!isset($_SESSION['id']) || $_SESSION['perfil'] !== 'treinador') {
