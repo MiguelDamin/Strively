@@ -302,10 +302,9 @@ $runnerIcon = '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path
   </div>
 
   <button class="fab-add" onclick="abrirModalCriarPost()">+</button>
-  <?php endif; ?>
+  </div> <!-- .comunidade-wrapper -->
 
-  <!-- Modal Criar -->
-  <div class="modal-criar-post-overlay" id="modalCriarPost">
+  <!-- Modal Criar -->  <div class="modal-criar-post-overlay" id="modalCriarPost">
     <div class="modal-criar-post">
       <button class="btn-fechar-modal" onclick="fecharModalCriarPost()">✕</button>
       <h3>Nova publicação</h3>
