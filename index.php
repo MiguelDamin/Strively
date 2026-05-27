@@ -319,63 +319,7 @@ if (isset($_SESSION['id'])):
   </section>
   <?php endif; ?>
 
-</div>
 
-
-
-<script>
-// Lógica do Carrossel Netflix Premium
-let ncIndex = 0;
-const ncCards = document.querySelectorAll('.nc-card');
-const ncTotal = ncCards.length;
-
-function renderNcCarousel() {
-  if (ncTotal === 0) return;
-  ncCards.forEach((card, i) => {
-    card.className = 'nc-card'; 
-    if (i === ncIndex) {
-      card.classList.add('nc-center');
-    } else if (ncTotal >= 3) {
-      if (i === (ncIndex - 1 + ncTotal) % ncTotal) card.classList.add('nc-left');
-      else if (i === (ncIndex + 1) % ncTotal) card.classList.add('nc-right');
-      else card.classList.add('nc-hidden');
-    } else if (ncTotal === 2) {
-      if (i !== ncIndex) card.classList.add('nc-right');
-      else card.classList.add('nc-center');
-    }
-  });
-}
-
-function ncMover(dir) {
-  if (ncTotal > 1) {
-    ncIndex = (ncIndex + dir + ncTotal) % ncTotal;
-    renderNcCarousel();
-  }
-}
-
-function ncIrPara(i) {
-  if (i === ncIndex) {
-    window.location.href = '/pages/eventos.php';
-  } else {
-    ncIndex = i;
-    renderNcCarousel();
-  }
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-  if (ncTotal > 0) {
-    renderNcCarousel();
-    const track = document.getElementById('ncTrack');
-    let startX = 0;
-    track.addEventListener('touchstart', e => { startX = e.changedTouches[0].screenX; }, {passive: true});
-    track.addEventListener('touchend', e => {
-      const endX = e.changedTouches[0].screenX;
-      if (endX < startX - 40) ncMover(1);
-      if (endX > startX + 40) ncMover(-1);
-    }, {passive: true});
-  }
-});
-</script>
 
 <?php 
 // =====================================================
@@ -387,13 +331,19 @@ else:
 
     // Stats para LP
     $totalCorredores = $pdo->query("SELECT COUNT(*) FROM usuarios WHERE perfil = 'corredor'")->fetchColumn();
-    $totalEventos = $pdo->query("SELECT COUNT(*) FROM eventos WHERE status = 'aprovado'")->fetchColumn();
+    $totalEventos = $pdo->query("SELECT COUNT(*) FROM eventos WHERE status = 'ativo'")->fetchColumn();
     $totalTreinadores = $pdo->query("SELECT COUNT(*) FROM treinadores WHERE status = 'aprovado'")->fetchColumn();
 
-    // Próximos 3 eventos
-    $stmtEventosLP = $pdo->prepare("SELECT nome, cidade, data_evento, distancias FROM eventos WHERE status = 'ativo' AND data_evento >= CURRENT_DATE ORDER BY data_evento ASC LIMIT 3");
-    $stmtEventosLP->execute();
-    $eventosHome = $stmtEventosLP->fetchAll();
+    // Query para o carrossel de visitantes
+    $stmtEventosCarrossel = $pdo->prepare("
+        SELECT id, nome, cidade, data_evento, banner 
+        FROM eventos 
+        WHERE status = 'ativo' AND data_evento >= CURRENT_DATE 
+        ORDER BY data_evento ASC 
+        LIMIT 10
+    ");
+    $stmtEventosCarrossel->execute();
+    $eventosCarrossel = $stmtEventosCarrossel->fetchAll();
 
     // Treinadores
     $stmtTreinadoresLP = $pdo->prepare("SELECT u.nome, u.foto, u.cidade, t.especialidade FROM treinadores t JOIN usuarios u ON u.id = t.usuario_id WHERE t.status = 'aprovado' ORDER BY t.id ASC LIMIT 4");
@@ -482,13 +432,18 @@ else:
 
 <div class="lp">
     <div class="hero-lp">
-        <nav class="hero-nav-lp">
-            <a href="/" class="hero-nav-brand"><img src="/images/logo_branca.webp" alt="Strively"><span>Strively</span></a>
-            <div class="hero-nav-links">
-                <a href="/pages/eventos.php" class="hero-nav-link">Eventos</a>
-                <a href="/pages/comunidade.php" class="hero-nav-link">Comunidade</a>
-                <a href="/pages/login.php" class="hero-nav-login">Entrar</a>
-            </div>
+        <nav style="display:flex;align-items:center;justify-content:space-between;max-width:700px;margin:0 auto 56px;position:relative;z-index:2;">
+          <!-- Logo -->
+          <a href="/" style="display:flex;align-items:center;gap:10px;text-decoration:none;">
+            <img src="/images/icon-192.png" style="width:38px;height:38px;border-radius:10px;object-fit:contain;">
+            <span style="color:#fff;font-family:'Bebas Neue',sans-serif;font-size:21px;letter-spacing:3px;">STRIVELY</span>
+          </a>
+          <!-- Links -->
+          <div style="display:flex;align-items:center;gap:8px;">
+            <a href="/pages/eventos.php" style="color:rgba(255,255,255,0.85);text-decoration:none;font-size:14px;font-weight:500;padding:8px 16px;border-radius:50px;transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.12)'" onmouseout="this.style.background='transparent'">Eventos</a>
+            <a href="/pages/comunidade.php" style="color:rgba(255,255,255,0.85);text-decoration:none;font-size:14px;font-weight:500;padding:8px 16px;border-radius:50px;transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.12)'" onmouseout="this.style.background='transparent'">Comunidade</a>
+            <a href="/pages/login.php" style="background:rgba(255,255,255,0.15);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,0.25);color:#fff;text-decoration:none;font-size:14px;font-weight:600;padding:8px 20px;border-radius:50px;transition:all 0.25s;" onmouseover="this.style.background='#fff';this.style.color='#1DB954'" onmouseout="this.style.background='rgba(255,255,255,0.15)';this.style.color='#fff'">Entrar</a>
+          </div>
         </nav>
         <div class="hero-lp-content">
             <div class="hero-chip"><div class="hero-chip-dot"></div><span>Plataforma para corredores</span></div>
@@ -539,37 +494,60 @@ else:
         </div>
     </div>
 
-    <!-- EVENTOS LP -->
-    <div class="section-lp-alt">
+    <!-- EVENTOS LP (CARROSSEL PREMIUM) -->
+    <div class="section-lp-alt" style="background: #fff;">
         <div class="section-lp-header">
             <span class="lp-section-label">Próximas corridas</span>
-            <h2 class="lp-section-title">Eventos perto de você</h2>
+            <h2 class="lp-section-title">Eventos em destaque</h2>
         </div>
-        <div class="lp-eventos-list">
-            <?php foreach ($eventosHome as $ev): 
-                $dt = new DateTime($ev['data_evento']);
-                $meses = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
-                $distancias = array_filter(array_map('trim', explode(',', $ev['distancias'] ?? '')));
-            ?>
-            <div class="lp-evento-row">
-                <div class="lp-evento-date">
-                    <div class="lp-evento-day"><?= $dt->format('d') ?></div>
-                    <div class="lp-evento-mon"><?= $meses[(int)$dt->format('m')-1] ?></div>
-                </div>
-                <div class="evento-sep"></div>
-                <div class="evento-info">
-                    <div class="evento-name"><?= htmlspecialchars($ev['nome']) ?></div>
-                    <div class="evento-city">📍 <?= htmlspecialchars($ev['cidade'] ?? '') ?></div>
-                    <?php if (!empty($distancias)): ?>
-                    <div class="evento-dists">
-                        <?php foreach ($distancias as $d): ?><span class="dist-badge"><?= htmlspecialchars($d) ?></span><?php endforeach; ?>
+        
+        <?php if (!empty($eventosCarrossel)): ?>
+        <div class="nc-container">
+            <?php if (count($eventosCarrossel) > 1): ?>
+                <button class="nc-nav nc-prev" onclick="ncMover(-1)">
+                    <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+                </button>
+            <?php endif; ?>
+            <div class="nc-track" id="ncTrack">
+                <?php foreach ($eventosCarrossel as $i => $ev): ?>
+                    <?php 
+                        $capa = strpos($ev['banner'], 'http') === 0 || empty($ev['banner']) ? $ev['banner'] : '/' . $ev['banner'];
+                        $dt = new DateTime($ev['data_evento']);
+                    ?>
+                    <div class="nc-card" data-index="<?= $i ?>" onclick="ncIrPara(<?= $i ?>)">
+                        <div class="nc-top" <?= $capa ? "style=\"background-image:url('$capa')\"" : "" ?>>
+                            <h3 class="nc-event-title-big"><?= htmlspecialchars($ev['nome']) ?></h3>
+                        </div>
+                        <div class="nc-base">
+                            <h4><?= htmlspecialchars($ev['nome']) ?></h4>
+                            <p class="nc-loc">📍 <?= htmlspecialchars($ev['cidade']) ?></p>
+                            <p class="nc-dat">📅 <?= $dt->format('d/m/Y') ?></p>
+                            <a href="/pages/login.php?msg=cadastre" class="nc-btn-v">Ver detalhes</a>
+                        </div>
                     </div>
-                    <?php endif; ?>
-                </div>
+                <?php endforeach; ?>
             </div>
-            <?php endforeach; ?>
+            <?php if (count($eventosCarrossel) > 1): ?>
+                <button class="nc-nav nc-next" onclick="ncMover(1)">
+                    <svg viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+                </button>
+            <?php endif; ?>
         </div>
-        <a href="/pages/eventos.php" class="ver-todos">Ver todos os eventos →</a>
+        <?php endif; ?>
+
+        <div style="text-align:center;margin-top:32px;">
+            <a href="/pages/eventos.php" style="
+                display:inline-flex;align-items:center;gap:8px;
+                background:transparent;color:#1DB954;
+                border:2px solid #1DB954;border-radius:50px;
+                padding:12px 28px;font-family:'Outfit',sans-serif;
+                font-size:0.9rem;font-weight:700;text-decoration:none;
+                transition:all 0.25s;letter-spacing:0.3px;
+            " onmouseover="this.style.background='#1DB954';this.style.color='#fff'" 
+               onmouseout="this.style.background='transparent';this.style.color='#1DB954'">
+                Ver todos os eventos →
+            </a>
+        </div>
     </div>
 
     <!-- TREINADORES LP -->
@@ -594,7 +572,19 @@ else:
             </div>
             <?php endforeach; ?>
         </div>
-        <a href="/pages/buscar-treinador.php" class="ver-todos">Ver todos os treinadores →</a>
+        <div style="text-align:center;margin-top:32px;">
+            <a href="/pages/cadastro.php" style="
+                display:inline-flex;align-items:center;gap:8px;
+                background:transparent;color:#1DB954;
+                border:2px solid #1DB954;border-radius:50px;
+                padding:12px 28px;font-family:'Outfit',sans-serif;
+                font-size:0.9rem;font-weight:700;text-decoration:none;
+                transition:all 0.25s;letter-spacing:0.3px;
+            " onmouseover="this.style.background='#1DB954';this.style.color='#fff'" 
+               onmouseout="this.style.background='transparent';this.style.color='#1DB954'">
+                Ver todos os treinadores →
+            </a>
+        </div>
     </div>
 
     <!-- CTA LP -->
@@ -615,6 +605,67 @@ else:
     </div>
 </div>
 
-<?php endif; ?>
+<?php endif; // Fim do if/else principal ?>
+
+<script>
+// Lógica do Carrossel Netflix Premium
+let ncIndex = 0;
+const ncCards = document.querySelectorAll('.nc-card');
+const ncTotal = ncCards.length;
+
+function renderNcCarousel() {
+  if (ncTotal === 0) return;
+  ncCards.forEach((card, i) => {
+    card.className = 'nc-card'; 
+    if (i === ncIndex) {
+      card.classList.add('nc-center');
+    } else if (ncTotal >= 3) {
+      if (i === (ncIndex - 1 + ncTotal) % ncTotal) card.classList.add('nc-left');
+      else if (i === (ncIndex + 1) % ncTotal) card.classList.add('nc-right');
+      else card.classList.add('nc-hidden');
+    } else if (ncTotal === 2) {
+      if (i !== ncIndex) card.classList.add('nc-right');
+      else card.classList.add('nc-center');
+    }
+  });
+}
+
+function ncMover(dir) {
+  if (ncTotal > 1) {
+    ncIndex = (ncIndex + dir + ncTotal) % ncTotal;
+    renderNcCarousel();
+  }
+}
+
+function ncIrPara(i) {
+  if (i === ncIndex) {
+    // Redirecionamento dinâmico dependendo da sessão
+    <?php if (!isset($_SESSION['id'])): ?>
+      window.location.href = '/pages/login.php?msg=cadastre';
+    <?php else: ?>
+      window.location.href = '/pages/eventos.php';
+    <?php endif; ?>
+  } else {
+    ncIndex = i;
+    renderNcCarousel();
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  if (ncTotal > 0) {
+    renderNcCarousel();
+    const tracks = document.querySelectorAll('[id="ncTrack"]');
+    tracks.forEach(track => {
+        let startX = 0;
+        track.addEventListener('touchstart', e => { startX = e.changedTouches[0].screenX; }, {passive: true});
+        track.addEventListener('touchend', e => {
+          const endX = e.changedTouches[0].screenX;
+          if (endX < startX - 40) ncMover(1);
+          if (endX > startX + 40) ncMover(-1);
+        }, {passive: true});
+    });
+  }
+});
+</script>
 </body>
 </html>
