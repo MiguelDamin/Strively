@@ -46,86 +46,559 @@ $totalTreinadores = $pdo->query("SELECT COUNT(*) FROM treinadores WHERE status =
 ?>
 
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-.lp { font-family: 'Outfit', sans-serif; background: #f5f6f5; width: 100%; overflow: hidden; }
+/* ========== RESET & BASE ========== */
+.lp * { box-sizing: border-box; margin: 0; padding: 0; }
+.lp { font-family: 'Outfit', sans-serif; background: #fafafa; width: 100%; overflow-x: hidden; color: #1a1a1a; }
 
-/* HERO */
-.hero { background: #1DB954; padding: 60px 40px 70px; text-align: center; }
-.hero-logo { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 48px; }
-.hero-logo img { width: 42px; height: 42px; object-fit: contain; border-radius: 10px; }
-.hero-logo-name { color: #fff; font-family: 'Bebas Neue', sans-serif; font-size: 24px; letter-spacing: 3px; }
-.hero-eyebrow { color: rgba(255,255,255,0.8); font-size: 12px; font-weight: 500; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 16px; }
-.hero-h1 { color: #fff; font-family: 'Bebas Neue', sans-serif; font-size: 52px; line-height: 1.05; margin-bottom: 8px; letter-spacing: 1px; }
-.hero-h1-destaque { color: #0d0d0d; font-family: 'Bebas Neue', sans-serif; font-size: 52px; line-height: 1.05; letter-spacing: 1px; }
-.hero-sub { color: rgba(255,255,255,0.88); font-size: 16px; line-height: 1.7; max-width: 460px; margin: 16px auto 36px; font-weight: 300; }
-.hero-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
-.btn-white { background: #fff; color: #1DB954; border: none; border-radius: 50px; padding: 14px 30px; font-size: 15px; font-weight: 700; cursor: pointer; font-family: 'Outfit', sans-serif; text-decoration: none; display: inline-block; }
-.btn-outline-white { background: transparent; color: #fff; border: 1.5px solid rgba(255,255,255,0.55); border-radius: 50px; padding: 14px 30px; font-size: 15px; font-weight: 600; cursor: pointer; font-family: 'Outfit', sans-serif; text-decoration: none; display: inline-block; }
+/* ========== HERO — Premium gradient + depth ========== */
+.hero {
+    background: linear-gradient(160deg, #1DB954 0%, #17a34a 40%, #0f8a3e 100%);
+    padding: 72px 32px 84px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+.hero::before {
+    content: '';
+    position: absolute;
+    top: -120px;
+    right: -80px;
+    width: 380px;
+    height: 380px;
+    background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+}
+.hero::after {
+    content: '';
+    position: absolute;
+    bottom: -60px;
+    left: -40px;
+    width: 260px;
+    height: 260px;
+    background: radial-gradient(circle, rgba(0,0,0,0.06) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+}
 
-/* STATS */
-.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: #e0e0e0; border-top: 1px solid #e0e0e0; border-bottom: 1px solid #e0e0e0; }
-.stat { background: #fff; padding: 24px 16px; text-align: center; }
-.stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 34px; color: #1DB954; line-height: 1; }
-.stat-label { font-size: 12px; color: #8a8a8a; margin-top: 4px; font-weight: 500; }
+/* Nav dentro do hero */
+.hero-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 680px;
+    margin: 0 auto 56px;
+    position: relative;
+    z-index: 2;
+}
+.hero-nav-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+}
+.hero-nav-brand img {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    border-radius: 10px;
+}
+.hero-nav-brand span {
+    color: #fff;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 3px;
+}
+.hero-nav-links {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+.hero-nav-link {
+    color: rgba(255,255,255,0.85);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 8px 16px;
+    border-radius: 50px;
+    transition: all 0.2s;
+}
+.hero-nav-link:hover {
+    background: rgba(255,255,255,0.12);
+    color: #fff;
+}
+.hero-nav-login {
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border: 1px solid rgba(255,255,255,0.25);
+    color: #fff;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 8px 20px;
+    border-radius: 50px;
+    transition: all 0.25s;
+}
+.hero-nav-login:hover {
+    background: #fff;
+    color: #1DB954;
+    border-color: #fff;
+}
 
-/* FEATURES */
-.section { padding: 52px 28px; background: #fff; }
-.section-alt { padding: 52px 28px; background: #f5f6f5; }
-.section-label { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #1DB954; margin-bottom: 8px; }
-.section-title { font-family: 'Bebas Neue', sans-serif; font-size: 32px; color: #0d0d0d; margin-bottom: 10px; letter-spacing: 1px; line-height: 1.1; }
-.section-sub { font-size: 15px; color: #4a4a4a; line-height: 1.7; max-width: 480px; font-weight: 300; }
-.features { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 28px; }
-.feat { background: #f5f6f5; border-radius: 16px; padding: 20px 18px; border: 1px solid #ebebeb; }
-.feat-icon { width: 40px; height: 40px; border-radius: 10px; background: rgba(29,185,84,0.12); display: flex; align-items: center; justify-content: center; margin-bottom: 12px; }
-.feat-icon svg { width: 22px; height: 22px; fill: #1DB954; }
-.feat-title { font-size: 14px; font-weight: 700; color: #0d0d0d; margin-bottom: 5px; }
-.feat-desc { font-size: 13px; color: #6a6a6a; line-height: 1.55; }
+/* Hero content */
+.hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 560px;
+    margin: 0 auto;
+}
+.hero-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255,255,255,0.13);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 50px;
+    padding: 6px 16px;
+    margin-bottom: 28px;
+}
+.hero-chip-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #fff;
+    animation: chipPulse 2s ease-in-out infinite;
+}
+@keyframes chipPulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+}
+.hero-chip span {
+    color: rgba(255,255,255,0.9);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
 
-/* EVENTOS */
-.eventos-list { display: flex; flex-direction: column; gap: 10px; margin-top: 24px; }
-.evento-row { background: #fff; border-radius: 16px; border: 1px solid #ebebeb; padding: 14px 16px; display: flex; align-items: center; gap: 14px; }
-.evento-date { text-align: center; min-width: 44px; flex-shrink: 0; }
-.evento-date-day { font-family: 'Bebas Neue', sans-serif; font-size: 26px; color: #1DB954; line-height: 1; }
-.evento-date-mon { font-size: 11px; color: #8a8a8a; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
-.evento-sep { width: 1px; height: 40px; background: #ebebeb; flex-shrink: 0; }
+.hero-h1 {
+    color: #fff;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 62px;
+    line-height: 1.02;
+    margin-bottom: 6px;
+    letter-spacing: 1.5px;
+}
+.hero-h1-destaque {
+    color: #0d0d0d;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 62px;
+    line-height: 1.02;
+    letter-spacing: 1.5px;
+    display: block;
+}
+.hero-sub {
+    color: rgba(255,255,255,0.85);
+    font-size: 17px;
+    line-height: 1.75;
+    max-width: 480px;
+    margin: 20px auto 40px;
+    font-weight: 300;
+}
+.hero-btns {
+    display: flex;
+    gap: 14px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+.btn-white {
+    background: #fff;
+    color: #1DB954;
+    border: none;
+    border-radius: 50px;
+    padding: 15px 32px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: 'Outfit', sans-serif;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.25s;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+}
+.btn-white:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+}
+.btn-outline-white {
+    background: transparent;
+    color: #fff;
+    border: 1.5px solid rgba(255,255,255,0.45);
+    border-radius: 50px;
+    padding: 15px 32px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'Outfit', sans-serif;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.25s;
+}
+.btn-outline-white:hover {
+    background: rgba(255,255,255,0.12);
+    border-color: rgba(255,255,255,0.7);
+    transform: translateY(-2px);
+}
+
+/* ========== STATS ========== */
+.stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    max-width: 680px;
+    margin: -32px auto 0;
+    position: relative;
+    z-index: 3;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+    overflow: hidden;
+}
+.stat {
+    padding: 28px 16px;
+    text-align: center;
+    position: relative;
+}
+.stat:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 20%;
+    height: 60%;
+    width: 1px;
+    background: #eee;
+}
+.stat-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 38px;
+    color: #1DB954;
+    line-height: 1;
+}
+.stat-label {
+    font-size: 13px;
+    color: #999;
+    margin-top: 4px;
+    font-weight: 500;
+    letter-spacing: 0.3px;
+}
+
+/* ========== SECTIONS ========== */
+.section {
+    padding: 72px 28px;
+    background: #fff;
+}
+.section-alt {
+    padding: 72px 28px;
+    background: #f5f6f5;
+}
+.section-header {
+    text-align: center;
+    max-width: 540px;
+    margin: 0 auto 36px;
+}
+.section-label {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: #1DB954;
+    margin-bottom: 10px;
+    display: block;
+}
+.section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 38px;
+    color: #0d0d0d;
+    margin-bottom: 12px;
+    letter-spacing: 1px;
+    line-height: 1.1;
+}
+.section-sub {
+    font-size: 16px;
+    color: #666;
+    line-height: 1.7;
+    font-weight: 300;
+}
+
+/* ========== FEATURES ========== */
+.features {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    max-width: 640px;
+    margin: 0 auto;
+}
+.feat {
+    background: #f9faf9;
+    border-radius: 18px;
+    padding: 28px 22px;
+    border: 1px solid #eee;
+    transition: all 0.3s ease;
+}
+.feat:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 28px rgba(0,0,0,0.06);
+    border-color: rgba(29,185,84,0.25);
+}
+.feat-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: rgba(29,185,84,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+}
+.feat-icon svg { width: 24px; height: 24px; fill: #1DB954; }
+.feat-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #0d0d0d;
+    margin-bottom: 6px;
+}
+.feat-desc {
+    font-size: 14px;
+    color: #777;
+    line-height: 1.6;
+}
+
+/* ========== EVENTOS ========== */
+.eventos-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 580px;
+    margin: 0 auto;
+}
+.evento-row {
+    background: #fff;
+    border-radius: 16px;
+    border: 1px solid #eee;
+    padding: 18px 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    transition: all 0.25s;
+}
+.evento-row:hover {
+    box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+    border-color: rgba(29,185,84,0.2);
+}
+.evento-date { text-align: center; min-width: 48px; flex-shrink: 0; }
+.evento-date-day {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 30px;
+    color: #1DB954;
+    line-height: 1;
+}
+.evento-date-mon {
+    font-size: 11px;
+    color: #999;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 600;
+}
+.evento-sep { width: 1px; height: 44px; background: #eee; flex-shrink: 0; }
 .evento-info { flex: 1; min-width: 0; }
-.evento-name { font-size: 14px; font-weight: 700; color: #0d0d0d; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.evento-city { font-size: 12px; color: #8a8a8a; margin-top: 2px; }
-.evento-dists { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 6px; }
-.dist-badge { font-size: 11px; background: rgba(29,185,84,0.1); color: #15923e; border-radius: 20px; padding: 2px 9px; font-weight: 600; }
-.ver-todos { display: block; text-align: center; margin-top: 20px; color: #1DB954; font-size: 14px; font-weight: 600; text-decoration: none; }
+.evento-name {
+    font-size: 15px;
+    font-weight: 700;
+    color: #1a1a1a;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.evento-city { font-size: 13px; color: #999; margin-top: 3px; }
+.evento-dists { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 8px; }
+.dist-badge {
+    font-size: 11px;
+    background: rgba(29,185,84,0.08);
+    color: #15923e;
+    border-radius: 20px;
+    padding: 3px 10px;
+    font-weight: 600;
+}
+.ver-todos {
+    display: block;
+    text-align: center;
+    margin-top: 28px;
+    color: #1DB954;
+    font-size: 15px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: opacity 0.2s;
+}
+.ver-todos:hover { opacity: 0.75; }
 
-/* TREINADORES */
-.treinadores-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 24px; }
-.treinador-card { background: #fff; border-radius: 16px; border: 1px solid #ebebeb; padding: 20px 16px; text-align: center; }
-.treinador-avatar { width: 58px; height: 58px; border-radius: 50%; border: 2.5px solid #1DB954; overflow: hidden; margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; background: rgba(29,185,84,0.08); }
+/* ========== TREINADORES ========== */
+.treinadores-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    max-width: 540px;
+    margin: 0 auto;
+}
+.treinador-card {
+    background: #f9faf9;
+    border-radius: 18px;
+    border: 1px solid #eee;
+    padding: 28px 18px;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+.treinador-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 28px rgba(0,0,0,0.06);
+    border-color: rgba(29,185,84,0.25);
+}
+.treinador-avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    border: 2.5px solid #1DB954;
+    overflow: hidden;
+    margin: 0 auto 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(29,185,84,0.06);
+}
 .treinador-avatar img { width: 100%; height: 100%; object-fit: cover; }
 .treinador-avatar svg { width: 28px; height: 28px; fill: #1DB954; }
-.treinador-nome { font-size: 14px; font-weight: 700; color: #0d0d0d; }
-.treinador-cidade { font-size: 12px; color: #8a8a8a; margin-top: 2px; }
-.treinador-esp { font-size: 12px; color: #4a4a4a; margin-top: 3px; }
-.treinador-badge { display: inline-block; margin-top: 8px; font-size: 11px; background: rgba(29,185,84,0.1); color: #15923e; border-radius: 20px; padding: 3px 10px; font-weight: 600; }
+.treinador-nome { font-size: 15px; font-weight: 700; color: #1a1a1a; }
+.treinador-cidade { font-size: 13px; color: #999; margin-top: 3px; }
+.treinador-esp { font-size: 13px; color: #555; margin-top: 4px; }
+.treinador-badge {
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 11px;
+    background: rgba(29,185,84,0.08);
+    color: #15923e;
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-weight: 600;
+}
 
-/* CTA */
-.cta { background: #0d0d0d; padding: 56px 28px; text-align: center; }
-.cta-title { font-family: 'Bebas Neue', sans-serif; font-size: 36px; color: #fff; margin-bottom: 10px; letter-spacing: 1px; }
-.cta-sub { font-size: 15px; color: rgba(255,255,255,0.55); margin-bottom: 28px; font-weight: 300; }
-.btn-green { background: #1DB954; color: #fff; border: none; border-radius: 50px; padding: 14px 34px; font-size: 15px; font-weight: 700; cursor: pointer; font-family: 'Outfit', sans-serif; text-decoration: none; display: inline-block; }
+/* ========== CTA ========== */
+.cta {
+    background: linear-gradient(160deg, #111 0%, #0a0a0a 100%);
+    padding: 72px 28px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+.cta::before {
+    content: '';
+    position: absolute;
+    top: -60px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 400px;
+    height: 200px;
+    background: radial-gradient(ellipse, rgba(29,185,84,0.12) 0%, transparent 70%);
+    pointer-events: none;
+}
+.cta-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 42px;
+    color: #fff;
+    margin-bottom: 12px;
+    letter-spacing: 1px;
+    position: relative;
+    z-index: 1;
+}
+.cta-sub {
+    font-size: 16px;
+    color: rgba(255,255,255,0.5);
+    margin-bottom: 32px;
+    font-weight: 300;
+    position: relative;
+    z-index: 1;
+}
+.btn-green {
+    background: #1DB954;
+    color: #fff;
+    border: none;
+    border-radius: 50px;
+    padding: 16px 38px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: 'Outfit', sans-serif;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.25s;
+    box-shadow: 0 4px 20px rgba(29,185,84,0.3);
+    position: relative;
+    z-index: 1;
+}
+.btn-green:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(29,185,84,0.4);
+}
 
-/* FOOTER */
-.footer { padding: 24px 28px; border-top: 1px solid #ebebeb; display: flex; align-items: center; justify-content: space-between; background: #fff; flex-wrap: wrap; gap: 12px; }
-.footer-brand { font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 2px; color: #0d0d0d; }
-.footer-links { display: flex; gap: 20px; }
-.footer-link { font-size: 13px; color: #8a8a8a; text-decoration: none; }
+/* ========== FOOTER ========== */
+.footer {
+    padding: 28px 28px;
+    border-top: 1px solid #eee;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #fff;
+    flex-wrap: wrap;
+    gap: 12px;
+    max-width: 100%;
+}
+.footer-brand {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    letter-spacing: 2.5px;
+    color: #1a1a1a;
+}
+.footer-links { display: flex; gap: 24px; }
+.footer-link {
+    font-size: 14px;
+    color: #999;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+.footer-link:hover { color: #1DB954; }
 
-/* MOBILE */
+/* ========== MOBILE ========== */
 @media (max-width: 640px) {
-    .hero { padding: 40px 24px 52px; }
-    .hero-h1, .hero-h1-destaque { font-size: 38px; }
-    .features { grid-template-columns: 1fr; }
-    .treinadores-grid { grid-template-columns: 1fr; }
-    .section, .section-alt { padding: 40px 20px; }
-    .cta { padding: 44px 20px; }
+    .hero { padding: 40px 20px 64px; }
+    .hero-nav { margin-bottom: 40px; }
+    .hero-nav-links { display: none; }
+    .hero-h1, .hero-h1-destaque { font-size: 44px; }
+    .hero-sub { font-size: 15px; margin: 16px auto 32px; }
+
+    .stats { margin: -24px 16px 0; }
+    .stat-num { font-size: 32px; }
+
+    .section, .section-alt { padding: 56px 20px; }
+    .section-title { font-size: 32px; }
+    .section-sub { font-size: 15px; }
+
+    .features { grid-template-columns: 1fr; max-width: 100%; }
+    .treinadores-grid { grid-template-columns: 1fr; max-width: 100%; }
+    .eventos-list { max-width: 100%; }
+
+    .cta { padding: 56px 20px; }
+    .cta-title { font-size: 34px; }
+
     .footer { flex-direction: column; align-items: flex-start; }
 }
 </style>
@@ -135,16 +608,29 @@ $totalTreinadores = $pdo->query("SELECT COUNT(*) FROM treinadores WHERE status =
 
 <!-- HERO -->
 <div class="hero">
-    <div class="hero-logo">
-        <img src="/images/logo_branca.webp" alt="Strively">
-        <span class="hero-logo-name">Strively</span>
-    </div>
-    <p class="hero-eyebrow">Plataforma para corredores</p>
-    <h1 class="hero-h1">Corra mais longe<br><span class="hero-h1-destaque">com quem entende</span></h1>
-    <p class="hero-sub">Conecte-se com treinadores, acompanhe sua evolução, descubra eventos perto de você e faça parte de uma comunidade de corredores.</p>
-    <div class="hero-btns">
-        <a href="/pages/cadastro.php" class="btn-white">Criar conta grátis</a>
-        <a href="/pages/eventos.php" class="btn-outline-white">Ver eventos</a>
+    <nav class="hero-nav">
+        <a href="/" class="hero-nav-brand">
+            <img src="/images/logo_branca.webp" alt="Strively">
+            <span>Strively</span>
+        </a>
+        <div class="hero-nav-links">
+            <a href="/pages/eventos.php" class="hero-nav-link">Eventos</a>
+            <a href="/pages/comunidade.php" class="hero-nav-link">Comunidade</a>
+            <a href="/pages/login.php" class="hero-nav-login">Entrar</a>
+        </div>
+    </nav>
+
+    <div class="hero-content">
+        <div class="hero-chip">
+            <div class="hero-chip-dot"></div>
+            <span>Plataforma para corredores</span>
+        </div>
+        <h1 class="hero-h1">Corra mais longe<span class="hero-h1-destaque">com quem entende</span></h1>
+        <p class="hero-sub">Conecte-se com treinadores, acompanhe sua evolução, descubra eventos perto de você e faça parte de uma comunidade de corredores.</p>
+        <div class="hero-btns">
+            <a href="/pages/cadastro.php" class="btn-white">Criar conta grátis</a>
+            <a href="/pages/eventos.php" class="btn-outline-white">Ver eventos</a>
+        </div>
     </div>
 </div>
 
@@ -165,10 +651,12 @@ $totalTreinadores = $pdo->query("SELECT COUNT(*) FROM treinadores WHERE status =
 </div>
 
 <!-- FEATURES -->
-<div class="section">
-    <p class="section-label">O que é o Strively</p>
-    <h2 class="section-title">Tudo que um corredor precisa</h2>
-    <p class="section-sub">Do treino ao evento, do treinador à comunidade — organize sua vida de corredor.</p>
+<div class="section" style="padding-top: 88px;">
+    <div class="section-header">
+        <span class="section-label">O que é o Strively</span>
+        <h2 class="section-title">Tudo que um corredor precisa</h2>
+        <p class="section-sub">Do treino ao evento, do treinador à comunidade — organize sua vida de corredor em um só lugar.</p>
+    </div>
     <div class="features">
         <div class="feat">
             <div class="feat-icon"><svg viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5C3.9 3 3 3.9 3 5v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg></div>
@@ -195,8 +683,10 @@ $totalTreinadores = $pdo->query("SELECT COUNT(*) FROM treinadores WHERE status =
 
 <!-- EVENTOS -->
 <div class="section-alt">
-    <p class="section-label">Próximas corridas</p>
-    <h2 class="section-title">Eventos perto de você</h2>
+    <div class="section-header">
+        <span class="section-label">Próximas corridas</span>
+        <h2 class="section-title">Eventos perto de você</h2>
+    </div>
     <div class="eventos-list">
         <?php
         $meses = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
@@ -229,9 +719,11 @@ $totalTreinadores = $pdo->query("SELECT COUNT(*) FROM treinadores WHERE status =
 
 <!-- TREINADORES -->
 <div class="section">
-    <p class="section-label">Treinadores</p>
-    <h2 class="section-title">Encontre seu treinador ideal</h2>
-    <p class="section-sub">Profissionais verificados prontos para montar sua planilha personalizada.</p>
+    <div class="section-header">
+        <span class="section-label">Treinadores</span>
+        <h2 class="section-title">Encontre seu treinador ideal</h2>
+        <p class="section-sub">Profissionais verificados prontos para montar sua planilha personalizada.</p>
+    </div>
     <div class="treinadores-grid">
         <?php foreach ($treinadoresHome as $tr): ?>
         <div class="treinador-card">
