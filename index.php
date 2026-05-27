@@ -245,17 +245,17 @@ else:
 
 <div class="lp">
     <div class="hero-lp">
-        <nav class="hero-nav-lp-custom" style="display:flex;align-items:center;justify-content:space-between;max-width:700px;margin:0 auto 56px;position:relative;z-index:2;">
+        <nav class="hero-nav-lp" style="display:flex;align-items:center;justify-content:space-between;max-width:700px;margin:0 auto 56px;position:relative;z-index:2;">
           <!-- Logo -->
           <a href="/" style="display:flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0;">
             <img src="/images/icon-192.png" style="width:38px;height:38px;border-radius:10px;object-fit:contain;">
             <span style="color:#fff;font-family:'Bebas Neue',sans-serif;font-size:21px;letter-spacing:3px;">STRIVELY</span>
           </a>
           <!-- Links -->
-          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center;">
-            <a href="/pages/eventos.php" style="color:rgba(255,255,255,0.85);text-decoration:none;font-size:14px;font-weight:500;padding:8px 16px;border-radius:50px;transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.12)'" onmouseout="this.style.background='transparent'">Eventos</a>
-            <a href="/pages/comunidade.php" style="color:rgba(255,255,255,0.85);text-decoration:none;font-size:14px;font-weight:500;padding:8px 16px;border-radius:50px;transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.12)'" onmouseout="this.style.background='transparent'">Comunidade</a>
-            <a href="/pages/login.php" style="background:rgba(255,255,255,0.15);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,0.25);color:#fff;text-decoration:none;font-size:14px;font-weight:600;padding:8px 20px;border-radius:50px;transition:all 0.25s;" onmouseover="this.style.background='#fff';this.style.color='#1DB954'" onmouseout="this.style.background='rgba(255,255,255,0.15)';this.style.color='#fff'">Entrar</a>
+          <div class="hero-nav-links" style="display:flex;align-items:center;gap:8px;">
+            <a href="/pages/eventos.php" class="hero-nav-link" style="color:rgba(255,255,255,0.85);text-decoration:none;font-size:14px;font-weight:500;padding:8px 16px;border-radius:50px;transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.12)'" onmouseout="this.style.background='transparent'">Eventos</a>
+            <a href="/pages/comunidade.php" class="hero-nav-link" style="color:rgba(255,255,255,0.85);text-decoration:none;font-size:14px;font-weight:500;padding:8px 16px;border-radius:50px;transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.12)'" onmouseout="this.style.background='transparent'">Comunidade</a>
+            <a href="/pages/login.php" class="hero-nav-login" style="background:rgba(255,255,255,0.15);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,0.25);color:#fff;text-decoration:none;font-size:14px;font-weight:600;padding:8px 20px;border-radius:50px;transition:all 0.25s;" onmouseover="this.style.background='#fff';this.style.color='#1DB954'" onmouseout="this.style.background='rgba(255,255,255,0.15)';this.style.color='#fff'">Entrar</a>
           </div>
         </nav>
         <div class="hero-lp-content">
@@ -425,7 +425,7 @@ else:
 .lp { font-family: 'Outfit', sans-serif; background: #fafafa; width: 100%; overflow-x: hidden; color: #1a1a1a; }
 .hero-lp { background: linear-gradient(160deg, #1DB954 0%, #17a34a 40%, #0f8a3e 100%); padding: 72px 32px 84px; text-align: center; position: relative; overflow: hidden; }
 .hero-lp::before { content: ''; position: absolute; top: -120px; right: -80px; width: 380px; height: 380px; background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%); border-radius: 50%; pointer-events: none; }
-.hero-nav-lp-custom { display: flex; align-items: center; justify-content: space-between; max-width: 680px; margin: 0 auto 56px; position: relative; z-index: 2; }
+.hero-nav-lp { display: flex; align-items: center; justify-content: space-between; max-width: 680px; margin: 0 auto 56px; position: relative; z-index: 2; }
 .hero-nav-brand img { width: 40px; height: 40px; object-fit: contain; border-radius: 10px; }
 .hero-nav-brand span { color: #fff; font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 3px; }
 .hero-nav-links { display: flex; gap: 8px; align-items: center; }
@@ -460,16 +460,26 @@ else:
 .lp-section-sub { font-size: 16px; color: #666; line-height: 1.7; font-weight: 300; }
 
 .lp-features { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; max-width: 640px; margin: 0 auto; }
-.lp-feat { background: #f9faf9; border-radius: 18px; padding: 28px 22px; border: 1px solid #eee; transition: all 0.3s ease; }
-.lp-feat:hover { transform: translateY(-4px); box-shadow: 0 12px 28px rgba(0,0,0,0.06); border-color: rgba(29,185,84,0.25); }
+.lp-feat { background: #f9faf9; border-radius: 18px; padding: 28px 22px; border: 1px solid #eee; transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.28s ease, border-color 0.28s ease; cursor: default; will-change: transform; }
+.lp-feat:hover { transform: translateY(-8px) scale(1.02); box-shadow: 0 16px 40px rgba(29,185,84,0.15); border-color: rgba(29,185,84,0.35); }
+.lp-feat:hover .lp-feat-icon { background: #1DB954; transition: background 0.25s ease; }
+.lp-feat:hover .lp-feat-icon svg { fill: #fff; transition: fill 0.25s ease; }
+.lp-feat:hover .lp-feat-title { color: #1DB954; transition: color 0.2s ease; }
+.lp-feat-touched { transform: translateY(-5px) scale(1.02) !important; box-shadow: 0 12px 30px rgba(29,185,84,0.15) !important; border-color: rgba(29,185,84,0.35) !important; }
+.lp-feat-touched .lp-feat-icon { background: #1DB954 !important; }
+.lp-feat-touched .lp-feat-icon svg { fill: #fff !important; }
+.lp-feat-touched .lp-feat-title { color: #1DB954 !important; }
+
 .lp-feat-icon { width: 48px; height: 48px; border-radius: 12px; background: rgba(29,185,84,0.1); display: flex; align-items: center; justify-content: center; margin-bottom: 16px; }
 .lp-feat-icon svg { width: 24px; height: 24px; fill: #1DB954; }
 .lp-feat-title { font-size: 16px; font-weight: 700; color: #0d0d0d; margin-bottom: 6px; }
 .lp-feat-desc { font-size: 14px; color: #777; line-height: 1.6; }
 
 .lp-treinadores-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; max-width: 540px; margin: 0 auto; }
-.lp-treinador-card { background: #f9faf9; border-radius: 18px; border: 1px solid #eee; padding: 28px 18px; text-align: center; transition: all 0.3s ease; }
-.lp-treinador-card:hover { transform: translateY(-4px); box-shadow: 0 12px 28px rgba(0,0,0,0.06); border-color: rgba(29,185,84,0.25); }
+.lp-treinador-card { background: #f9faf9; border-radius: 18px; border: 1px solid #eee; padding: 28px 18px; text-align: center; transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.28s ease, border-color 0.28s ease; will-change: transform; }
+.lp-treinador-card:hover { transform: translateY(-6px) scale(1.02); box-shadow: 0 14px 36px rgba(29,185,84,0.14); border-color: rgba(29,185,84,0.3); }
+.lp-treinador-touched { transform: translateY(-5px) scale(1.02) !important; box-shadow: 0 12px 30px rgba(29,185,84,0.15) !important; border-color: rgba(29,185,84,0.35) !important; }
+.lp-treinador-touched .treinador-nome { color: #1DB954; }
 .lp-treinador-badge { display: inline-block; margin-top: 10px; font-size: 11px; background: rgba(29,185,84,0.08); color: #15923e; border-radius: 20px; padding: 4px 12px; font-weight: 600; }
 
 .lp-cta { background: linear-gradient(160deg, #111 0%, #0a0a0a 100%); padding: 72px 28px; text-align: center; position: relative; overflow: hidden; }
@@ -530,16 +540,18 @@ else:
   .nc-card { width: 260px; height: 440px; }
   .nc-left { transform: translateX(-150px) scale(0.85); }
   .nc-right { transform: translateX(150px) scale(0.85); }
-  .nc-nav { width: 40px; height: 40px; }
+  .nc-nav { display: none !important; }
   .nc-prev { left: 5px; }
   .nc-next { right: 5px; }
+  .nc-btn-v { display: none !important; }
   .home-widgets { grid-template-columns: 1fr; padding: 24px 20px 0; }
   .home-widget { padding: 20px; }
 }
 
 @media(max-width: 640px) {
     .hero-lp { padding-top: 40px; }
-    .hero-nav-lp-custom { margin-bottom: 32px; gap: 10px; }
+    .hero-nav-lp { justify-content: space-between !important; padding: 0 4px !important; margin-bottom: 32px !important; }
+    .hero-nav-links .hero-nav-link { display: none !important; }
     .hero-nav-brand span { font-size: 16px; letter-spacing: 2px; }
     .hero-nav-link { padding: 6px 10px; font-size: 12px; }
     .hero-nav-login { padding: 6px 14px; font-size: 12px; }
@@ -575,6 +587,20 @@ function renderNcCarousel() {
   });
 }
 
+let autoPlayTimer;
+let pauseTimer;
+
+function startAutoPlay() {
+  if (ncTotal > 1) {
+    autoPlayTimer = setInterval(() => ncMover(1), 4000);
+  }
+}
+function pauseAutoPlay() {
+  clearInterval(autoPlayTimer);
+  clearTimeout(pauseTimer);
+  pauseTimer = setTimeout(startAutoPlay, 6000);
+}
+
 function ncMover(dir) {
   if (ncTotal > 1) {
     ncIndex = (ncIndex + dir + ncTotal) % ncTotal;
@@ -599,15 +625,46 @@ function ncIrPara(i) {
 document.addEventListener('DOMContentLoaded', () => {
   if (ncTotal > 0) {
     renderNcCarousel();
+    startAutoPlay();
+    
+    // Swipe logic improved
     const tracks = document.querySelectorAll('[id="ncTrack"]');
     tracks.forEach(track => {
-        let startX = 0;
-        track.addEventListener('touchstart', e => { startX = e.changedTouches[0].screenX; }, {passive: true});
-        track.addEventListener('touchend', e => {
-          const endX = e.changedTouches[0].screenX;
-          if (endX < startX - 40) ncMover(1);
-          if (endX > startX + 40) ncMover(-1);
-        }, {passive: true});
+      let touchStartX = 0, touchStartY = 0;
+      track.addEventListener('touchstart', e => {
+        touchStartX = e.changedTouches[0].screenX;
+        touchStartY = e.changedTouches[0].screenY;
+        pauseAutoPlay();
+      }, { passive: true });
+      
+      track.addEventListener('touchend', e => {
+        const dx = e.changedTouches[0].screenX - touchStartX;
+        const dy = Math.abs(e.changedTouches[0].screenY - touchStartY);
+        if (dy < 60) {
+          if (dx < -40) ncMover(1);
+          else if (dx > 40) ncMover(-1);
+        }
+      }, { passive: true });
+    });
+
+    // Touch animations for feature cards
+    document.querySelectorAll('.lp-feat').forEach(card => {
+      card.addEventListener('touchstart', () => {
+        card.classList.add('lp-feat-touched');
+      }, { passive: true });
+      card.addEventListener('touchend', () => {
+        setTimeout(() => card.classList.remove('lp-feat-touched'), 400);
+      }, { passive: true });
+    });
+
+    // Touch animations for trainer cards
+    document.querySelectorAll('.lp-treinador-card').forEach(card => {
+      card.addEventListener('touchstart', () => {
+        card.classList.add('lp-treinador-touched');
+      }, { passive: true });
+      card.addEventListener('touchend', () => {
+        setTimeout(() => card.classList.remove('lp-treinador-touched'), 400);
+      }, { passive: true });
     });
   }
 });
