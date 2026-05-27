@@ -584,9 +584,38 @@ else:
   text-align: center;
   gap: 4px;
   min-height: 0;       /* permite que flex encolha */
-  overflow: hidden;    /* corta conteúdo que passar da altura disponível */
+  overflow: visible;   /* <- era hidden, trocar para visible */
 }
-.nc-base h4 { font-family: 'Outfit', sans-serif; font-size: 1.15rem; font-weight: 700; color: #111; margin: 0 0 4px 0; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* Título do evento no card */
+.nc-base h4 {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #111;
+  margin: 0 0 4px 0;
+  line-height: 1.35;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: unset;
+  display: block;
+  word-break: break-word;
+  max-width: 100%;
+}
+
+/* Card central mostra título completo */
+.nc-center .nc-base h4 {
+  font-size: 1.05rem;
+  white-space: normal;
+}
+
+/* Cards laterais podem truncar pois ficam desfocados */
+.nc-left .nc-base h4,
+.nc-right .nc-base h4 {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
 .nc-base .nc-loc { font-size: 0.88rem; color: #777; margin-bottom: 2px; }
 .nc-base .nc-dat { font-size: 0.88rem; color: #1DB954; font-weight: 600; margin-bottom: 12px; }
 .nc-btn-v {
@@ -680,6 +709,13 @@ else:
   .nc-card      { width: 200px; height: 320px; }
   .nc-left      { transform: translateX(-95px) scale(0.78); }
   .nc-right     { transform: translateX(95px)  scale(0.78); }
+}
+
+@media (min-width: 601px) {
+  .nc-card {
+    width: 300px;
+    height: 470px;   /* era 460px, +10px para acomodar títulos de 2 linhas */
+  }
 }
 </style>
 
