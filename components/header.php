@@ -338,10 +338,15 @@ if (isset($_SESSION['id']) && isset($pdo)) {
 <!-- Scripts: dropdown desktop + bottom sheet mobile + PWA -->
 <style>
 @media (max-width: 768px) {
+    header nav {
+        display: flex !important;
+        align-items: center !important;
+    }
     .btn-voltar-mobile {
         display: inline-flex !important;
-        align-items: center;
+        align-items: center !important;
         visibility: visible !important;
+        opacity: 1 !important;
     }
 }
 @media (min-width: 769px) {

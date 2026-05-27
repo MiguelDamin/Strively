@@ -20,7 +20,7 @@ if (isset($_SESSION['id'])):
     }
 
     // Eventos para o carrossel (antigo)
-    $stmt = $pdo->prepare("SELECT id, nome, cidade, data_evento, banner FROM eventos WHERE status = 'aprovado' AND data_evento >= CURRENT_DATE ORDER BY data_evento ASC LIMIT 10");
+    $stmt = $pdo->prepare("SELECT id, nome, cidade, data_evento, banner FROM eventos WHERE status = 'ativo' AND data_evento >= CURRENT_DATE ORDER BY data_evento ASC LIMIT 10");
     $stmt->execute();
     $eventos_carrossel = $stmt->fetchAll();
     
@@ -30,77 +30,92 @@ if (isset($_SESSION['id'])):
 
 <style>
 /* =====================================================
-   CARROSSEL ESTILO NETFLIX (HOME ANTIGA)
+   CARROSSEL PREMIUM ESTILO NETFLIX
    ===================================================== */
-.netflix-section {
-  padding: 60px 0;
-  background: linear-gradient(180deg, #f8f9fa 0%, #fff 100%);
-  overflow: hidden;
-}
-.nc-header { text-align: center; margin-bottom: 30px; }
-.nc-header h2 { font-family: 'Bebas Neue', sans-serif; font-size: 2.4rem; letter-spacing: 1.5px; color: #111; margin: 0; }
-.nc-header p { color: #777; font-size: 0.95rem; }
-.nc-container { position: relative; max-width: 900px; margin: 0 auto; display: flex; align-items: center; justify-content: center; height: 480px; }
-.nc-track { position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; perspective: 1000px; }
+.home-logado { padding-bottom: 80px; background: #fff; }
+
+.section-spacer { height: 80px; } /* Respiro visual entre Hero e Carrossel */
+
+.nc-header { text-align: center; margin-bottom: 40px; padding: 0 20px; }
+.nc-header h2 { font-family: 'Bebas Neue', sans-serif; font-size: 2.8rem; letter-spacing: 1.5px; color: #111; margin: 0; }
+.nc-header p { color: #888; font-size: 1rem; font-weight: 300; margin-top: 4px; }
+
+.nc-container { position: relative; max-width: 1000px; margin: 0 auto; display: flex; align-items: center; justify-content: center; height: 520px; overflow: visible; }
+.nc-track { position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; perspective: 1200px; }
+
 .nc-nav {
-  position: absolute; top: 50%; transform: translateY(-50%); width: 44px; height: 44px; border-radius: 50%; border: none; background: #fff;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 20; transition: all 0.2s;
+  position: absolute; top: 50%; transform: translateY(-50%); width: 50px; height: 50px; border-radius: 50%; border: none; background: #fff;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 30; transition: all 0.3s;
 }
-.nc-nav:hover { background: #1DB954; }
+.nc-nav:hover { background: #1DB954; transform: translateY(-50%) scale(1.1); }
 .nc-nav:hover svg { fill: #fff; }
-.nc-nav svg { width: 22px; height: 22px; fill: #333; transition: fill 0.2s; }
-.nc-prev { left: 10px; }
-.nc-next { right: 10px; }
+.nc-nav svg { width: 24px; height: 24px; fill: #333; transition: fill 0.2s; }
+.nc-prev { left: -20px; }
+.nc-next { right: -20px; }
+
+/* CARD INDIVIDUAL */
 .nc-card {
-  position: absolute; width: 280px; height: 420px; border-radius: 18px; overflow: hidden; background: #fff; display: flex; flex-direction: column;
-  transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.5s cubic-bezier(0.25, 1, 0.5, 1), filter 0.5s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.5s cubic-bezier(0.25, 1, 0.5, 1);
-  cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.08); opacity: 0; pointer-events: none; transform: scale(0.7); z-index: 1;
+  position: absolute; width: 300px; height: 460px; border-radius: 20px; overflow: hidden; background: #fff; display: flex; flex-direction: column;
+  transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.05); opacity: 0; pointer-events: none; transform: scale(0.7); z-index: 1;
 }
-.nc-center { transform: translateX(0) scale(1); opacity: 1; filter: none; z-index: 10; box-shadow: 0 20px 50px rgba(0,0,0,0.2); pointer-events: auto; border: 2.5px solid #1DB954; }
-.nc-left { transform: translateX(-190px) scale(0.85); opacity: 0.55; filter: blur(2.5px); z-index: 5; pointer-events: auto; }
-.nc-right { transform: translateX(190px) scale(0.85); opacity: 0.55; filter: blur(2.5px); z-index: 5; pointer-events: auto; }
-.nc-hidden { transform: translateX(0) scale(0.7); opacity: 0; filter: blur(4px); z-index: 1; pointer-events: none; }
-.nc-capa { flex: 0 0 65%; background-color: #f97316; background-size: cover; background-position: center; position: relative; display: flex; align-items: flex-end; padding: 24px; }
-.nc-capa::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 80%); }
-.nc-nome-destaque { position: relative; z-index: 2; color: #fff; font-family: 'Bebas Neue', sans-serif; font-size: 2rem; line-height: 1.1; letter-spacing: 1px; margin: 0; text-shadow: 0 2px 8px rgba(0,0,0,0.5); }
-.nc-info { flex: 1; background: #fff; padding: 16px 20px; display: flex; flex-direction: column; }
-.nc-info h4 { font-family: 'Outfit', sans-serif; font-size: 1rem; font-weight: 700; color: #111; margin: 0 0 4px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.nc-local, .nc-data { margin: 0 0 2px 0; font-size: 0.8rem; color: #666; }
-.nc-btn {
-  margin-top: auto; align-self: flex-start; padding: 8px 20px; border-radius: 100px; border: 1.5px solid #1DB954; color: #1DB954; font-weight: 700; font-size: 0.8rem;
+
+/* CARD CENTRAL (ATIVO) */
+.nc-center { transform: translateX(0) scale(1.1) !important; opacity: 1 !important; filter: none !important; z-index: 20 !important; box-shadow: 0 25px 60px rgba(0,0,0,0.2) !important; pointer-events: auto; }
+
+/* CARDS LATERAIS */
+.nc-left { transform: translateX(-240px) scale(0.85); opacity: 0.6; filter: blur(4px); z-index: 10; pointer-events: auto; }
+.nc-right { transform: translateX(240px) scale(0.85); opacity: 0.6; filter: blur(4px); z-index: 10; pointer-events: auto; }
+.nc-hidden { transform: translateX(0) scale(0.6); opacity: 0; filter: blur(8px); z-index: 1; pointer-events: none; }
+
+/* ESTRUTURA DO CARD (65% Topo / 35% Base) */
+.nc-top { flex: 0 0 65%; background-color: #f97316; background-size: cover; background-position: center; position: relative; display: flex; align-items: center; justify-content: center; padding: 25px; text-align: center; }
+.nc-top::after { content: ''; position: absolute; inset: 0; background: rgba(0,0,0,0.3); }
+.nc-event-title-big { position: relative; z-index: 2; color: #fff; font-family: 'Bebas Neue', sans-serif; font-size: 2.8rem; line-height: 1; letter-spacing: 1px; margin: 0; text-shadow: 0 4px 12px rgba(0,0,0,0.4); text-transform: uppercase; }
+
+.nc-base { flex: 1; background: #fff; padding: 20px; display: flex; flex-direction: column; align-items: center; text-align: center; }
+.nc-base h4 { font-family: 'Outfit', sans-serif; font-size: 1.1rem; font-weight: 700; color: #111; margin: 0 0 4px 0; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.nc-base .nc-loc { font-size: 0.85rem; color: #777; margin-bottom: 2px; }
+.nc-base .nc-dat { font-size: 0.85rem; color: var(--green); font-weight: 600; margin-bottom: 12px; }
+
+.nc-btn-v {
+  margin-top: auto; padding: 10px 24px; border-radius: 100px; border: 2px solid #1DB954; color: #1DB954; font-weight: 700; font-size: 0.85rem;
   text-transform: uppercase; letter-spacing: 0.5px; text-decoration: none; transition: all 0.2s;
 }
-.nc-center .nc-btn { background: #1DB954; color: #fff; }
-.nc-btn:hover { background: #199e46 !important; color: #fff; border-color: #199e46; }
+.nc-center .nc-btn-v { background: #1DB954; color: #fff; box-shadow: 0 4px 12px rgba(29,185,84,0.2); }
+.nc-btn-v:hover { background: #199e46 !important; color: #fff !important; border-color: #199e46 !important; }
 
 @media(max-width: 768px) {
-  .nc-left { transform: translateX(-120px) scale(0.85); opacity: 0.3; }
-  .nc-right { transform: translateX(120px) scale(0.85); opacity: 0.3; }
-  .nc-nav { display: none; }
+  .nc-container { height: 420px; }
+  .nc-card { width: 240px; height: 380px; }
+  .nc-left { transform: translateX(-140px) scale(0.85); }
+  .nc-right { transform: translateX(140px) scale(0.85); }
+  .nc-nav { width: 40px; height: 40px; }
+  .nc-prev { left: 10px; }
+  .nc-next { right: 10px; }
 }
-.nc-track { touch-action: pan-y; }
 
 /* HERO OLD */
-.hero-old { padding: 80px 20px; text-align: center; background: #fff; }
-.hero-old h1 { font-family: 'Bebas Neue', sans-serif; font-size: 3.5rem; color: #111; margin-bottom: 20px; line-height: 1; }
+.hero-old { padding: 70px 20px 40px; text-align: center; background: #fff; }
+.hero-old h1 { font-family: 'Bebas Neue', sans-serif; font-size: 3.8rem; color: #111; margin-bottom: 20px; line-height: 0.95; letter-spacing: 1px; }
 .hero-old h1 span { color: #1DB954; }
-.hero-old p { color: #666; font-size: 1.1rem; max-width: 600px; margin: 0 auto 30px; line-height: 1.6; }
-.hero-buttons { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; }
-.btn-primary { background: #1DB954; color: #fff; padding: 12px 28px; border-radius: 50px; text-decoration: none; font-weight: 700; transition: all 0.2s; }
-.btn-secondary { background: #f0f0f0; color: #333; padding: 12px 28px; border-radius: 50px; text-decoration: none; font-weight: 700; transition: all 0.2s; }
-.btn-primary:hover { background: #199e46; transform: translateY(-2px); }
-.btn-secondary:hover { background: #e5e5e5; transform: translateY(-2px); }
+.hero-old p { color: #666; font-size: 1.15rem; max-width: 650px; margin: 0 auto 35px; line-height: 1.6; font-weight: 300; }
+.hero-buttons { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+.btn-p { background: #1DB954; color: #fff; padding: 14px 32px; border-radius: 50px; text-decoration: none; font-weight: 700; transition: all 0.2s; box-shadow: 0 4px 15px rgba(29,185,84,0.25); }
+.btn-s { background: #f5f5f5; color: #333; padding: 14px 32px; border-radius: 50px; text-decoration: none; font-weight: 700; transition: all 0.2s; }
+.btn-p:hover { background: #199e46; transform: translateY(-2px); }
+.btn-s:hover { background: #ececec; transform: translateY(-2px); }
 
 /* SOBRE OLD */
-.sobre { padding: 80px 20px; background: #fff; text-align: center; }
-.sobre h2 { font-family: 'Bebas Neue', sans-serif; font-size: 2.8rem; margin-bottom: 10px; }
-.sobre .subtitulo { color: #888; margin-bottom: 50px; }
-.sobre-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; max-width: 1000px; margin: 0 auto; }
-.sobre-card { padding: 40px 30px; border-radius: 20px; background: #f9f9f9; border: 1px solid #eee; transition: all 0.3s; }
-.sobre-card:hover { transform: translateY(-10px); box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
-.sobre-card .icone { font-size: 2.5rem; margin-bottom: 20px; display: block; }
-.sobre-card h3 { font-family: 'Outfit', sans-serif; font-size: 1.4rem; margin-bottom: 15px; color: #111; }
-.sobre-card p { color: #666; line-height: 1.6; font-size: 0.95rem; }
+.sobre { padding: 80px 20px; background: #fafafa; text-align: center; border-top: 1px solid #eee; }
+.sobre h2 { font-family: 'Bebas Neue', sans-serif; font-size: 3rem; margin-bottom: 10px; color: #111; }
+.sobre .subtitulo { color: #999; margin-bottom: 60px; font-weight: 300; }
+.sobre-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; max-width: 1100px; margin: 0 auto; }
+.sobre-card { padding: 50px 35px; border-radius: 24px; background: #fff; border: 1px solid #eee; transition: all 0.3s; box-shadow: 0 4px 20px rgba(0,0,0,0.02); }
+.sobre-card:hover { transform: translateY(-8px); box-shadow: 0 15px 35px rgba(0,0,0,0.06); }
+.sobre-card .icone { font-size: 3rem; margin-bottom: 25px; display: block; }
+.sobre-card h3 { font-family: 'Outfit', sans-serif; font-size: 1.5rem; margin-bottom: 15px; color: #111; font-weight: 700; }
+.sobre-card p { color: #777; line-height: 1.7; font-size: 1rem; }
 </style>
 
 <div class="home-logado">
@@ -111,24 +126,26 @@ if (isset($_SESSION['id'])):
     <p>Conecte-se com treinadores, descubra eventos de corrida perto de você e compartilhe equipamentos com a comunidade.</p>
     <div class="hero-buttons">
       <?php if (isset($me) && $me['perfil'] === 'treinador'): ?>
-        <a href="/pages/eventos.php" class="btn-secondary">Ver eventos</a>
-        <a href="/pages/alunos.php" class="btn-primary">Ver alunos</a>
+        <a href="/pages/eventos.php" class="btn-s">Ver eventos</a>
+        <a href="/pages/alunos.php" class="btn-p">Ver alunos</a>
       <?php elseif (isset($me) && !empty($me['treinador_id']) && $me['status_vinculo'] === 'aceito'): ?>
-        <a href="/pages/eventos.php" class="btn-secondary">Ver eventos</a>
-        <a href="/pages/treinos.php" class="btn-primary">Ver treinos</a>
+        <a href="/pages/eventos.php" class="btn-s">Ver eventos</a>
+        <a href="/pages/treinos.php" class="btn-p">Ver treinos</a>
       <?php else: ?>
-        <a href="/pages/eventos.php" class="btn-secondary">Ver eventos</a>
-        <a href="/pages/buscar-treinador.php" class="btn-primary">Procurar treinador</a>
+        <a href="/pages/eventos.php" class="btn-s">Ver eventos</a>
+        <a href="/pages/buscar-treinador.php" class="btn-p">Procurar treinador</a>
       <?php endif; ?>
     </div>
   </section>
 
-  <!-- CARROSSEL EVENTOS -->
+  <div class="section-spacer"></div>
+
+  <!-- CARROSSEL EVENTOS (PREMIUM NETFLIX) -->
   <?php if (!empty($eventos_carrossel)): ?>
   <section class="netflix-section">
     <div class="nc-header">
-      <h2>Próximas Corridas</h2>
-      <p>Eventos em destaque na plataforma</p>
+      <h2>Eventos em destaque</h2>
+      <p>Descubra corridas que estão acontecendo perto de você</p>
     </div>
     <div class="nc-container">
       <?php if (count($eventos_carrossel) > 1): ?>
@@ -143,14 +160,14 @@ if (isset($_SESSION['id'])):
             $dt = new DateTime($ev['data_evento']);
           ?>
           <div class="nc-card" data-index="<?= $i ?>" onclick="ncIrPara(<?= $i ?>)">
-            <div class="nc-capa" <?= $capa ? "style=\"background-image:url('$capa')\"" : "" ?>>
-              <h3 class="nc-nome-destaque"><?= htmlspecialchars($ev['nome']) ?></h3>
+            <div class="nc-top" <?= $capa ? "style=\"background-image:url('$capa')\"" : "" ?>>
+              <h3 class="nc-event-title-big"><?= htmlspecialchars($ev['nome']) ?></h3>
             </div>
-            <div class="nc-info">
+            <div class="nc-base">
               <h4><?= htmlspecialchars($ev['nome']) ?></h4>
-              <p class="nc-local">📍 <?= htmlspecialchars($ev['cidade']) ?></p>
-              <p class="nc-data">📅 <?= $dt->format('d/m/Y') ?></p>
-              <a href="/pages/eventos.php" class="nc-btn">Ver detalhes</a>
+              <p class="nc-loc">📍 <?= htmlspecialchars($ev['cidade']) ?></p>
+              <p class="nc-dat">📅 <?= $dt->format('d/m/Y') ?></p>
+              <a href="/pages/eventos.php" class="nc-btn-v">Ver detalhes</a>
             </div>
           </div>
         <?php endforeach; ?>
@@ -163,6 +180,8 @@ if (isset($_SESSION['id'])):
     </div>
   </section>
   <?php endif; ?>
+
+  <div class="section-spacer"></div>
 
   <!-- SEÇÃO SOBRE ANTIGA -->
   <section class="sobre">
@@ -190,7 +209,7 @@ if (isset($_SESSION['id'])):
 </div>
 
 <script>
-// Lógica do Carrossel Netflix
+// Lógica do Carrossel Netflix Premium
 let ncIndex = 0;
 const ncCards = document.querySelectorAll('.nc-card');
 const ncTotal = ncCards.length;
@@ -207,6 +226,7 @@ function renderNcCarousel() {
       else card.classList.add('nc-hidden');
     } else if (ncTotal === 2) {
       if (i !== ncIndex) card.classList.add('nc-right');
+      else card.classList.add('nc-center');
     }
   });
 }
@@ -227,17 +247,19 @@ function ncIrPara(i) {
   }
 }
 
-if (ncTotal > 0) {
-  renderNcCarousel();
-  const track = document.getElementById('ncTrack');
-  let startX = 0;
-  track.addEventListener('touchstart', e => { startX = e.changedTouches[0].screenX; }, {passive: true});
-  track.addEventListener('touchend', e => {
-    const endX = e.changedTouches[0].screenX;
-    if (endX < startX - 40) ncMover(1);
-    if (endX > startX + 40) ncMover(-1);
-  }, {passive: true});
-}
+document.addEventListener('DOMContentLoaded', () => {
+  if (ncTotal > 0) {
+    renderNcCarousel();
+    const track = document.getElementById('ncTrack');
+    let startX = 0;
+    track.addEventListener('touchstart', e => { startX = e.changedTouches[0].screenX; }, {passive: true});
+    track.addEventListener('touchend', e => {
+      const endX = e.changedTouches[0].screenX;
+      if (endX < startX - 40) ncMover(1);
+      if (endX > startX + 40) ncMover(-1);
+    }, {passive: true});
+  }
+});
 </script>
 
 <?php 
@@ -254,7 +276,7 @@ else:
     $totalTreinadores = $pdo->query("SELECT COUNT(*) FROM treinadores WHERE status = 'aprovado'")->fetchColumn();
 
     // Próximos 3 eventos
-    $stmtEventosLP = $pdo->prepare("SELECT nome, cidade, data_evento, distancias FROM eventos WHERE status = 'aprovado' AND data_evento >= CURRENT_DATE ORDER BY data_evento ASC LIMIT 3");
+    $stmtEventosLP = $pdo->prepare("SELECT nome, cidade, data_evento, distancias FROM eventos WHERE status = 'ativo' AND data_evento >= CURRENT_DATE ORDER BY data_evento ASC LIMIT 3");
     $stmtEventosLP->execute();
     $eventosHome = $stmtEventosLP->fetchAll();
 
