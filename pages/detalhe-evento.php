@@ -110,14 +110,23 @@ include '../components/header.php';
       <?php endif; ?>
 
       <?php if (!empty($evento['autor_nome'])): ?>
-      <div style="display:flex; align-items:center; gap:8px; margin-top:-4px; margin-bottom:12px; color:var(--text-muted); font-size:0.95rem;">
-        <?php if (!empty($evento['autor_foto'])): ?>
-          <img src="<?= htmlspecialchars($evento['autor_foto']) ?>" alt="Foto" style="width:26px;height:26px;border-radius:50%;object-fit:cover;">
-        <?php else: ?>
-          <span>👤</span>
-        <?php endif; ?>
-        <span>Criado por <strong><?= htmlspecialchars($evento['autor_nome']) ?></strong></span>
-      </div>
+        <?php
+          $autorDetId = (int)$evento['usuario_id'];
+          $linkAutorDet = (isset($_SESSION['id']) && $_SESSION['id'] === $autorDetId)
+            ? '/pages/perfil.php'
+            : '/pages/perfil-publico.php?id=' . $autorDetId;
+        ?>
+        <a href="<?= $linkAutorDet ?>" 
+           style="display:flex;align-items:center;gap:8px;margin-top:-4px;margin-bottom:12px; color:var(--text-muted); font-size:0.95rem;text-decoration:none;transition:color 0.2s;width:fit-content;"
+           onmouseover="this.style.color='var(--green,#1DB954)'"
+           onmouseout="this.style.color='var(--text-muted)'">
+          <?php if (!empty($evento['autor_foto'])): ?>
+            <img src="<?= htmlspecialchars($evento['autor_foto']) ?>" alt="Foto" style="width:26px;height:26px;border-radius:50%;object-fit:cover;">
+          <?php else: ?>
+            <span>👤</span>
+          <?php endif; ?>
+          <span>Criado por <strong><?= htmlspecialchars($evento['autor_nome']) ?></strong></span>
+        </a>
       <?php endif; ?>
 
       <div class="evento-meta">

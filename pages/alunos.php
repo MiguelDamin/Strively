@@ -347,13 +347,23 @@ include '../components/header.php';
     <?php foreach ($alunos as $aluno): ?>
       <div class="aluno-card">
 
-        <?php if (!empty($aluno['foto'])): ?>
-          <img src="<?= htmlspecialchars($aluno['foto']) ?>" class="aluno-avatar" alt="Foto">
-        <?php else: ?>
-          <div class="aluno-avatar-padrao">
-            <svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
-          </div>
-        <?php endif; ?>
+        <!-- foto do aluno — envolver em link -->
+        <?php $alunoLink = '/pages/perfil-publico.php?id=' . (int)$aluno['id']; ?>
+        <a href="<?= $alunoLink ?>" 
+           title="Ver perfil de <?= htmlspecialchars($aluno['nome']) ?>"
+           style="flex-shrink:0;display:block;">
+          <?php if (!empty($aluno['foto'])): ?>
+            <img src="<?= htmlspecialchars($aluno['foto']) ?>" 
+                 class="aluno-avatar" 
+                 style="cursor:pointer;transition:transform 0.2s,opacity 0.2s;"
+                 onmouseover="this.style.opacity='0.8';this.style.transform='scale(1.05)'"
+                 onmouseout="this.style.opacity='1';this.style.transform='scale(1)'">
+          <?php else: ?>
+            <div class="aluno-avatar-padrao" style="cursor:pointer;">
+              <svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+            </div>
+          <?php endif; ?>
+        </a>
 
         <div class="aluno-info">
           <div class="aluno-nome"><?= htmlspecialchars($aluno['nome']) ?></div>

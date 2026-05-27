@@ -187,13 +187,23 @@ include '../components/header.php';
       Meus alunos
     </a>
 
-    <?php if (!empty($aluno['foto'])): ?>
-      <img src="<?= htmlspecialchars($aluno['foto']) ?>" alt="Foto" class="aluno-foto">
-    <?php else: ?>
-      <div class="aluno-foto-padrao">
-        <svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
-      </div>
-    <?php endif; ?>
+    <?php
+      $alunoProfileLink = '/pages/perfil-publico.php?id=' . (int)$aluno['id'];
+    ?>
+    <a href="<?= $alunoProfileLink ?>" 
+       style="display:contents;text-decoration:none;"
+       title="Ver perfil de <?= htmlspecialchars($aluno['nome']) ?>">
+      <?php if (!empty($aluno['foto'])): ?>
+        <img src="<?= htmlspecialchars($aluno['foto']) ?>" alt="Foto" class="aluno-foto" 
+             style="cursor:pointer;transition:opacity 0.2s;"
+             onmouseover="this.style.opacity='0.8'"
+             onmouseout="this.style.opacity='1'">
+      <?php else: ?>
+        <div class="aluno-foto-padrao" style="cursor:pointer;">
+          <svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+        </div>
+      <?php endif; ?>
+    </a>
 
     <div class="aluno-info">
       <h1><?= htmlspecialchars($aluno['nome']) ?></h1>

@@ -204,14 +204,26 @@ include '../components/header.php';
 
               <div class="card-footer">
                 <?php if (!empty($evento['autor_nome'])): ?>
-                <div class="card-autor">
-                  <?php if (!empty($evento['autor_foto'])): ?>
-                    <img src="<?= htmlspecialchars($evento['autor_foto']) ?>" alt="autor">
-                  <?php else: ?>
-                    <span style="font-size:16px;">👤</span>
-                  <?php endif; ?>
-                  <span><?= htmlspecialchars(explode(' ', $evento['autor_nome'])[0]) ?></span>
-                </div>
+                  <?php
+                    $autorEventoId = (int)$evento['usuario_id'];
+                    $linkAutorEvento = (isset($_SESSION['id']) && $_SESSION['id'] === $autorEventoId)
+                      ? '/pages/perfil.php'
+                      : '/pages/perfil-publico.php?id=' . $autorEventoId;
+                  ?>
+                  <a href="<?= $linkAutorEvento ?>" 
+                     class="card-autor" 
+                     style="text-decoration:none;color:inherit;transition:opacity 0.2s;" 
+                     onclick="event.stopPropagation()"
+                     onmouseover="this.style.opacity='0.75'"
+                     onmouseout="this.style.opacity='1'">
+                    <?php if (!empty($evento['autor_foto'])): ?>
+                      <img src="<?= htmlspecialchars($evento['autor_foto']) ?>" alt="autor"
+                           style="width:28px;height:28px;border-radius:50%;object-fit:cover;">
+                    <?php else: ?>
+                      <span style="font-size:16px;">👤</span>
+                    <?php endif; ?>
+                    <span><?= htmlspecialchars(explode(' ', $evento['autor_nome'])[0]) ?></span>
+                  </a>
                 <?php endif; ?>
 
                 <div style="display:flex; justify-content:center; gap:8px; width:100%;">

@@ -71,6 +71,18 @@ $runnerIcon = '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path
   .post-actions button { background: none; border: none; font-size: 1.1rem; color: #bbb; cursor: pointer; transition: 0.2s; }
   .post-actions button:hover { color: #d63031; }
   
+  .post-header a { transition: all 0.2s; }
+  .post-header a:hover .post-avatar,
+  .post-header a:hover img.post-avatar {
+    opacity: 0.8;
+    transform: scale(1.04);
+    transition: all 0.2s ease;
+  }
+  .post-header a:hover .post-author span:first-child {
+    color: var(--green, #1DB954);
+    transition: color 0.2s;
+  }
+  
   .fab-add { position: fixed; bottom: 90px; right: 24px; width: 56px; height: 56px; background: var(--green); border-radius: 50%; color: #fff; font-size: 32px; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 16px rgba(29,185,84,0.4); border: none; cursor: pointer; transition: transform 0.2s; z-index: 100; }
   .fab-add:active { transform: scale(0.9); }
   
@@ -228,17 +240,33 @@ $runnerIcon = '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path
         <div class="post-card" id="post-<?= $p['id'] ?>">
           
           <div class="post-header">
-            <?php if (!empty($p['autor_foto'])): ?>
-              <img src="<?= htmlspecialchars(strpos($p['autor_foto'], 'http') === 0 ? $p['autor_foto'] : '/'.$p['autor_foto']) ?>" class="post-avatar" />
-            <?php else: ?>
-              <div class="post-avatar" style="display:flex;align-items:center;justify-content:center;">
-                <svg viewBox="0 0 24 24" style="width:24px;height:24px;fill:#999;"><path d="M12 12c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm0 2c-3.33 0-10 1.67-10 5v3h20v-3c0-3.33-6.67-5-10-5z"/></svg>
+            <?php
+              $autorId = (int)$p['usuario_id'];
+              $linkAutor = (isset($_SESSION['id']) && $_SESSION['id'] === $autorId)
+                ? '/pages/perfil.php'
+                : '/pages/perfil-publico.php?id=' . $autorId;
+            ?>
+            <a href="<?= $linkAutor ?>" style="display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit;flex:1;">
+              <?php if (!empty($p['autor_foto'])): ?>
+                <img src="<?= htmlspecialchars(strpos($p['autor_foto'], 'http') === 0 ? $p['autor_foto'] : '/'.$p['autor_foto']) ?>" 
+                     class="post-avatar" 
+                     style="cursor:pointer;transition:opacity 0.2s;flex-shrink:0;"
+                     onmouseover="this.style.opacity='0.8'"
+                     onmouseout="this.style.opacity='1'" />
+              <?php else: ?>
+                <div class="post-avatar" style="cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                  <svg viewBox="0 0 24 24" style="width:24px;height:24px;fill:#999;">
+                    <path d="M12 12c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm0 2c-3.33 0-10 1.67-10 5v3h20v-3c0-3.33-6.67-5-10-5z"/>
+                  </svg>
+                </div>
+              <?php endif; ?>
+              <div class="post-author" style="text-decoration:none;">
+                <span style="font-weight:700;color:var(--text-primary,#111);">
+                  <?= htmlspecialchars($p['autor_nome']) ?>
+                </span>
+                <span class="post-date"><?= $tempoFormatado ?></span>
               </div>
-            <?php endif; ?>
-            <div class="post-author">
-              <?= htmlspecialchars($p['autor_nome']) ?>
-              <span class="post-date"><?= $tempoFormatado ?></span>
-            </div>
+            </a>
           </div>
 
           <div class="post-content">

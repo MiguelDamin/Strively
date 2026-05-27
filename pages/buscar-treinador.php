@@ -306,7 +306,9 @@ include '../components/header.php';
 
     <?php else: ?>
       <?php foreach ($treinadores as $tr): ?>
-        <div class="bt-card">
+        <div class="bt-card" 
+             style="cursor:pointer;" 
+             onclick="window.location.href='/pages/perfil-publico.php?id=<?= (int)$tr['id'] ?>'">
 
           <!-- Foto -->
           <?php if (!empty($tr['foto'])): ?>
@@ -327,13 +329,13 @@ include '../components/header.php';
           <!-- Badges: especialidade, assessoria, CREF -->
           <div class="bt-meta">
             <?php if (!empty($tr['especialidade'])): ?>
-              <span class="bt-badge"><?= htmlspecialchars($tr['especialidade']) ?></span>
+              <span class="bt-badge" onclick="event.stopPropagation()"><?= htmlspecialchars($tr['especialidade']) ?></span>
             <?php endif; ?>
             <?php if (!empty($tr['assessoria'])): ?>
-              <span class="bt-badge"><?= htmlspecialchars($tr['assessoria']) ?></span>
+              <span class="bt-badge" onclick="event.stopPropagation()"><?= htmlspecialchars($tr['assessoria']) ?></span>
             <?php endif; ?>
             <?php if (!empty($tr['cref'])): ?>
-              <span class="bt-badge">CREF <?= htmlspecialchars($tr['cref']) ?></span>
+              <span class="bt-badge" onclick="event.stopPropagation()">CREF <?= htmlspecialchars($tr['cref']) ?></span>
             <?php endif; ?>
           </div>
 
@@ -355,7 +357,7 @@ include '../components/header.php';
             <div class="bt-status-badge vinculado">Você já tem um vínculo</div>
           <?php else: ?>
             <button class="btn-primary" style="width:100%; padding:9px 0; font-size:0.85rem;"
-                    onclick="abrirModal(<?= (int)$tr['id'] ?>, '<?= htmlspecialchars(addslashes($tr['nome']), ENT_QUOTES) ?>')">
+                    onclick="event.stopPropagation(); abrirModal(<?= (int)$tr['id'] ?>, '<?= htmlspecialchars(addslashes($tr['nome']), ENT_QUOTES) ?>')">
               Contratar
             </button>
           <?php endif; ?>
