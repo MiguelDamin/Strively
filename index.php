@@ -53,129 +53,7 @@ if (isset($_SESSION['id'])):
     include 'components/header.php';
 ?>
 
-<style>
-/* =====================================================
-   CARROSSEL PREMIUM ESTILO NETFLIX
-   ===================================================== */
-.home-logado { padding-bottom: 80px; background: #fff; }
 
-.section-spacer { height: 80px; } /* Respiro visual entre Hero e Carrossel */
-
-.nc-header { text-align: center; margin-bottom: 40px; padding: 0 20px; }
-.nc-header h2 { font-family: 'Bebas Neue', sans-serif; font-size: 2.8rem; letter-spacing: 1.5px; color: #111; margin: 0; }
-.nc-header p { color: #888; font-size: 1rem; font-weight: 300; margin-top: 4px; }
-
-.nc-container { position: relative; max-width: 1000px; margin: 0 auto; display: flex; align-items: center; justify-content: center; height: 520px; overflow: visible; }
-.nc-track { position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; perspective: 1200px; }
-
-.nc-nav {
-  position: absolute; top: 50%; transform: translateY(-50%); width: 50px; height: 50px; border-radius: 50%; border: none; background: #fff;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 30; transition: all 0.3s;
-}
-.nc-nav:hover { background: #1DB954; transform: translateY(-50%) scale(1.1); }
-.nc-nav:hover svg { fill: #fff; }
-.nc-nav svg { width: 24px; height: 24px; fill: #333; transition: fill 0.2s; }
-.nc-prev { left: -20px; }
-.nc-next { right: -20px; }
-
-/* CARD INDIVIDUAL */
-.nc-card {
-  position: absolute; width: 300px; height: 460px; border-radius: 20px; overflow: hidden; background: #fff; display: flex; flex-direction: column;
-  transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-  cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.05); opacity: 0; pointer-events: none; transform: scale(0.7); z-index: 1;
-}
-
-/* CARD CENTRAL (ATIVO) */
-.nc-center { transform: translateX(0) scale(1.1) !important; opacity: 1 !important; filter: none !important; z-index: 20 !important; box-shadow: 0 25px 60px rgba(0,0,0,0.2) !important; pointer-events: auto; }
-
-/* CARDS LATERAIS */
-.nc-left { transform: translateX(-240px) scale(0.85); opacity: 0.6; filter: blur(4px); z-index: 10; pointer-events: auto; }
-.nc-right { transform: translateX(240px) scale(0.85); opacity: 0.6; filter: blur(4px); z-index: 10; pointer-events: auto; }
-.nc-hidden { transform: translateX(0) scale(0.6); opacity: 0; filter: blur(8px); z-index: 1; pointer-events: none; }
-
-/* ESTRUTURA DO CARD (65% Topo / 35% Base) */
-.nc-top { flex: 0 0 65%; background-color: #f97316; background-size: cover; background-position: center; position: relative; display: flex; align-items: center; justify-content: center; padding: 25px; text-align: center; }
-.nc-top::after { content: ''; position: absolute; inset: 0; background: rgba(0,0,0,0.3); }
-.nc-event-title-big { position: relative; z-index: 2; color: #fff; font-family: 'Bebas Neue', sans-serif; font-size: 2.8rem; line-height: 1; letter-spacing: 1px; margin: 0; text-shadow: 0 4px 12px rgba(0,0,0,0.4); text-transform: uppercase; }
-
-.nc-base { flex: 1; background: #fff; padding: 20px; display: flex; flex-direction: column; align-items: center; text-align: center; }
-.nc-base h4 { font-family: 'Outfit', sans-serif; font-size: 1.1rem; font-weight: 700; color: #111; margin: 0 0 4px 0; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.nc-base .nc-loc { font-size: 0.85rem; color: #777; margin-bottom: 2px; }
-.nc-base .nc-dat { font-size: 0.85rem; color: var(--green); font-weight: 600; margin-bottom: 12px; }
-
-.nc-btn-v {
-  margin-top: auto; padding: 10px 24px; border-radius: 100px; border: 2px solid #1DB954; color: #1DB954; font-weight: 700; font-size: 0.85rem;
-  text-transform: uppercase; letter-spacing: 0.5px; text-decoration: none; transition: all 0.2s;
-}
-.nc-center .nc-btn-v { background: #1DB954; color: #fff; box-shadow: 0 4px 12px rgba(29,185,84,0.2); }
-.nc-btn-v:hover { background: #199e46 !important; color: #fff !important; border-color: #199e46 !important; }
-
-@media(max-width: 768px) {
-  .nc-container { height: 420px; }
-  .nc-card { width: 240px; height: 380px; }
-  .nc-left { transform: translateX(-140px) scale(0.85); }
-  .nc-right { transform: translateX(140px) scale(0.85); }
-  .nc-nav { width: 40px; height: 40px; }
-  .nc-prev { left: 10px; }
-  .nc-next { right: 10px; }
-}
-
-/* WIDGETS DASHBOARD */
-.home-widgets {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 16px;
-    max-width: 1000px;
-    margin: 40px auto 0;
-    padding: 0 24px;
-}
-.home-widget {
-    background: #fff;
-    border-radius: 16px;
-    padding: 20px;
-    border: 1px solid #eee;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    transition: transform 0.2s, box-shadow 0.2s;
-    text-decoration: none;
-    color: inherit;
-}
-.home-widget:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 6px 20px rgba(0,0,0,0.09);
-}
-.home-widget-icon { font-size: 1.8rem; }
-.home-widget-label {
-    font-size: 0.75rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    color: #999;
-}
-.home-widget-valor {
-    font-family: 'Bebas Neue', sans-serif;
-    font-size: 1.4rem;
-    letter-spacing: 1px;
-    color: #111;
-    line-height: 1.1;
-}
-.home-widget-sub {
-    font-size: 0.78rem;
-    color: #aaa;
-}
-.home-widget-verde { border-left: 4px solid #1DB954; }
-.home-widget-cta {
-    background: #1DB954;
-    color: #fff;
-    border: none;
-}
-.home-widget-cta .home-widget-label,
-.home-widget-cta .home-widget-valor,
-.home-widget-cta .home-widget-sub { color: rgba(255,255,255,0.85); }
-.home-widget-cta .home-widget-valor { color: #fff; }
-</style>
 
 <div class="home-logado">
 
@@ -184,7 +62,9 @@ if (isset($_SESSION['id'])):
 
     <!-- TREINO -->
     <a href="/pages/treinos.php" class="home-widget home-widget-verde">
-      <div class="home-widget-icon">🏃</div>
+      <div class="home-widget-icon">
+        <svg viewBox="0 0 24 24" width="32" height="32" style="fill:#1DB954"><path d="M13.49 5.48c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm-3.6 13.9l1-4.4 2.1 2v6h2v-7.5l-2.1-2 .6-3c1.3 1.5 3.3 2.5 5.5 2.5v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1l-5.2 2.2v4.7h2v-3.4l1.8-.7-1.6 8.1-4.9-1-.4 2 7 1.4z"/></svg>
+      </div>
       <div class="home-widget-label">Próximo Treino</div>
       <div class="home-widget-valor">
         <?php if ($proximoTreino): ?>
@@ -211,7 +91,9 @@ if (isset($_SESSION['id'])):
 
     <!-- KM / STRAVA -->
     <a href="/pages/perfil.php" class="home-widget">
-      <div class="home-widget-icon">📍</div>
+      <div class="home-widget-icon">
+        <svg viewBox="0 0 24 24" width="32" height="32" style="fill:#999"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 0 1 0-5 2.5 2.5 0 0 1 0 5z"/></svg>
+      </div>
       <div class="home-widget-label">Km em <?= date('Y') ?></div>
       <div class="home-widget-valor">
         <?php if (!empty($stravaData['strava_conectado'])): ?>
@@ -227,7 +109,9 @@ if (isset($_SESSION['id'])):
 
     <!-- PRÓXIMO EVENTO -->
     <a href="/pages/eventos.php" class="home-widget">
-      <div class="home-widget-icon">🏅</div>
+      <div class="home-widget-icon">
+        <svg viewBox="0 0 24 24" width="32" height="32" style="fill:#999"><path d="M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.63 4.39 4.94A5.01 5.01 0 0 0 11 14.9V17H9v2h6v-2h-2v-2.1a5.01 5.01 0 0 0 3.61-2.96C19.08 11.63 21 9.55 21 7V7c0-1.1-.9-2-2-2zM5 8V7h2v3.82C5.84 10.4 5 9.3 5 8zm14 0c0 1.3-.84 2.4-2 2.82V7h2v1z"/></svg>
+      </div>
       <div class="home-widget-label">Próximo Evento</div>
       <div class="home-widget-valor">
         <?php if ($proximoEvento): ?>
@@ -253,21 +137,27 @@ if (isset($_SESSION['id'])):
         $qtdAlunos = $stmtAlunos->fetchColumn();
       ?>
       <a href="/pages/alunos.php" class="home-widget home-widget-cta">
-        <div class="home-widget-icon">👥</div>
+        <div class="home-widget-icon">
+          <svg viewBox="0 0 24 24" width="32" height="32" style="fill:rgba(255,255,255,0.9)"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+        </div>
         <div class="home-widget-label">Seus Alunos</div>
         <div class="home-widget-valor"><?= $qtdAlunos ?> aluno<?= $qtdAlunos != 1 ? 's' : '' ?></div>
         <div class="home-widget-sub">Ver painel →</div>
       </a>
     <?php elseif (isset($me) && !empty($me['treinador_id']) && $me['status_vinculo'] === 'aceito'): ?>
       <a href="/pages/treinos.php?aba=planilha" class="home-widget home-widget-cta">
-        <div class="home-widget-icon">📋</div>
+        <div class="home-widget-icon">
+          <svg viewBox="0 0 24 24" width="32" height="32" style="fill:rgba(255,255,255,0.9)"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+        </div>
         <div class="home-widget-label">Planilha</div>
         <div class="home-widget-valor">Ver Treinos</div>
         <div class="home-widget-sub">Abrir planilha →</div>
       </a>
     <?php else: ?>
       <a href="/pages/buscar-treinador.php" class="home-widget home-widget-cta">
-        <div class="home-widget-icon">🏋️</div>
+        <div class="home-widget-icon">
+          <svg viewBox="0 0 24 24" width="32" height="32" style="fill:rgba(255,255,255,0.9)"><path d="M20.57 14.86L22 13.43 20.57 12 17 15.57 8.43 7 12 3.43 10.57 2 9.14 3.43 7.71 2 5.57 4.14 4.14 2.71 2.71 4.14l1.43 1.43L2 7.71l1.43 1.43L2 10.57 3.43 12 7 8.43 15.57 17 12 20.57 13.43 22l1.43-1.43L16.29 22l2.14-2.14 1.43 1.43 1.43-1.43-1.43-1.43L22 16.29z"/></svg>
+        </div>
         <div class="home-widget-label">Treinador</div>
         <div class="home-widget-valor">Procurar</div>
         <div class="home-widget-sub">Ver treinadores →</div>
@@ -299,7 +189,6 @@ if (isset($_SESSION['id'])):
           ?>
           <div class="nc-card" data-index="<?= $i ?>" onclick="ncIrPara(<?= $i ?>)">
             <div class="nc-top" <?= $capa ? "style=\"background-image:url('$capa')\"" : "" ?>>
-              <h3 class="nc-event-title-big"><?= htmlspecialchars($ev['nome']) ?></h3>
             </div>
             <div class="nc-base">
               <h4><?= htmlspecialchars($ev['nome']) ?></h4>
@@ -352,94 +241,78 @@ else:
 ?>
 
 <style>
-/* ========== LANDING PAGE PREMIUM CSS ========== */
-.lp * { box-sizing: border-box; margin: 0; padding: 0; }
-.lp { font-family: 'Outfit', sans-serif; background: #fafafa; width: 100%; overflow-x: hidden; color: #1a1a1a; }
-.hero-lp { background: linear-gradient(160deg, #1DB954 0%, #17a34a 40%, #0f8a3e 100%); padding: 72px 32px 84px; text-align: center; position: relative; overflow: hidden; }
-.hero-lp::before { content: ''; position: absolute; top: -120px; right: -80px; width: 380px; height: 380px; background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%); border-radius: 50%; pointer-events: none; }
-.hero-nav-lp { display: flex; align-items: center; justify-content: space-between; max-width: 680px; margin: 0 auto 56px; position: relative; z-index: 2; }
-.hero-nav-brand img { width: 40px; height: 40px; object-fit: contain; border-radius: 10px; }
-.hero-nav-brand span { color: #fff; font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 3px; }
-.hero-nav-links { display: flex; gap: 8px; align-items: center; }
-.hero-nav-link { color: rgba(255,255,255,0.85); text-decoration: none; font-size: 14px; font-weight: 500; padding: 8px 16px; border-radius: 50px; transition: all 0.2s; }
-.hero-nav-link:hover { background: rgba(255,255,255,0.12); color: #fff; }
-.hero-nav-login { background: rgba(255,255,255,0.15); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); border: 1px solid rgba(255,255,255,0.25); color: #fff; text-decoration: none; font-size: 14px; font-weight: 600; padding: 8px 20px; border-radius: 50px; transition: all 0.25s; }
-.hero-nav-login:hover { background: #fff; color: #1DB954; border-color: #fff; }
-.hero-lp-content { position: relative; z-index: 2; max-width: 560px; margin: 0 auto; }
-.hero-chip { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.13); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.2); border-radius: 50px; padding: 6px 16px; margin-bottom: 28px; }
-.hero-chip-dot { width: 7px; height: 7px; border-radius: 50%; background: #fff; animation: chipPulse 2s ease-in-out infinite; }
-@keyframes chipPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
-.hero-chip span { color: rgba(255,255,255,0.9); font-size: 12px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; }
-.lp-h1 { color: #fff; font-family: 'Bebas Neue', sans-serif; font-size: 62px; line-height: 1.02; margin-bottom: 6px; letter-spacing: 1.5px; }
-.lp-h1-destaque { color: #0d0d0d; font-family: 'Bebas Neue', sans-serif; font-size: 62px; line-height: 1.02; letter-spacing: 1.5px; display: block; }
-.lp-sub { color: rgba(255,255,255,0.85); font-size: 17px; line-height: 1.75; max-width: 480px; margin: 20px auto 40px; font-weight: 300; }
-.hero-btns-lp { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
-.lp-btn-white { background: #fff; color: #1DB954; border: none; border-radius: 50px; padding: 15px 32px; font-size: 15px; font-weight: 700; cursor: pointer; font-family: 'Outfit', sans-serif; text-decoration: none; display: inline-block; transition: all 0.25s; box-shadow: 0 4px 16px rgba(0,0,0,0.1); }
-.lp-btn-outline { background: transparent; color: #fff; border: 1.5px solid rgba(255,255,255,0.45); border-radius: 50px; padding: 15px 32px; font-size: 15px; font-weight: 600; cursor: pointer; text-decoration: none; display: inline-block; transition: all 0.25s; }
-.lp-btn-white:hover, .lp-btn-outline:hover { transform: translateY(-2px); }
+}
+/* SHARED STYLES (DASHBOARD & CARROSSEL) */
+.home-logado { padding-bottom: 80px; background: #fff; }
+.section-spacer { height: 80px; }
+.nc-header { text-align: center; margin-bottom: 40px; padding: 0 20px; }
+.nc-header h2 { font-family: 'Bebas Neue', sans-serif; font-size: 3rem; letter-spacing: 1.5px; color: #111; margin: 0; }
+.nc-header p { color: #888; font-size: 1rem; font-weight: 300; margin-top: 4px; }
+.nc-container { position: relative; max-width: 1000px; margin: 0 auto; display: flex; align-items: center; justify-content: center; height: 520px; overflow: visible; }
+.nc-track { position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; perspective: 1200px; }
+.nc-nav { position: absolute; top: 50%; transform: translateY(-50%); width: 50px; height: 50px; border-radius: 50%; border: none; background: #fff; box-shadow: 0 8px 20px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 30; transition: all 0.3s; }
+.nc-nav:hover { background: #1DB954; transform: translateY(-50%) scale(1.1); }
+.nc-nav:hover svg { fill: #fff; }
+.nc-nav svg { width: 24px; height: 24px; fill: #333; transition: fill 0.2s; }
+.nc-prev { left: -20px; }
+.nc-next { right: -20px; }
+.nc-card { position: absolute; width: 300px; height: 460px; border-radius: 20px; overflow: hidden; background: #fff; display: flex; flex-direction: column; transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.05); opacity: 0; pointer-events: none; transform: scale(0.7); z-index: 1; }
+.nc-center { transform: translateX(0) scale(1.1) !important; opacity: 1 !important; filter: none !important; z-index: 20 !important; box-shadow: 0 25px 60px rgba(0,0,0,0.2) !important; pointer-events: auto; }
+.nc-left { transform: translateX(-240px) scale(0.85); opacity: 0.6; filter: blur(4px); z-index: 10; pointer-events: auto; }
+.nc-right { transform: translateX(240px) scale(0.85); opacity: 0.6; filter: blur(4px); z-index: 10; pointer-events: auto; }
+.nc-hidden { transform: translateX(0) scale(0.6); opacity: 0; filter: blur(8px); z-index: 1; pointer-events: none; }
+.nc-top { flex: 0 0 65%; background-color: #eee; background-size: cover; background-position: center; position: relative; display: flex; align-items: center; justify-content: center; }
+.nc-top::after { content: ''; position: absolute; inset: 0; background: linear-gradient(transparent, rgba(0,0,0,0.2)); }
+.nc-base { flex: 1; background: #fff; padding: 20px; display: flex; flex-direction: column; align-items: center; text-align: center; }
+.nc-base h4 { font-family: 'Outfit', sans-serif; font-size: 1.15rem; font-weight: 700; color: #111; margin: 0 0 4px 0; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.nc-base .nc-loc { font-size: 0.88rem; color: #777; margin-bottom: 2px; }
+.nc-base .nc-dat { font-size: 0.88rem; color: #1DB954; font-weight: 600; margin-bottom: 12px; }
+.nc-btn-v { margin-top: auto; padding: 10px 24px; border-radius: 100px; border: 2px solid #1DB954; color: #1DB954; font-weight: 700; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; text-decoration: none; transition: all 0.2s; }
+.nc-center .nc-btn-v { background: #1DB954; color: #fff; box-shadow: 0 4px 12px rgba(29,185,84,0.2); }
+.nc-btn-v:hover { background: #199e46 !important; color: #fff !important; border-color: #199e46 !important; }
 
-.lp-stats { display: grid; grid-template-columns: repeat(3, 1fr); max-width: 680px; margin: -32px auto 0; position: relative; z-index: 3; background: #fff; border-radius: 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.08); overflow: hidden; }
-.lp-stat { padding: 28px 16px; text-align: center; position: relative; }
-.lp-stat:not(:last-child)::after { content: ''; position: absolute; right: 0; top: 20%; height: 60%; width: 1px; background: #eee; }
-.lp-stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 38px; color: #1DB954; line-height: 1; }
-.lp-stat-label { font-size: 13px; color: #999; margin-top: 4px; font-weight: 500; }
+/* WIDGETS */
+.home-widgets { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; max-width: 1000px; margin: 0 auto; padding: 40px 24px 0; }
+.home-widget { background: #fff; border-radius: 16px; padding: 24px; border: 1px solid #eee; box-shadow: 0 2px 12px rgba(0,0,0,0.04); display: flex; flex-direction: column; gap: 8px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); text-decoration: none; color: inherit; }
+.home-widget:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,0.08); }
+.home-widget-icon { display: block; margin-bottom: 4px; }
+.home-widget-label { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #999; }
+.home-widget-valor { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; letter-spacing: 1px; color: #111; line-height: 1.1; margin: 2px 0; }
+.home-widget-sub { font-size: 0.8rem; color: #aaa; }
+.home-widget-verde { border-left: 4px solid #1DB954; }
+.home-widget-cta { background: #1DB954; color: #fff; border: none; }
+.home-widget-cta .home-widget-label { color: rgba(255,255,255,0.7); }
+.home-widget-cta .home-widget-valor { color: #fff; }
+.home-widget-cta .home-widget-sub { color: rgba(255,255,255,0.8); }
 
-.section-lp { padding: 72px 28px; background: #fff; }
-.section-lp-alt { padding: 72px 28px; background: #f5f6f5; }
-.section-lp-header { text-align: center; max-width: 540px; margin: 0 auto 36px; }
-.lp-section-label { font-size: 12px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: #1DB954; margin-bottom: 10px; display: block; }
-.lp-section-title { font-family: 'Bebas Neue', sans-serif; font-size: 38px; color: #0d0d0d; margin-bottom: 12px; letter-spacing: 1px; line-height: 1.1; }
-.lp-section-sub { font-size: 16px; color: #666; line-height: 1.7; font-weight: 300; }
+@media(max-width: 768px) {
+  .nc-container { height: 420px; }
+  .nc-card { width: 240px; height: 380px; }
+  .nc-left { transform: translateX(-140px) scale(0.85); }
+  .nc-right { transform: translateX(140px) scale(0.85); }
+  .nc-nav { width: 40px; height: 40px; }
+  .nc-prev { left: 10px; }
+  .nc-next { right: 10px; }
+  .home-widgets { grid-template-columns: 1fr; padding: 24px 20px 0; }
+  .home-widget { padding: 20px; }
+}
 
-.lp-features { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; max-width: 640px; margin: 0 auto; }
-.lp-feat { background: #f9faf9; border-radius: 18px; padding: 28px 22px; border: 1px solid #eee; transition: all 0.3s ease; }
-.lp-feat:hover { transform: translateY(-4px); box-shadow: 0 12px 28px rgba(0,0,0,0.06); border-color: rgba(29,185,84,0.25); }
-.lp-feat-icon { width: 48px; height: 48px; border-radius: 12px; background: rgba(29,185,84,0.1); display: flex; align-items: center; justify-content: center; margin-bottom: 16px; }
-.lp-feat-icon svg { width: 24px; height: 24px; fill: #1DB954; }
-.lp-feat-title { font-size: 16px; font-weight: 700; color: #0d0d0d; margin-bottom: 6px; }
-.lp-feat-desc { font-size: 14px; color: #777; line-height: 1.6; }
-
-.lp-eventos-list { display: flex; flex-direction: column; gap: 12px; max-width: 580px; margin: 0 auto; }
-.lp-evento-row { background: #fff; border-radius: 16px; border: 1px solid #eee; padding: 18px 20px; display: flex; align-items: center; gap: 16px; transition: all 0.25s; }
-.lp-evento-row:hover { box-shadow: 0 6px 20px rgba(0,0,0,0.05); border-color: rgba(29,185,84,0.2); }
-.lp-evento-date { text-align: center; min-width: 48px; flex-shrink: 0; }
-.lp-evento-day { font-family: 'Bebas Neue', sans-serif; font-size: 30px; color: #1DB954; line-height: 1; }
-.lp-evento-mon { font-size: 11px; color: #999; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
-.lp-treinadores-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; max-width: 540px; margin: 0 auto; }
-.lp-treinador-card { background: #f9faf9; border-radius: 18px; border: 1px solid #eee; padding: 28px 18px; text-align: center; transition: all 0.3s ease; }
-.lp-treinador-card:hover { transform: translateY(-4px); box-shadow: 0 12px 28px rgba(0,0,0,0.06); border-color: rgba(29,185,84,0.25); }
-.lp-treinador-badge { display: inline-block; margin-top: 10px; font-size: 11px; background: rgba(29,185,84,0.08); color: #15923e; border-radius: 20px; padding: 4px 12px; font-weight: 600; }
-
-.lp-cta { background: linear-gradient(160deg, #111 0%, #0a0a0a 100%); padding: 72px 28px; text-align: center; position: relative; overflow: hidden; }
-.lp-cta-title { font-family: 'Bebas Neue', sans-serif; font-size: 42px; color: #fff; margin-bottom: 12px; letter-spacing: 1px; position: relative; z-index: 1; }
-.lp-cta-sub { font-size: 16px; color: rgba(255,255,255,0.5); margin-bottom: 32px; font-weight: 300; position: relative; z-index: 1; }
-.lp-btn-green { background: #1DB954; color: #fff; border: none; border-radius: 50px; padding: 16px 38px; font-size: 15px; font-weight: 700; cursor: pointer; text-decoration: none; display: inline-block; transition: all 0.25s; box-shadow: 0 4px 20px rgba(29,185,84,0.3); position: relative; z-index: 1; }
-
-.lp-footer { padding: 28px 28px; border-top: 1px solid #eee; display: flex; align-items: center; justify-content: space-between; background: #fff; flex-wrap: wrap; gap: 12px; }
-.lp-footer-brand { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 2.5px; color: #1a1a1a; }
-.lp-footer-link { font-size: 14px; color: #999; text-decoration: none; transition: color 0.2s; }
-.lp-footer-link:hover { color: #1DB954; }
-
-@media (max-width: 640px) {
-    .hero-lp { padding: 40px 20px 64px; }
-    .hero-nav-lp { margin-bottom: 40px; }
-    .hero-nav-links { display: none; }
-    .lp-h1, .lp-h1-destaque { font-size: 44px; }
-    .lp-stats { margin: -24px 16px 0; }
-    .lp-features, .lp-treinadores-grid, .lp-eventos-list { grid-template-columns: 1fr; max-width: 100%; }
+@media(max-width: 640px) {
+    .hero-lp-content .hero-nav-brand { margin-bottom: 20px; }
+    .hero-nav-lp-custom { flex-direction: column; gap: 20px; align-items: center; text-align: center; }
 }
 </style>
 
 <div class="lp">
     <div class="hero-lp">
-        <nav style="display:flex;align-items:center;justify-content:space-between;max-width:700px;margin:0 auto 56px;position:relative;z-index:2;">
+        <nav class="hero-nav-lp-custom" style="display:flex;align-items:center;justify-content:space-between;max-width:700px;margin:0 auto 56px;position:relative;z-index:2;">
           <!-- Logo -->
-          <a href="/" style="display:flex;align-items:center;gap:10px;text-decoration:none;">
+          <a href="/" style="display:flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0;">
             <img src="/images/icon-192.png" style="width:38px;height:38px;border-radius:10px;object-fit:contain;">
             <span style="color:#fff;font-family:'Bebas Neue',sans-serif;font-size:21px;letter-spacing:3px;">STRIVELY</span>
           </a>
           <!-- Links -->
-          <div style="display:flex;align-items:center;gap:8px;">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:center;">
             <a href="/pages/eventos.php" style="color:rgba(255,255,255,0.85);text-decoration:none;font-size:14px;font-weight:500;padding:8px 16px;border-radius:50px;transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.12)'" onmouseout="this.style.background='transparent'">Eventos</a>
             <a href="/pages/comunidade.php" style="color:rgba(255,255,255,0.85);text-decoration:none;font-size:14px;font-weight:500;padding:8px 16px;border-radius:50px;transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.12)'" onmouseout="this.style.background='transparent'">Comunidade</a>
             <a href="/pages/login.php" style="background:rgba(255,255,255,0.15);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,0.25);color:#fff;text-decoration:none;font-size:14px;font-weight:600;padding:8px 20px;border-radius:50px;transition:all 0.25s;" onmouseover="this.style.background='#fff';this.style.color='#1DB954'" onmouseout="this.style.background='rgba(255,255,255,0.15)';this.style.color='#fff'">Entrar</a>
@@ -516,7 +389,6 @@ else:
                     ?>
                     <div class="nc-card" data-index="<?= $i ?>" onclick="ncIrPara(<?= $i ?>)">
                         <div class="nc-top" <?= $capa ? "style=\"background-image:url('$capa')\"" : "" ?>>
-                            <h3 class="nc-event-title-big"><?= htmlspecialchars($ev['nome']) ?></h3>
                         </div>
                         <div class="nc-base">
                             <h4><?= htmlspecialchars($ev['nome']) ?></h4>
