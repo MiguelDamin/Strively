@@ -423,6 +423,28 @@ else:
 /* ========== LANDING PAGE PREMIUM CSS ========== */
 .lp * { box-sizing: border-box; margin: 0; padding: 0; }
 .lp { font-family: 'Outfit', sans-serif; background: #fafafa; width: 100%; overflow-x: hidden; color: #1a1a1a; }
+
+/* Containers da landing não podem vazar */
+.lp,
+.hero-lp,
+.lp-stats,
+.section-lp,
+.section-lp-alt,
+.lp-features,
+.lp-treinadores-grid,
+.lp-eventos-list,
+.nc-container,
+.nc-track,
+.netflix-section {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* Cards do carrossel não podem criar overflow */
+.nc-card {
+  flex-shrink: 0;
+  max-width: 100%;
+}
 .hero-lp { background: linear-gradient(160deg, #1DB954 0%, #17a34a 40%, #0f8a3e 100%); padding: 72px 32px 84px; text-align: center; position: relative; overflow: hidden; }
 .hero-lp::before { content: ''; position: absolute; top: -120px; right: -80px; width: 380px; height: 380px; background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%); border-radius: 50%; pointer-events: none; }
 .hero-nav-lp { display: flex; align-items: center; justify-content: space-between; max-width: 680px; margin: 0 auto 56px; position: relative; z-index: 2; }
@@ -498,8 +520,8 @@ else:
 .nc-header { text-align: center; margin-bottom: 40px; padding: 0 20px; }
 .nc-header h2 { font-family: 'Bebas Neue', sans-serif; font-size: 3rem; letter-spacing: 1.5px; color: #111; margin: 0; }
 .nc-header p { color: #888; font-size: 1rem; font-weight: 300; margin-top: 4px; }
-.nc-container { position: relative; max-width: 1000px; margin: 0 auto; display: flex; align-items: center; justify-content: center; height: 520px; overflow: visible; }
-.nc-track { position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; perspective: 1200px; }
+.nc-container { position: relative; max-width: 1000px; margin: 0 auto; display: flex; align-items: center; justify-content: center; height: 520px; overflow: hidden; }
+.nc-track { position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; perspective: 1200px; overflow: hidden; }
 .nc-nav { position: absolute; top: 50%; transform: translateY(-50%); width: 50px; height: 50px; border-radius: 50%; border: none; background: #fff; box-shadow: 0 8px 20px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 30; transition: all 0.3s; }
 .nc-nav:hover { background: #1DB954; transform: translateY(-50%) scale(1.1); }
 .nc-nav:hover svg { fill: #fff; }
@@ -513,13 +535,52 @@ else:
 .nc-hidden { transform: translateX(0) scale(0.6); opacity: 0; filter: blur(8px); z-index: 1; pointer-events: none; }
 .nc-top { flex: 0 0 65%; background-color: #eee; background-size: cover; background-position: center; position: relative; display: flex; align-items: center; justify-content: center; }
 .nc-top::after { content: ''; position: absolute; inset: 0; background: linear-gradient(transparent, rgba(0,0,0,0.2)); }
-.nc-base { flex: 1; background: #fff; padding: 20px; display: flex; flex-direction: column; align-items: center; text-align: center; }
+.nc-base {
+  flex: 1;
+  background: #fff;
+  padding: 18px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 4px;
+}
 .nc-base h4 { font-family: 'Outfit', sans-serif; font-size: 1.15rem; font-weight: 700; color: #111; margin: 0 0 4px 0; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .nc-base .nc-loc { font-size: 0.88rem; color: #777; margin-bottom: 2px; }
 .nc-base .nc-dat { font-size: 0.88rem; color: #1DB954; font-weight: 600; margin-bottom: 12px; }
-.nc-btn-v { margin-top: auto; padding: 10px 24px; border-radius: 100px; border: 2px solid #1DB954; color: #1DB954; font-weight: 700; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; text-decoration: none; transition: all 0.2s; }
-.nc-center .nc-btn-v { background: #1DB954; color: #fff; box-shadow: 0 4px 12px rgba(29,185,84,0.2); }
-.nc-btn-v:hover { background: #199e46 !important; color: #fff !important; border-color: #199e46 !important; }
+.nc-btn-v {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: auto;
+  padding: 9px 22px;
+  border-radius: 100px;
+  border: 2px solid #1DB954;
+  color: #1DB954;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  text-decoration: none;
+  width: fit-content;          /* NÃO ocupa 100% da largura */
+  align-self: center;          /* centraliza horizontalmente */
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+.nc-center .nc-btn-v {
+  background: #1DB954;
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(29,185,84,0.25);
+  border-color: #1DB954;
+}
+.nc-btn-v:hover {
+  background: #17a348 !important;
+  color: #fff !important;
+  border-color: #17a348 !important;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(29,185,84,0.3) !important;
+}
 
 /* WIDGETS */
 .home-widgets { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; max-width: 1000px; margin: 0 auto; padding: 40px 24px 0; }
@@ -636,6 +697,15 @@ document.addEventListener('DOMContentLoaded', () => {
         touchStartY = e.changedTouches[0].screenY;
         pauseAutoPlay();
       }, { passive: true });
+
+      track.addEventListener('touchmove', e => {
+        const touch = e.touches[0];
+        const dx = Math.abs(touch.screenX - touchStartX);
+        const dy = Math.abs(touch.screenY - touchStartY);
+        if (dx > dy && dx > 10) {
+          e.preventDefault(); // evita que o swipe horizontal role a página
+        }
+      }, { passive: false });
       
       track.addEventListener('touchend', e => {
         const dx = e.changedTouches[0].screenX - touchStartX;
