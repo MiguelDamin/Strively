@@ -23,6 +23,31 @@ if (isset($_SESSION['id'])):
     $stmt = $pdo->prepare("SELECT id, nome, cidade, data_evento, banner FROM eventos WHERE status = 'ativo' AND data_evento >= CURRENT_DATE ORDER BY data_evento ASC LIMIT 10");
     $stmt->execute();
     $eventos_carrossel = $stmt->fetchAll();
+
+    // WIDGET 1 — Próximo treino
+    $stmt = $pdo->prepare("
+        SELECT titulo, data_treino, status FROM treinos 
+        WHERE aluno_id = ? AND data_treino >= CURRENT_DATE AND status = 'pendente'
+        ORDER BY data_treino ASC LIMIT 1
+    ");
+    $stmt->execute([$_SESSION['id']]);
+    $proximoTreino = $stmt->fetch();
+
+    // WIDGET 2 — Km Strava
+    $stmt = $pdo->prepare("SELECT strava_km_ano, strava_conectado FROM usuarios WHERE id = ?");
+    $stmt->execute([$_SESSION['id']]);
+    $stravaData = $stmt->fetch();
+
+    // WIDGET 3 — Próximo evento inscrito
+    $stmt = $pdo->prepare("
+        SELECT e.nome, e.data_evento, e.cidade 
+        FROM usuario_eventos ue 
+        JOIN eventos e ON e.id = ue.evento_id 
+        WHERE ue.usuario_id = ? AND e.data_evento >= CURRENT_DATE 
+        ORDER BY e.data_evento ASC LIMIT 1
+    ");
+    $stmt->execute([$_SESSION['id']]);
+    $proximoEvento = $stmt->fetch();
     
     include 'components/head.php';
     include 'components/header.php';
@@ -95,48 +120,161 @@ if (isset($_SESSION['id'])):
   .nc-next { right: 10px; }
 }
 
-/* HERO OLD */
-.hero-old { padding: 70px 20px 40px; text-align: center; background: #fff; }
-.hero-old h1 { font-family: 'Bebas Neue', sans-serif; font-size: 3.8rem; color: #111; margin-bottom: 20px; line-height: 0.95; letter-spacing: 1px; }
-.hero-old h1 span { color: #1DB954; }
-.hero-old p { color: #666; font-size: 1.15rem; max-width: 650px; margin: 0 auto 35px; line-height: 1.6; font-weight: 300; }
-.hero-buttons { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
-.btn-p { background: #1DB954; color: #fff; padding: 14px 32px; border-radius: 50px; text-decoration: none; font-weight: 700; transition: all 0.2s; box-shadow: 0 4px 15px rgba(29,185,84,0.25); }
-.btn-s { background: #f5f5f5; color: #333; padding: 14px 32px; border-radius: 50px; text-decoration: none; font-weight: 700; transition: all 0.2s; }
-.btn-p:hover { background: #199e46; transform: translateY(-2px); }
-.btn-s:hover { background: #ececec; transform: translateY(-2px); }
-
-/* SOBRE OLD */
-.sobre { padding: 80px 20px; background: #fafafa; text-align: center; border-top: 1px solid #eee; }
-.sobre h2 { font-family: 'Bebas Neue', sans-serif; font-size: 3rem; margin-bottom: 10px; color: #111; }
-.sobre .subtitulo { color: #999; margin-bottom: 60px; font-weight: 300; }
-.sobre-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; max-width: 1100px; margin: 0 auto; }
-.sobre-card { padding: 50px 35px; border-radius: 24px; background: #fff; border: 1px solid #eee; transition: all 0.3s; box-shadow: 0 4px 20px rgba(0,0,0,0.02); }
-.sobre-card:hover { transform: translateY(-8px); box-shadow: 0 15px 35px rgba(0,0,0,0.06); }
-.sobre-card .icone { font-size: 3rem; margin-bottom: 25px; display: block; }
-.sobre-card h3 { font-family: 'Outfit', sans-serif; font-size: 1.5rem; margin-bottom: 15px; color: #111; font-weight: 700; }
-.sobre-card p { color: #777; line-height: 1.7; font-size: 1rem; }
+/* WIDGETS DASHBOARD */
+.home-widgets {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    max-width: 1000px;
+    margin: 40px auto 0;
+    padding: 0 24px;
+}
+.home-widget {
+    background: #fff;
+    border-radius: 16px;
+    padding: 20px;
+    border: 1px solid #eee;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    transition: transform 0.2s, box-shadow 0.2s;
+    text-decoration: none;
+    color: inherit;
+}
+.home-widget:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.09);
+}
+.home-widget-icon { font-size: 1.8rem; }
+.home-widget-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: #999;
+}
+.home-widget-valor {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.4rem;
+    letter-spacing: 1px;
+    color: #111;
+    line-height: 1.1;
+}
+.home-widget-sub {
+    font-size: 0.78rem;
+    color: #aaa;
+}
+.home-widget-verde { border-left: 4px solid #1DB954; }
+.home-widget-cta {
+    background: #1DB954;
+    color: #fff;
+    border: none;
+}
+.home-widget-cta .home-widget-label,
+.home-widget-cta .home-widget-valor,
+.home-widget-cta .home-widget-sub { color: rgba(255,255,255,0.85); }
+.home-widget-cta .home-widget-valor { color: #fff; }
 </style>
 
 <div class="home-logado">
 
-  <!-- HERO ANTIGO -->
-  <section class="hero-old">
-    <h1>Corra <span>Mais Longe</span><br>Com o Strively</h1>
-    <p>Conecte-se com treinadores, descubra eventos de corrida perto de você e compartilhe equipamentos com a comunidade.</p>
-    <div class="hero-buttons">
-      <?php if (isset($me) && $me['perfil'] === 'treinador'): ?>
-        <a href="/pages/eventos.php" class="btn-s">Ver eventos</a>
-        <a href="/pages/alunos.php" class="btn-p">Ver alunos</a>
-      <?php elseif (isset($me) && !empty($me['treinador_id']) && $me['status_vinculo'] === 'aceito'): ?>
-        <a href="/pages/eventos.php" class="btn-s">Ver eventos</a>
-        <a href="/pages/treinos.php" class="btn-p">Ver treinos</a>
-      <?php else: ?>
-        <a href="/pages/eventos.php" class="btn-s">Ver eventos</a>
-        <a href="/pages/buscar-treinador.php" class="btn-p">Procurar treinador</a>
-      <?php endif; ?>
-    </div>
-  </section>
+  <!-- DASHBOARD DE WIDGETS -->
+  <div class="home-widgets">
+
+    <!-- TREINO -->
+    <a href="/pages/treinos.php" class="home-widget home-widget-verde">
+      <div class="home-widget-icon">🏃</div>
+      <div class="home-widget-label">Próximo Treino</div>
+      <div class="home-widget-valor">
+        <?php if ($proximoTreino): ?>
+          <?= htmlspecialchars($proximoTreino['titulo']) ?>
+        <?php else: ?>
+          Nenhum agendado
+        <?php endif; ?>
+      </div>
+      <div class="home-widget-sub">
+        <?php if ($proximoTreino): ?>
+          <?php
+            $hoje = date('Y-m-d');
+            $amanha = date('Y-m-d', strtotime('+1 day'));
+            $dt = $proximoTreino['data_treino'];
+            if ($dt === $hoje) echo 'Hoje';
+            elseif ($dt === $amanha) echo 'Amanhã';
+            else echo (new DateTime($dt))->format('d/m');
+          ?>
+        <?php else: ?>
+          Ver agenda →
+        <?php endif; ?>
+      </div>
+    </a>
+
+    <!-- KM / STRAVA -->
+    <a href="/pages/perfil.php" class="home-widget">
+      <div class="home-widget-icon">📍</div>
+      <div class="home-widget-label">Km em <?= date('Y') ?></div>
+      <div class="home-widget-valor">
+        <?php if (!empty($stravaData['strava_conectado'])): ?>
+          <?= number_format($stravaData['strava_km_ano'], 0, ',', '.') ?> km
+        <?php else: ?>
+          — km
+        <?php endif; ?>
+      </div>
+      <div class="home-widget-sub">
+        <?= !empty($stravaData['strava_conectado']) ? 'via Strava' : 'Conecte o Strava →' ?>
+      </div>
+    </a>
+
+    <!-- PRÓXIMO EVENTO -->
+    <a href="/pages/eventos.php" class="home-widget">
+      <div class="home-widget-icon">🏅</div>
+      <div class="home-widget-label">Próximo Evento</div>
+      <div class="home-widget-valor">
+        <?php if ($proximoEvento): ?>
+          <?= htmlspecialchars($proximoEvento['nome']) ?>
+        <?php else: ?>
+          Nenhum evento
+        <?php endif; ?>
+      </div>
+      <div class="home-widget-sub">
+        <?php if ($proximoEvento): ?>
+          <?= (new DateTime($proximoEvento['data_evento']))->format('d/m') ?> · <?= htmlspecialchars($proximoEvento['cidade']) ?>
+        <?php else: ?>
+          Ver corridas →
+        <?php endif; ?>
+      </div>
+    </a>
+
+    <!-- CTA CONDICIONAL -->
+    <?php if (isset($me) && $me['perfil'] === 'treinador'): ?>
+      <?php
+        $stmtAlunos = $pdo->prepare("SELECT COUNT(*) FROM usuarios WHERE treinador_id = ?");
+        $stmtAlunos->execute([$_SESSION['id']]);
+        $qtdAlunos = $stmtAlunos->fetchColumn();
+      ?>
+      <a href="/pages/alunos.php" class="home-widget home-widget-cta">
+        <div class="home-widget-icon">👥</div>
+        <div class="home-widget-label">Seus Alunos</div>
+        <div class="home-widget-valor"><?= $qtdAlunos ?> aluno<?= $qtdAlunos != 1 ? 's' : '' ?></div>
+        <div class="home-widget-sub">Ver painel →</div>
+      </a>
+    <?php elseif (isset($me) && !empty($me['treinador_id']) && $me['status_vinculo'] === 'aceito'): ?>
+      <a href="/pages/treinos.php?aba=planilha" class="home-widget home-widget-cta">
+        <div class="home-widget-icon">📋</div>
+        <div class="home-widget-label">Planilha</div>
+        <div class="home-widget-valor">Ver Treinos</div>
+        <div class="home-widget-sub">Abrir planilha →</div>
+      </a>
+    <?php else: ?>
+      <a href="/pages/buscar-treinador.php" class="home-widget home-widget-cta">
+        <div class="home-widget-icon">🏋️</div>
+        <div class="home-widget-label">Treinador</div>
+        <div class="home-widget-valor">Procurar</div>
+        <div class="home-widget-sub">Ver treinadores →</div>
+      </a>
+    <?php endif; ?>
+
+  </div>
 
   <div class="section-spacer"></div>
 
@@ -181,32 +319,9 @@ if (isset($_SESSION['id'])):
   </section>
   <?php endif; ?>
 
-  <div class="section-spacer"></div>
-
-  <!-- SEÇÃO SOBRE ANTIGA -->
-  <section class="sobre">
-    <h2>Como Funciona</h2>
-    <p class="subtitulo">Tudo que um corredor precisa em um só lugar</p>
-    <div class="sobre-grid">
-      <div class="sobre-card">
-        <div class="icone">🏅</div>
-        <h3>Eventos</h3>
-        <p>Descubra corridas perto de você e fique por dentro dos próximos eventos da sua região.</p>
-      </div>
-      <div class="sobre-card">
-        <div class="icone">🏃</div>
-        <h3>Treinos</h3>
-        <p>Conecte-se com um treinador verificado e receba planilhas de treino personalizadas.</p>
-      </div>
-      <div class="sobre-card">
-        <div class="icone">👟</div>
-        <h3>Equipamentos</h3>
-        <p>Compartilhe descontos e reviews de tênis e acessórios com a comunidade de corredores.</p>
-      </div>
-    </div>
-  </section>
-
 </div>
+
+
 
 <script>
 // Lógica do Carrossel Netflix Premium
