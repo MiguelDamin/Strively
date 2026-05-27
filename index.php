@@ -526,23 +526,29 @@ else:
 .home-widget-cta .home-widget-sub { color: rgba(255,255,255,0.8); }
 
 @media(max-width: 768px) {
-  .nc-container { height: 420px; }
-  .nc-card { width: 240px; height: 380px; }
-  .nc-left { transform: translateX(-140px) scale(0.85); }
-  .nc-right { transform: translateX(140px) scale(0.85); }
+  .nc-container { height: 480px; }
+  .nc-card { width: 260px; height: 440px; }
+  .nc-left { transform: translateX(-150px) scale(0.85); }
+  .nc-right { transform: translateX(150px) scale(0.85); }
   .nc-nav { width: 40px; height: 40px; }
-  .nc-prev { left: 10px; }
-  .nc-next { right: 10px; }
+  .nc-prev { left: 5px; }
+  .nc-next { right: 5px; }
   .home-widgets { grid-template-columns: 1fr; padding: 24px 20px 0; }
   .home-widget { padding: 20px; }
 }
 
 @media(max-width: 640px) {
-    .hero-lp-content .hero-nav-brand { margin-bottom: 20px; }
-    .hero-nav-lp-custom { flex-direction: column; gap: 20px; align-items: center; text-align: center; }
-    .lp-h1, .lp-h1-destaque { font-size: 42px; }
-    .lp-stats { grid-template-columns: 1fr; margin-top: 20px; }
-    .lp-stat:not(:last-child)::after { display: none; }
+    .hero-lp { padding-top: 40px; }
+    .hero-nav-lp-custom { margin-bottom: 32px; gap: 10px; }
+    .hero-nav-brand span { font-size: 16px; letter-spacing: 2px; }
+    .hero-nav-link { padding: 6px 10px; font-size: 12px; }
+    .hero-nav-login { padding: 6px 14px; font-size: 12px; }
+    .lp-h1, .lp-h1-destaque { font-size: 38px; }
+    .lp-stats { grid-template-columns: repeat(3, 1fr); margin-top: -24px; max-width: 90%; }
+    .lp-stat { padding: 16px 8px; }
+    .lp-stat-num { font-size: 24px; }
+    .lp-stat-label { font-size: 10px; }
+    .lp-stat:not(:last-child)::after { height: 40%; }
 }
 </style>
 
