@@ -10,7 +10,6 @@ if (isset($_SESSION['id'])) {
 unset($only_session);
 $tituloPagina = "Corra Mais Longe";
 include 'components/head.php';
-include 'components/header.php';
 ?>
 
 <?php
