@@ -1,407 +1,280 @@
 <?php
-ob_start();
-require_once 'config/conexao.php';
-$tituloPagina = "Início";
+$only_session = true;
+require_once 'components/header.php';
 
-// Fetch upcoming active events for the carousel
-$stmt = $pdo->prepare("SELECT id, nome, cidade, data_evento, banner FROM eventos WHERE status = 'ativo' AND data_evento >= CURRENT_DATE ORDER BY data_evento ASC LIMIT 10");
-$stmt->execute();
-$eventos_carrossel = $stmt->fetchAll();
+if (isset($_SESSION['id'])) {
+    header('Location: /pages/perfil.php');
+    exit();
+}
+
+unset($only_session);
+$tituloPagina = "Corra Mais Longe";
+include 'components/head.php';
+include 'components/header.php';
 ?>
-<?php include('components/head.php'); ?>
-<?php include('components/header.php'); ?>
+
+<?php
+require_once 'config/conexao.php';
+
+// Próximos 3 eventos futuros aprovados
+$stmtEventos = $pdo->prepare("
+    SELECT nome, cidade, data_evento, distancias, banner
+    FROM eventos
+    WHERE status = 'aprovado'
+    AND data_evento >= CURRENT_DATE
+    ORDER BY data_evento ASC
+    LIMIT 3
+");
+$stmtEventos->execute();
+$eventosHome = $stmtEventos->fetchAll();
+
+// Treinadores aprovados (até 4)
+$stmtTreinadores = $pdo->prepare("
+    SELECT u.nome, u.foto, u.cidade, t.especialidade
+    FROM treinadores t
+    JOIN usuarios u ON u.id = t.usuario_id
+    WHERE t.status = 'aprovado'
+    ORDER BY t.id ASC
+    LIMIT 4
+");
+$stmtTreinadores->execute();
+$treinadoresHome = $stmtTreinadores->fetchAll();
+
+// Stats gerais
+$totalCorredores = $pdo->query("SELECT COUNT(*) FROM usuarios WHERE perfil = 'corredor'")->fetchColumn();
+$totalEventos = $pdo->query("SELECT COUNT(*) FROM eventos WHERE status = 'aprovado'")->fetchColumn();
+$totalTreinadores = $pdo->query("SELECT COUNT(*) FROM treinadores WHERE status = 'aprovado'")->fetchColumn();
+?>
 
 <style>
-/* =====================================================
-   CARROSSEL ESTILO NETFLIX
-   ===================================================== */
-.netflix-section {
-  padding: 60px 0;
-  background: linear-gradient(180deg, #f8f9fa 0%, #fff 100%);
-  overflow: hidden;
-}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+.lp { font-family: 'Outfit', sans-serif; background: #f5f6f5; width: 100%; overflow: hidden; }
 
-.nc-header {
-  text-align: center;
-  margin-bottom: 30px;
-}
-.nc-header h2 {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 2.4rem;
-  letter-spacing: 1.5px;
-  color: #111;
-  margin: 0;
-}
-.nc-header p {
-  color: var(--text-muted, #777);
-  font-size: 0.95rem;
-}
+/* HERO */
+.hero { background: #1DB954; padding: 60px 40px 70px; text-align: center; }
+.hero-logo { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 48px; }
+.hero-logo img { width: 42px; height: 42px; object-fit: contain; border-radius: 10px; }
+.hero-logo-name { color: #fff; font-family: 'Bebas Neue', sans-serif; font-size: 24px; letter-spacing: 3px; }
+.hero-eyebrow { color: rgba(255,255,255,0.8); font-size: 12px; font-weight: 500; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 16px; }
+.hero-h1 { color: #fff; font-family: 'Bebas Neue', sans-serif; font-size: 52px; line-height: 1.05; margin-bottom: 8px; letter-spacing: 1px; }
+.hero-h1-destaque { color: #0d0d0d; font-family: 'Bebas Neue', sans-serif; font-size: 52px; line-height: 1.05; letter-spacing: 1px; }
+.hero-sub { color: rgba(255,255,255,0.88); font-size: 16px; line-height: 1.7; max-width: 460px; margin: 16px auto 36px; font-weight: 300; }
+.hero-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.btn-white { background: #fff; color: #1DB954; border: none; border-radius: 50px; padding: 14px 30px; font-size: 15px; font-weight: 700; cursor: pointer; font-family: 'Outfit', sans-serif; text-decoration: none; display: inline-block; }
+.btn-outline-white { background: transparent; color: #fff; border: 1.5px solid rgba(255,255,255,0.55); border-radius: 50px; padding: 14px 30px; font-size: 15px; font-weight: 600; cursor: pointer; font-family: 'Outfit', sans-serif; text-decoration: none; display: inline-block; }
 
-.nc-container {
-  position: relative;
-  max-width: 900px;
-  margin: 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 480px; 
-}
+/* STATS */
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: #e0e0e0; border-top: 1px solid #e0e0e0; border-bottom: 1px solid #e0e0e0; }
+.stat { background: #fff; padding: 24px 16px; text-align: center; }
+.stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 34px; color: #1DB954; line-height: 1; }
+.stat-label { font-size: 12px; color: #8a8a8a; margin-top: 4px; font-weight: 500; }
 
-.nc-track {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  perspective: 1000px;
-}
+/* FEATURES */
+.section { padding: 52px 28px; background: #fff; }
+.section-alt { padding: 52px 28px; background: #f5f6f5; }
+.section-label { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #1DB954; margin-bottom: 8px; }
+.section-title { font-family: 'Bebas Neue', sans-serif; font-size: 32px; color: #0d0d0d; margin-bottom: 10px; letter-spacing: 1px; line-height: 1.1; }
+.section-sub { font-size: 15px; color: #4a4a4a; line-height: 1.7; max-width: 480px; font-weight: 300; }
+.features { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 28px; }
+.feat { background: #f5f6f5; border-radius: 16px; padding: 20px 18px; border: 1px solid #ebebeb; }
+.feat-icon { width: 40px; height: 40px; border-radius: 10px; background: rgba(29,185,84,0.12); display: flex; align-items: center; justify-content: center; margin-bottom: 12px; }
+.feat-icon svg { width: 22px; height: 22px; fill: #1DB954; }
+.feat-title { font-size: 14px; font-weight: 700; color: #0d0d0d; margin-bottom: 5px; }
+.feat-desc { font-size: 13px; color: #6a6a6a; line-height: 1.55; }
 
-.nc-nav {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  border: none;
-  background: #fff;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.1);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  z-index: 20;
-  transition: all 0.2s;
-}
-.nc-nav:hover { background: var(--green); }
-.nc-nav:hover svg { fill: #fff; }
-.nc-nav svg { width: 22px; height: 22px; fill: #333; transition: fill 0.2s; }
+/* EVENTOS */
+.eventos-list { display: flex; flex-direction: column; gap: 10px; margin-top: 24px; }
+.evento-row { background: #fff; border-radius: 16px; border: 1px solid #ebebeb; padding: 14px 16px; display: flex; align-items: center; gap: 14px; }
+.evento-date { text-align: center; min-width: 44px; flex-shrink: 0; }
+.evento-date-day { font-family: 'Bebas Neue', sans-serif; font-size: 26px; color: #1DB954; line-height: 1; }
+.evento-date-mon { font-size: 11px; color: #8a8a8a; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+.evento-sep { width: 1px; height: 40px; background: #ebebeb; flex-shrink: 0; }
+.evento-info { flex: 1; min-width: 0; }
+.evento-name { font-size: 14px; font-weight: 700; color: #0d0d0d; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.evento-city { font-size: 12px; color: #8a8a8a; margin-top: 2px; }
+.evento-dists { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 6px; }
+.dist-badge { font-size: 11px; background: rgba(29,185,84,0.1); color: #15923e; border-radius: 20px; padding: 2px 9px; font-weight: 600; }
+.ver-todos { display: block; text-align: center; margin-top: 20px; color: #1DB954; font-size: 14px; font-weight: 600; text-decoration: none; }
 
-.nc-prev { left: 10px; }
-.nc-next { right: 10px; }
+/* TREINADORES */
+.treinadores-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 24px; }
+.treinador-card { background: #fff; border-radius: 16px; border: 1px solid #ebebeb; padding: 20px 16px; text-align: center; }
+.treinador-avatar { width: 58px; height: 58px; border-radius: 50%; border: 2.5px solid #1DB954; overflow: hidden; margin: 0 auto 10px; display: flex; align-items: center; justify-content: center; background: rgba(29,185,84,0.08); }
+.treinador-avatar img { width: 100%; height: 100%; object-fit: cover; }
+.treinador-avatar svg { width: 28px; height: 28px; fill: #1DB954; }
+.treinador-nome { font-size: 14px; font-weight: 700; color: #0d0d0d; }
+.treinador-cidade { font-size: 12px; color: #8a8a8a; margin-top: 2px; }
+.treinador-esp { font-size: 12px; color: #4a4a4a; margin-top: 3px; }
+.treinador-badge { display: inline-block; margin-top: 8px; font-size: 11px; background: rgba(29,185,84,0.1); color: #15923e; border-radius: 20px; padding: 3px 10px; font-weight: 600; }
 
-/* The Cards */
-.nc-card {
-  position: absolute;
-  width: 280px;
-  height: 420px;
-  border-radius: 18px;
-  overflow: hidden;
-  background: #fff;
-  display: flex;
-  flex-direction: column;
-  transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1), 
-              opacity 0.5s cubic-bezier(0.25, 1, 0.5, 1), 
-              filter 0.5s cubic-bezier(0.25, 1, 0.5, 1),
-              box-shadow 0.5s cubic-bezier(0.25, 1, 0.5, 1);
-  cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+/* CTA */
+.cta { background: #0d0d0d; padding: 56px 28px; text-align: center; }
+.cta-title { font-family: 'Bebas Neue', sans-serif; font-size: 36px; color: #fff; margin-bottom: 10px; letter-spacing: 1px; }
+.cta-sub { font-size: 15px; color: rgba(255,255,255,0.55); margin-bottom: 28px; font-weight: 300; }
+.btn-green { background: #1DB954; color: #fff; border: none; border-radius: 50px; padding: 14px 34px; font-size: 15px; font-weight: 700; cursor: pointer; font-family: 'Outfit', sans-serif; text-decoration: none; display: inline-block; }
 
-  /* Start hidden by default to avoid flash */
-  opacity: 0;
-  pointer-events: none;
-  transform: scale(0.7);
-  z-index: 1;
-}
+/* FOOTER */
+.footer { padding: 24px 28px; border-top: 1px solid #ebebeb; display: flex; align-items: center; justify-content: space-between; background: #fff; flex-wrap: wrap; gap: 12px; }
+.footer-brand { font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 2px; color: #0d0d0d; }
+.footer-links { display: flex; gap: 20px; }
+.footer-link { font-size: 13px; color: #8a8a8a; text-decoration: none; }
 
-/* Card States */
-.nc-center {
-  transform: translateX(0) scale(1);
-  opacity: 1;
-  filter: none;
-  z-index: 10;
-  box-shadow: 0 20px 50px rgba(0,0,0,0.2);
-  pointer-events: auto;
-  border: 2.5px solid var(--green);
-}
-
-.nc-left {
-  transform: translateX(-190px) scale(0.85);
-  opacity: 0.55;
-  filter: blur(2.5px);
-  z-index: 5;
-  pointer-events: auto;
-}
-
-.nc-right {
-  transform: translateX(190px) scale(0.85);
-  opacity: 0.55;
-  filter: blur(2.5px);
-  z-index: 5;
-  pointer-events: auto;
-}
-
-.nc-hidden {
-  transform: translateX(0) scale(0.7);
-  opacity: 0;
-  filter: blur(4px);
-  z-index: 1;
-  pointer-events: none;
-}
-
-/* Card Internals */
-.nc-capa {
-  flex: 0 0 65%;
-  background-color: #f97316; /* Fallback laranja */
-  background-size: cover;
-  background-position: center;
-  position: relative;
-  display: flex;
-  align-items: flex-end;
-  padding: 24px;
-}
-.nc-capa::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 80%);
-}
-.nc-nome-destaque {
-  position: relative;
-  z-index: 2;
-  color: #fff;
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 2rem;
-  line-height: 1.1;
-  letter-spacing: 1px;
-  margin: 0;
-  text-shadow: 0 2px 8px rgba(0,0,0,0.5);
-}
-
-.nc-info {
-  flex: 1;
-  background: #fff;
-  padding: 16px 20px;
-  display: flex;
-  flex-direction: column;
-}
-.nc-info h4 {
-  font-family: 'Outfit', sans-serif;
-  font-size: 1rem;
-  font-weight: 700;
-  color: #111;
-  margin: 0 0 4px 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.nc-local, .nc-data {
-  margin: 0 0 2px 0;
-  font-size: 0.8rem;
-  color: #666;
-}
-.nc-btn {
-  margin-top: auto;
-  align-self: flex-start;
-  padding: 8px 20px;
-  border-radius: 100px;
-  border: 1.5px solid var(--green);
-  color: var(--green);
-  font-weight: 700;
-  font-size: 0.8rem;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  text-decoration: none;
-  transition: all 0.2s;
-}
-.nc-center .nc-btn {
-  background: var(--green);
-  color: #fff;
-}
-.nc-btn:hover {
-  background: #199e46 !important;
-  color: #fff;
-  border-color: #199e46;
-}
-
-@media(max-width: 768px) {
-  .nc-left { transform: translateX(-120px) scale(0.85); opacity: 0.3; }
-  .nc-right { transform: translateX(120px) scale(0.85); opacity: 0.3; }
-  .nc-nav { display: none; }
-}
-.nc-track {
-  touch-action: pan-y; /* Previne a rolagem horizontal nativa do celular ao fazer o swipe */
+/* MOBILE */
+@media (max-width: 640px) {
+    .hero { padding: 40px 24px 52px; }
+    .hero-h1, .hero-h1-destaque { font-size: 38px; }
+    .features { grid-template-columns: 1fr; }
+    .treinadores-grid { grid-template-columns: 1fr; }
+    .section, .section-alt { padding: 40px 20px; }
+    .cta { padding: 44px 20px; }
+    .footer { flex-direction: column; align-items: flex-start; }
 }
 </style>
+
 <body>
+<div class="lp">
 
-  <!-- =====================================================
-       HERO — seção principal centralizada
-       ===================================================== -->
-  <section class="hero">
-
-    <h1>Corra <span>Mais Longe</span><br>Com o Strively</h1>
-
-    <p>Conecte-se com treinadores, descubra eventos de corrida perto de você e compartilhe equipamentos com a comunidade.</p>
-
-    <div class="hero-buttons">
-      <?php if (!isset($_SESSION['id'])): ?>
-        <!-- VISITANTE -->
-        <a href="pages/cadastro.php" class="btn-primary">Criar conta grátis</a>
-        <a href="pages/eventos.php" class="btn-secondary">Ver eventos</a>
-
-      <?php elseif (isset($me) && $me['perfil'] === 'treinador'): ?>
-        <!-- TREINADOR -->
-        <a href="pages/eventos.php" class="btn-secondary">Ver eventos</a>
-        <a href="/pages/alunos.php" class="btn-primary">Ver alunos</a>
-
-      <?php elseif (isset($me) && !empty($me['treinador_id']) && $me['status_vinculo'] === 'aceito'): ?>
-        <!-- CORREDOR COM TREINADOR ACEITO -->
-        <a href="pages/eventos.php" class="btn-secondary">Ver eventos</a>
-        <a href="/pages/treinos.php" class="btn-primary">Ver treinos</a>
-
-      <?php else: ?>
-        <!-- CORREDOR SEM TREINADOR OU PENDENTE -->
-        <a href="pages/eventos.php" class="btn-secondary">Ver eventos</a>
-        <a href="/pages/buscar-treinador.php" class="btn-primary">Procurar treinador</a>
-
-      <?php endif; ?>
+<!-- HERO -->
+<div class="hero">
+    <div class="hero-logo">
+        <img src="/images/logo_branca.webp" alt="Strively">
+        <span class="hero-logo-name">Strively</span>
     </div>
-
-  </section>
-
-  <!-- =====================================================
-       CARROSSEL EVENTOS ESTILO NETFLIX
-       ===================================================== -->
-  <?php if (!empty($eventos_carrossel)): ?>
-  <section class="netflix-section">
-    <div class="nc-header">
-      <h2>Próximas Corridas</h2>
-      <p>Eventos em destaque na plataforma</p>
+    <p class="hero-eyebrow">Plataforma para corredores</p>
+    <h1 class="hero-h1">Corra mais longe<br><span class="hero-h1-destaque">com quem entende</span></h1>
+    <p class="hero-sub">Conecte-se com treinadores, acompanhe sua evolução, descubra eventos perto de você e faça parte de uma comunidade de corredores.</p>
+    <div class="hero-btns">
+        <a href="/pages/cadastro.php" class="btn-white">Criar conta grátis</a>
+        <a href="/pages/eventos.php" class="btn-outline-white">Ver eventos</a>
     </div>
-    <div class="nc-container">
-      
-      <?php if (count($eventos_carrossel) > 1): ?>
-        <button class="nc-nav nc-prev" onclick="ncMover(-1)">
-          <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
-        </button>
-      <?php endif; ?>
+</div>
 
-      <div class="nc-track" id="ncTrack">
-        <?php foreach ($eventos_carrossel as $i => $ev): ?>
-          <?php 
-            $capa = strpos($ev['banner'], 'http') === 0 || empty($ev['banner']) ? $ev['banner'] : '/' . $ev['banner'];
+<!-- STATS -->
+<div class="stats">
+    <div class="stat">
+        <div class="stat-num">+<?= $totalCorredores ?></div>
+        <div class="stat-label">Corredores</div>
+    </div>
+    <div class="stat">
+        <div class="stat-num">+<?= $totalEventos ?></div>
+        <div class="stat-label">Eventos</div>
+    </div>
+    <div class="stat">
+        <div class="stat-num">+<?= $totalTreinadores ?></div>
+        <div class="stat-label">Treinadores</div>
+    </div>
+</div>
+
+<!-- FEATURES -->
+<div class="section">
+    <p class="section-label">O que é o Strively</p>
+    <h2 class="section-title">Tudo que um corredor precisa</h2>
+    <p class="section-sub">Do treino ao evento, do treinador à comunidade — organize sua vida de corredor.</p>
+    <div class="features">
+        <div class="feat">
+            <div class="feat-icon"><svg viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5C3.9 3 3 3.9 3 5v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg></div>
+            <div class="feat-title">Calendário de treinos</div>
+            <div class="feat-desc">Receba treinos do seu treinador e acompanhe sua evolução semana a semana.</div>
+        </div>
+        <div class="feat">
+            <div class="feat-icon"><svg viewBox="0 0 24 24"><path d="M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.63 4.39 4.94A5.01 5.01 0 0 0 11 14.9V17H9v2h6v-2h-2v-2.1a5.01 5.01 0 0 0 3.61-2.96C19.08 11.63 21 9.55 21 7V7c0-1.1-.9-2-2-2z"/></svg></div>
+            <div class="feat-title">Eventos de corrida</div>
+            <div class="feat-desc">Descubra provas perto de você e adicione ao seu calendário com um clique.</div>
+        </div>
+        <div class="feat">
+            <div class="feat-icon"><svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg></div>
+            <div class="feat-title">Treinadores</div>
+            <div class="feat-desc">Encontre o treinador ideal e receba planilhas personalizadas para você.</div>
+        </div>
+        <div class="feat">
+            <div class="feat-icon"><svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg></div>
+            <div class="feat-title">Comunidade</div>
+            <div class="feat-desc">Compartilhe seus treinos, conquistas e se inspire com outros corredores.</div>
+        </div>
+    </div>
+</div>
+
+<!-- EVENTOS -->
+<div class="section-alt">
+    <p class="section-label">Próximas corridas</p>
+    <h2 class="section-title">Eventos perto de você</h2>
+    <div class="eventos-list">
+        <?php
+        $meses = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+        foreach ($eventosHome as $ev):
             $dt = new DateTime($ev['data_evento']);
-          ?>
-          <div class="nc-card" data-index="<?= $i ?>" onclick="ncIrPara(<?= $i ?>)">
-            <div class="nc-capa" <?= $capa ? "style=\"background-image:url('$capa')\"" : "" ?>>
-              <h3 class="nc-nome-destaque"><?= htmlspecialchars($ev['nome']) ?></h3>
+            $distancias = array_filter(array_map('trim', explode(',', $ev['distancias'] ?? '')));
+        ?>
+        <div class="evento-row">
+            <div class="evento-date">
+                <div class="evento-date-day"><?= $dt->format('d') ?></div>
+                <div class="evento-date-mon"><?= $meses[(int)$dt->format('m')-1] ?></div>
             </div>
-            <div class="nc-info">
-              <h4><?= htmlspecialchars($ev['nome']) ?></h4>
-              <p class="nc-local">📍 <?= htmlspecialchars($ev['cidade']) ?></p>
-              <p class="nc-data">📅 <?= $dt->format('d/m/Y') ?></p>
-              <a href="/pages/eventos.php" class="nc-btn">Ver detalhes</a>
+            <div class="evento-sep"></div>
+            <div class="evento-info">
+                <div class="evento-name"><?= htmlspecialchars($ev['nome']) ?></div>
+                <div class="evento-city">📍 <?= htmlspecialchars($ev['cidade'] ?? '') ?></div>
+                <?php if (!empty($distancias)): ?>
+                <div class="evento-dists">
+                    <?php foreach ($distancias as $d): ?>
+                        <span class="dist-badge"><?= htmlspecialchars($d) ?></span>
+                    <?php endforeach; ?>
+                </div>
+                <?php endif; ?>
             </div>
-          </div>
+        </div>
         <?php endforeach; ?>
-      </div>
-
-      <?php if (count($eventos_carrossel) > 1): ?>
-        <button class="nc-nav nc-next" onclick="ncMover(1)">
-          <svg viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
-        </button>
-      <?php endif; ?>
-
     </div>
-  </section>
-  <?php endif; ?>
+    <a href="/pages/eventos.php" class="ver-todos">Ver todos os eventos →</a>
+</div>
 
-  <!-- =====================================================
-       SEÇÃO EXPLICATIVA — como funciona o Strively
-       ===================================================== -->
-  <section class="sobre">
-
-    <h2>Como Funciona</h2>
-    <p class="subtitulo">Tudo que um corredor precisa em um só lugar</p>
-
-    <div class="sobre-grid">
-
-      <!-- Card 1 -->
-      <div class="sobre-card">
-        <div class="icone">🏅</div>
-        <h3>Eventos</h3>
-        <p>Descubra corridas perto de você e fique por dentro dos próximos eventos da sua região.</p>
-      </div>
-
-      <!-- Card 2 -->
-      <div class="sobre-card">
-        <div class="icone">🏃</div>
-        <h3>Treinos</h3>
-        <p>Conecte-se com um treinador verificado e receba planilhas de treino personalizadas.</p>
-      </div>
-
-      <!-- Card 3 -->
-      <div class="sobre-card">
-        <div class="icone">👟</div>
-        <h3>Equipamentos</h3>
-        <p>Compartilhe descontos e reviews de tênis e acessórios com a comunidade de corredores.</p>
-      </div>
-
+<!-- TREINADORES -->
+<div class="section">
+    <p class="section-label">Treinadores</p>
+    <h2 class="section-title">Encontre seu treinador ideal</h2>
+    <p class="section-sub">Profissionais verificados prontos para montar sua planilha personalizada.</p>
+    <div class="treinadores-grid">
+        <?php foreach ($treinadoresHome as $tr): ?>
+        <div class="treinador-card">
+            <div class="treinador-avatar">
+                <?php if (!empty($tr['foto'])): ?>
+                    <img src="<?= strpos($tr['foto'], 'http') === 0 ? htmlspecialchars($tr['foto']) : '/' . htmlspecialchars($tr['foto']) ?>" alt="<?= htmlspecialchars($tr['nome']) ?>">
+                <?php else: ?>
+                    <svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+                <?php endif; ?>
+            </div>
+            <div class="treinador-nome"><?= htmlspecialchars(explode(' ', $tr['nome'])[0] . ' ' . (explode(' ', $tr['nome'])[1] ?? '')) ?></div>
+            <?php if (!empty($tr['cidade'])): ?>
+            <div class="treinador-cidade">📍 <?= htmlspecialchars($tr['cidade']) ?></div>
+            <?php endif; ?>
+            <?php if (!empty($tr['especialidade'])): ?>
+            <div class="treinador-esp"><?= htmlspecialchars($tr['especialidade']) ?></div>
+            <?php endif; ?>
+            <span class="treinador-badge">✓ Verificado</span>
+        </div>
+        <?php endforeach; ?>
     </div>
+    <a href="/pages/buscar-treinador.php" class="ver-todos">Ver todos os treinadores →</a>
+</div>
 
-  </section>
+<!-- CTA -->
+<div class="cta">
+    <h2 class="cta-title">Pronto para correr mais longe?</h2>
+    <p class="cta-sub">Crie sua conta grátis e comece hoje mesmo.</p>
+    <a href="/pages/cadastro.php" class="btn-green">Criar conta grátis</a>
+</div>
 
-<script>
-// Lógica do Carrossel Netflix
-let ncIndex = 0;
-const ncCards = document.querySelectorAll('.nc-card');
-const ncTotal = ncCards.length;
+<!-- FOOTER -->
+<div class="footer">
+    <span class="footer-brand">Strively</span>
+    <div class="footer-links">
+        <a href="/pages/eventos.php" class="footer-link">Eventos</a>
+        <a href="/pages/buscar-treinador.php" class="footer-link">Treinadores</a>
+        <a href="/pages/comunidade.php" class="footer-link">Comunidade</a>
+        <a href="/pages/login.php" class="footer-link">Login</a>
+    </div>
+</div>
 
-function renderNcCarousel() {
-  if (ncTotal === 0) return;
-  ncCards.forEach((card, i) => {
-    // Reseta classes
-    card.className = 'nc-card'; 
-    if (i === ncIndex) {
-      card.classList.add('nc-center');
-    } else if (ncTotal >= 3) {
-      if (i === (ncIndex - 1 + ncTotal) % ncTotal) card.classList.add('nc-left');
-      else if (i === (ncIndex + 1) % ncTotal) card.classList.add('nc-right');
-      else card.classList.add('nc-hidden');
-    } else if (ncTotal === 2) {
-      if (i !== ncIndex) card.classList.add('nc-right'); // com 2 cards, o outro vai pra direita
-    }
-  });
-}
-
-function ncMover(dir) {
-  if (ncTotal > 1) {
-    ncIndex = (ncIndex + dir + ncTotal) % ncTotal;
-    renderNcCarousel();
-  }
-}
-
-function ncIrPara(i) {
-  if (i === ncIndex) {
-    // Se clicou no do centro, leva pra página
-    window.location.href = '/pages/eventos.php';
-  } else {
-    // Se clicou no lateral, traz pro centro
-    ncIndex = i;
-    renderNcCarousel();
-  }
-}
-
-if (ncTotal > 0) {
-  renderNcCarousel();
-  
-  // Touch Swipe para Mobile - Restaurado
-  const track = document.getElementById('ncTrack');
-  let startX = 0;
-  
-  track.addEventListener('touchstart', e => {
-    startX = e.changedTouches[0].screenX;
-  }, {passive: true});
-  
-  track.addEventListener('touchend', e => {
-    const endX = e.changedTouches[0].screenX;
-    if (endX < startX - 40) ncMover(1); // Swipe Left = Próximo
-    if (endX > startX + 40) ncMover(-1); // Swipe Right = Anterior
-  }, {passive: true});
-}
-</script>
-
+</div><!-- /.lp -->
 </body>
 </html>
