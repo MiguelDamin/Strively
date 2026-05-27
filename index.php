@@ -441,19 +441,12 @@ else:
 
 <style>
 /* ========== LANDING PAGE PREMIUM CSS ========== */
-.lp * { box-sizing: border-box; margin: 0; padding: 0; }
-.lp { font-family: 'Outfit', sans-serif; background: #fafafa; width: 100%; overflow-x: hidden; color: #1a1a1a; }
-
-/* Containers da landing não podem vazar */
-.lp,
-.hero-lp,
-.lp-stats,
-.section-lp,
-.lp-features,
-.lp-treinadores-grid,
-.lp-eventos-list {
-  max-width: 100%;
+.lp {
+  font-family: 'Outfit', sans-serif;
+  background: #fafafa;
+  width: 100%;
   overflow-x: hidden;
+  color: #1a1a1a;
 }
 
 /* Cards do carrossel não podem criar overflow */
@@ -463,9 +456,9 @@ else:
 }
 .netflix-section {
   width: 100%;
-  max-width: 100%;
-  overflow: hidden;   /* <- overflow:hidden APENAS aqui no wrapper externo */
   position: relative;
+  padding: 0 0 40px 0;
+  /* SEM overflow de nenhum tipo */
 }
 .hero-lp { background: linear-gradient(160deg, #1DB954 0%, #17a34a 40%, #0f8a3e 100%); padding: 72px 32px 84px; text-align: center; position: relative; overflow: hidden; }
 .hero-lp::before { content: ''; position: absolute; top: -120px; right: -80px; width: 380px; height: 380px; background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%); border-radius: 50%; pointer-events: none; }
@@ -549,13 +542,14 @@ else:
 .nc-header p { color: #888; font-size: 1rem; font-weight: 300; margin-top: 4px; }
 .nc-container {
   position: relative;
+  width: 100%;
   max-width: 1000px;
   margin: 0 auto;
   display: flex;
   align-items: center;
   justify-content: center;
   height: 520px;
-  clip-path: inset(0 -100vw);  /* permite cards saírem lateralmente sem criar scrollbar */
+  /* SEM overflow */
 }
 .nc-track {
   position: relative;
@@ -565,6 +559,7 @@ else:
   align-items: center;
   justify-content: center;
   perspective: 1200px;
+  /* SEM overflow */
 }
 .nc-nav { position: absolute; top: 50%; transform: translateY(-50%); width: 50px; height: 50px; border-radius: 50%; border: none; background: #fff; box-shadow: 0 8px 20px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 30; transition: all 0.3s; }
 .nc-nav:hover { background: #1DB954; transform: translateY(-50%) scale(1.1); }
@@ -574,20 +569,22 @@ else:
 .nc-next { right: -20px; }
 .nc-card { position: absolute; width: 300px; height: 460px; border-radius: 20px; overflow: hidden; background: #fff; display: flex; flex-direction: column; transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.05); opacity: 0; pointer-events: none; transform: scale(0.7); z-index: 1; }
 .nc-center { transform: translateX(0) scale(1.1) !important; opacity: 1 !important; filter: none !important; z-index: 20 !important; box-shadow: 0 25px 60px rgba(0,0,0,0.2) !important; pointer-events: auto; }
-.nc-left { transform: translateX(-240px) scale(0.85); opacity: 0.6; filter: blur(4px); z-index: 10; pointer-events: auto; }
-.nc-right { transform: translateX(240px) scale(0.85); opacity: 0.6; filter: blur(4px); z-index: 10; pointer-events: auto; }
+.nc-left  { transform: translateX(-220px) scale(0.85); opacity: 0.6; filter: blur(3px); z-index: 10; pointer-events: auto; }
+.nc-right { transform: translateX(220px)  scale(0.85); opacity: 0.6; filter: blur(3px); z-index: 10; pointer-events: auto; }
 .nc-hidden { transform: translateX(0) scale(0.6); opacity: 0; filter: blur(8px); z-index: 1; pointer-events: none; }
 .nc-top { flex: 0 0 65%; background-color: #eee; background-size: cover; background-position: center; position: relative; display: flex; align-items: center; justify-content: center; }
 .nc-top::after { content: ''; position: absolute; inset: 0; background: linear-gradient(transparent, rgba(0,0,0,0.2)); }
 .nc-base {
   flex: 1;
   background: #fff;
-  padding: 18px 16px 16px;
+  padding: 16px 16px 14px;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
   gap: 4px;
+  min-height: 0;       /* permite que flex encolha */
+  overflow: hidden;    /* corta conteúdo que passar da altura disponível */
 }
 .nc-base h4 { font-family: 'Outfit', sans-serif; font-size: 1.15rem; font-weight: 700; color: #111; margin: 0 0 4px 0; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .nc-base .nc-loc { font-size: 0.88rem; color: #777; margin-bottom: 2px; }
@@ -596,27 +593,28 @@ else:
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;          /* não encolhe */
   margin-top: auto;
-  padding: 9px 22px;
+  padding: 8px 20px;
   border-radius: 100px;
   border: 2px solid #1DB954;
   color: #1DB954;
   font-family: 'Outfit', sans-serif;
-  font-size: 0.78rem;
+  font-size: 0.75rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.4px;
   text-decoration: none;
-  width: fit-content;          /* NÃO ocupa 100% da largura */
-  align-self: center;          /* centraliza horizontalmente */
-  transition: all 0.2s ease;
+  width: auto;
+  align-self: center;
   white-space: nowrap;
+  transition: all 0.2s ease;
 }
+
 .nc-center .nc-btn-v {
   background: #1DB954;
   color: #fff;
-  box-shadow: 0 4px 14px rgba(29,185,84,0.25);
-  border-color: #1DB954;
+  box-shadow: 0 3px 12px rgba(29,185,84,0.3);
 }
 .nc-btn-v:hover {
   background: #17a348 !important;
@@ -640,20 +638,20 @@ else:
 .home-widget-cta .home-widget-valor { color: #fff; }
 .home-widget-cta .home-widget-sub { color: rgba(255,255,255,0.8); }
 
-@media(max-width: 768px) {
+@media (max-width: 900px) {
   .nc-container { height: 480px; }
-  .nc-card { width: 260px; height: 440px; }
-  .nc-left { transform: translateX(-150px) scale(0.85); }
-  .nc-right { transform: translateX(150px) scale(0.85); }
-  .nc-nav { display: none !important; }
-  .nc-prev { left: 5px; }
-  .nc-next { right: 5px; }
+  .nc-card      { width: 260px; height: 400px; }
+  .nc-left      { transform: translateX(-160px) scale(0.83); }
+  .nc-right     { transform: translateX(160px)  scale(0.83); }
+}
+
+@media (max-width: 768px) {
   .nc-btn-v { display: none !important; }
   .home-widgets { grid-template-columns: 1fr; padding: 24px 20px 0; }
   .home-widget { padding: 20px; }
 }
 
-@media(max-width: 640px) {
+@media (max-width: 640px) {
     .hero-lp { padding-top: 40px; }
     .hero-nav-lp { justify-content: space-between !important; padding: 0 4px !important; margin-bottom: 32px !important; }
     .hero-nav-links .hero-nav-link { display: none !important; }
@@ -668,15 +666,20 @@ else:
     .lp-stat:not(:last-child)::after { height: 40%; }
 }
 
-@media (max-width: 480px) {
-  .nc-container { height: 400px; }
-  .nc-card { width: 220px; height: 350px; }
-  .nc-left  { transform: translateX(-120px) scale(0.82); }
-  .nc-right { transform: translateX(120px)  scale(0.82); }
-  .nc-top   { flex: 0 0 62%; }
-  .section-lp-alt {
-    padding: 48px 16px 40px;
-  }
+@media (max-width: 600px) {
+  .nc-container { height: 420px; }
+  .nc-card      { width: 230px; height: 360px; }
+  .nc-left      { transform: translateX(-110px) scale(0.80); }
+  .nc-right     { transform: translateX(110px)  scale(0.80); }
+  .nc-nav       { display: none !important; }
+  .nc-btn-v     { display: none !important; }
+}
+
+@media (max-width: 380px) {
+  .nc-container { height: 380px; }
+  .nc-card      { width: 200px; height: 320px; }
+  .nc-left      { transform: translateX(-95px) scale(0.78); }
+  .nc-right     { transform: translateX(95px)  scale(0.78); }
 }
 </style>
 
