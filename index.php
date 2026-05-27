@@ -315,50 +315,70 @@ else:
         </div>
         
         <?php if (!empty($eventosCarrossel)): ?>
-        <div class="nc-container">
-            <?php if (count($eventosCarrossel) > 1): ?>
-                <button class="nc-nav nc-prev" onclick="ncMover(-1)">
-                    <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
-                </button>
-            <?php endif; ?>
-            <div class="nc-track" id="ncTrack">
-                <?php foreach ($eventosCarrossel as $i => $ev): ?>
-                    <?php 
-                        $capa = strpos($ev['banner'], 'http') === 0 || empty($ev['banner']) ? $ev['banner'] : '/' . $ev['banner'];
-                        $dt = new DateTime($ev['data_evento']);
-                    ?>
-                    <div class="nc-card" data-index="<?= $i ?>" onclick="ncIrPara(<?= $i ?>)">
-                        <div class="nc-top" <?= $capa ? "style=\"background-image:url('$capa')\"" : "" ?>>
+        <div class="netflix-section">
+            <div class="nc-container">
+                <?php if (count($eventosCarrossel) > 1): ?>
+                    <button class="nc-nav nc-prev" onclick="ncMover(-1)">
+                        <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
+                    </button>
+                <?php endif; ?>
+                <div class="nc-track" id="ncTrack">
+                    <?php foreach ($eventosCarrossel as $i => $ev): ?>
+                        <?php 
+                            $capa = strpos($ev['banner'], 'http') === 0 || empty($ev['banner']) ? $ev['banner'] : '/' . $ev['banner'];
+                            $dt = new DateTime($ev['data_evento']);
+                        ?>
+                        <div class="nc-card" data-index="<?= $i ?>" onclick="ncIrPara(<?= $i ?>)">
+                            <div class="nc-top" <?= $capa ? "style=\"background-image:url('$capa')\"" : "" ?>>
+                            </div>
+                            <div class="nc-base">
+                                <h4><?= htmlspecialchars($ev['nome']) ?></h4>
+                                <p class="nc-loc">📍 <?= htmlspecialchars($ev['cidade']) ?></p>
+                                <p class="nc-dat">📅 <?= $dt->format('d/m/Y') ?></p>
+                                <a href="/pages/login.php?msg=cadastre" class="nc-btn-v">Ver detalhes</a>
+                            </div>
                         </div>
-                        <div class="nc-base">
-                            <h4><?= htmlspecialchars($ev['nome']) ?></h4>
-                            <p class="nc-loc">📍 <?= htmlspecialchars($ev['cidade']) ?></p>
-                            <p class="nc-dat">📅 <?= $dt->format('d/m/Y') ?></p>
-                            <a href="/pages/login.php?msg=cadastre" class="nc-btn-v">Ver detalhes</a>
-                        </div>
-                    </div>
-                <?php endforeach; ?>
+                    <?php endforeach; ?>
+                </div>
+                <?php if (count($eventosCarrossel) > 1): ?>
+                    <button class="nc-nav nc-next" onclick="ncMover(1)">
+                        <svg viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
+                    </button>
+                <?php endif; ?>
             </div>
-            <?php if (count($eventosCarrossel) > 1): ?>
-                <button class="nc-nav nc-next" onclick="ncMover(1)">
-                    <svg viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
-                </button>
-            <?php endif; ?>
         </div>
         <?php endif; ?>
 
-        <div style="text-align:center;margin-top:32px;">
-            <a href="/pages/eventos.php" style="
-                display:inline-flex;align-items:center;gap:8px;
-                background:transparent;color:#1DB954;
-                border:2px solid #1DB954;border-radius:50px;
-                padding:12px 28px;font-family:'Outfit',sans-serif;
-                font-size:0.9rem;font-weight:700;text-decoration:none;
-                transition:all 0.25s;letter-spacing:0.3px;
-            " onmouseover="this.style.background='#1DB954';this.style.color='#fff'" 
-               onmouseout="this.style.background='transparent';this.style.color='#1DB954'">
-                Ver todos os eventos →
-            </a>
+        <div style="
+          text-align: center;
+          margin-top: 36px;
+          margin-bottom: 8px;
+          padding: 0 24px 16px;
+          width: 100%;
+          box-sizing: border-box;
+        ">
+          <a href="/pages/eventos.php"
+             onmouseover="this.style.background='#1DB954';this.style.color='#fff'"
+             onmouseout="this.style.background='transparent';this.style.color='#1DB954'"
+             style="
+               display: inline-flex;
+               align-items: center;
+               gap: 8px;
+               background: transparent;
+               color: #1DB954;
+               border: 2px solid #1DB954;
+               border-radius: 50px;
+               padding: 12px 32px;
+               font-family: 'Outfit', sans-serif;
+               font-size: 0.9rem;
+               font-weight: 700;
+               text-decoration: none;
+               transition: all 0.25s;
+               letter-spacing: 0.3px;
+               white-space: nowrap;
+             ">
+            Ver todos os eventos →
+          </a>
         </div>
     </div>
 
@@ -429,13 +449,9 @@ else:
 .hero-lp,
 .lp-stats,
 .section-lp,
-.section-lp-alt,
 .lp-features,
 .lp-treinadores-grid,
-.lp-eventos-list,
-.nc-container,
-.nc-track,
-.netflix-section {
+.lp-eventos-list {
   max-width: 100%;
   overflow-x: hidden;
 }
@@ -444,6 +460,12 @@ else:
 .nc-card {
   flex-shrink: 0;
   max-width: 100%;
+}
+.netflix-section {
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;   /* <- overflow:hidden APENAS aqui no wrapper externo */
+  position: relative;
 }
 .hero-lp { background: linear-gradient(160deg, #1DB954 0%, #17a34a 40%, #0f8a3e 100%); padding: 72px 32px 84px; text-align: center; position: relative; overflow: hidden; }
 .hero-lp::before { content: ''; position: absolute; top: -120px; right: -80px; width: 380px; height: 380px; background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%); border-radius: 50%; pointer-events: none; }
@@ -475,7 +497,12 @@ else:
 .lp-stat-label { font-size: 13px; color: #999; margin-top: 4px; font-weight: 500; }
 
 .section-lp { padding: 72px 28px; background: #fff; }
-.section-lp-alt { padding: 72px 28px; background: #f5f6f5; }
+.section-lp-alt {
+  padding: 72px 28px;
+  background: #f5f6f5;
+  width: 100%;
+  box-sizing: border-box;
+}
 .section-lp-header { text-align: center; max-width: 540px; margin: 0 auto 36px; }
 .lp-section-label { font-size: 12px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: #1DB954; margin-bottom: 10px; display: block; }
 .lp-section-title { font-family: 'Bebas Neue', sans-serif; font-size: 38px; color: #0d0d0d; margin-bottom: 12px; letter-spacing: 1px; line-height: 1.1; }
@@ -520,8 +547,25 @@ else:
 .nc-header { text-align: center; margin-bottom: 40px; padding: 0 20px; }
 .nc-header h2 { font-family: 'Bebas Neue', sans-serif; font-size: 3rem; letter-spacing: 1.5px; color: #111; margin: 0; }
 .nc-header p { color: #888; font-size: 1rem; font-weight: 300; margin-top: 4px; }
-.nc-container { position: relative; max-width: 1000px; margin: 0 auto; display: flex; align-items: center; justify-content: center; height: 520px; overflow: hidden; }
-.nc-track { position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; perspective: 1200px; overflow: hidden; }
+.nc-container {
+  position: relative;
+  max-width: 1000px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 520px;
+  clip-path: inset(0 -100vw);  /* permite cards saírem lateralmente sem criar scrollbar */
+}
+.nc-track {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  perspective: 1200px;
+}
 .nc-nav { position: absolute; top: 50%; transform: translateY(-50%); width: 50px; height: 50px; border-radius: 50%; border: none; background: #fff; box-shadow: 0 8px 20px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 30; transition: all 0.3s; }
 .nc-nav:hover { background: #1DB954; transform: translateY(-50%) scale(1.1); }
 .nc-nav:hover svg { fill: #fff; }
@@ -622,6 +666,17 @@ else:
     .lp-stat-num { font-size: 24px; }
     .lp-stat-label { font-size: 10px; }
     .lp-stat:not(:last-child)::after { height: 40%; }
+}
+
+@media (max-width: 480px) {
+  .nc-container { height: 400px; }
+  .nc-card { width: 220px; height: 350px; }
+  .nc-left  { transform: translateX(-120px) scale(0.82); }
+  .nc-right { transform: translateX(120px)  scale(0.82); }
+  .nc-top   { flex: 0 0 62%; }
+  .section-lp-alt {
+    padding: 48px 16px 40px;
+  }
 }
 </style>
 
