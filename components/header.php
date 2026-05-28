@@ -345,69 +345,63 @@ if (isset($_SESSION['id']) && isset($pdo)) {
     transform: translate(-50%, -50%);
     z-index: 99999;
     pointer-events: none;
+    width: 60px;
+    height: 60px;
 ">
-    <svg id="loader-runner" width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-        <g class="running-body" stroke="#1DB954" stroke-width="8" stroke-linecap="round" fill="none">
-            <!-- Cabeça -->
-            <circle cx="60" cy="15" r="7" fill="#1DB954" stroke="none"/>
-            <!-- Tronco -->
-            <line x1="60" y1="22" x2="45" y2="48" />
+    <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: 100%;">
+        <g stroke="#1DB954" stroke-width="12" stroke-linecap="round" fill="none">
+            <!-- Chão pontilhado -->
+            <line class="ground-move" x1="-100" y1="95" x2="200" y2="95" stroke-dasharray="1, 20" />
             
-            <!-- Braço Traseiro -->
-            <path class="arm-back-full" d="M 52 28 L 35 35 L 45 50" />
-            
-            <!-- Perna Traseira (Pushing) -->
-            <path class="leg-back-full" d="M 45 48 L 30 65 L 45 85" />
-            
-            <!-- Perna Frontal (Lifting) -->
-            <path class="leg-front-full" d="M 45 48 L 65 65 L 55 85" />
-            
-            <!-- Braço Frontal -->
-            <path class="arm-front-full" d="M 52 28 L 70 35 L 60 50" />
+            <!-- Boneco -->
+            <g class="stri-runner-small">
+                <!-- Cabeça -->
+                <circle cx="50" cy="15" r="8" fill="#1DB954" stroke="none" />
+                <!-- Corpo -->
+                <line x1="50" y1="25" x2="40" y2="55" />
+                <!-- Braços -->
+                <line class="arm-b" x1="46" y1="35" x2="30" y2="50" />
+                <line class="arm-f" x1="46" y1="35" x2="65" y2="45" />
+                <!-- Pernas -->
+                <line class="leg-b" x1="40" y1="55" x2="25" y2="80" />
+                <line class="leg-f" x1="40" y1="55" x2="60" y2="80" />
+            </g>
         </g>
     </svg>
 </div>
 
 <style>
-@keyframes runBody {
-    0%, 100% { transform: translateY(0) rotate(0deg); }
-    50% { transform: translateY(-5px) rotate(-2deg); }
+@keyframes groundFlow {
+    from { stroke-dashoffset: 0; }
+    to { stroke-dashoffset: 42; }
 }
-.running-body {
-    animation: runBody 0.6s ease-in-out infinite;
-    transform-origin: 45px 48px;
-}
-
-@keyframes legMoveFront {
-    0% { d: path("M 45 48 L 65 65 L 55 85"); }
-    25% { d: path("M 45 48 L 50 75 L 75 88"); } /* Foot down/push */
-    50% { d: path("M 45 48 L 30 65 L 45 85"); } /* Leg back */
-    75% { d: path("M 45 48 L 55 55 L 70 65"); } /* Knee lift */
-    100% { d: path("M 45 48 L 65 65 L 55 85"); }
-}
-@keyframes legMoveBack {
-    0% { d: path("M 45 48 L 30 65 L 45 85"); }
-    25% { d: path("M 45 48 L 55 55 L 70 65"); }
-    50% { d: path("M 45 48 L 65 65 L 55 85"); }
-    75% { d: path("M 45 48 L 50 75 L 75 88"); }
-    100% { d: path("M 45 48 L 30 65 L 45 85"); }
+.ground-move {
+    animation: groundFlow 0.5s linear infinite;
 }
 
-@keyframes armMoveFront {
-    0%   { d: path("M 52 28 L 70 35 L 60 50"); }
-    50%  { d: path("M 52 28 L 35 35 L 45 50"); }
-    100% { d: path("M 52 28 L 70 35 L 60 50"); }
+@keyframes runnerSmallBounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
 }
-@keyframes armMoveBack {
-    0%   { d: path("M 52 28 L 35 35 L 45 50"); }
-    50%  { d: path("M 52 28 L 70 35 L 60 50"); }
-    100% { d: path("M 52 28 L 35 35 L 45 50"); }
+.stri-runner-small {
+    animation: runnerSmallBounce 0.25s ease-in-out infinite;
 }
 
-.leg-front-full { animation: legMoveFront 0.6s infinite ease-in-out; }
-.leg-back-full { animation: legMoveBack 0.6s infinite ease-in-out; }
-.arm-front-full { animation: armMoveFront 0.6s infinite ease-in-out; }
-.arm-back-full { animation: armMoveBack 0.6s infinite ease-in-out; }
+@keyframes legSwing {
+    0% { transform: rotate(-30deg); transform-origin: 40px 55px; }
+    50% { transform: rotate(40deg); transform-origin: 40px 55px; }
+    100% { transform: rotate(-30deg); transform-origin: 40px 55px; }
+}
+@keyframes armSwing {
+    0% { transform: rotate(40deg); transform-origin: 46px 35px; }
+    50% { transform: rotate(-40deg); transform-origin: 46px 35px; }
+    100% { transform: rotate(40deg); transform-origin: 46px 35px; }
+}
+
+.leg-f { animation: legSwing 0.5s ease-in-out infinite; }
+.leg-b { animation: legSwing 0.5s ease-in-out infinite reverse; }
+.arm-f { animation: armSwing 0.5s ease-in-out infinite; }
+.arm-b { animation: armSwing 0.5s ease-in-out infinite reverse; }
 
 @media (max-width: 768px) {
     header nav {
