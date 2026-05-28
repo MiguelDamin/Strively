@@ -336,7 +336,6 @@ if (isset($_SESSION['id']) && isset($pdo)) {
 </button>
 
 <!-- Scripts: dropdown desktop + bottom sheet mobile + PWA -->
-<style>
 <!-- LOADER GLOBAL -->
 <div id="global-loader" style="
     display: none;
@@ -400,7 +399,6 @@ if (isset($_SESSION['id']) && isset($pdo)) {
 #leg-back-upper, #leg-back-lower   { animation: legBackAnim  0.4s ease-in-out infinite; }
 #arm-front { animation: armFrontAnim 0.4s ease-in-out infinite; }
 #arm-back  { animation: armBackAnim  0.4s ease-in-out infinite; }
-</style>
 
 @media (max-width: 768px) {
     header nav {
