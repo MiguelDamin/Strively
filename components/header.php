@@ -337,6 +337,69 @@ if (isset($_SESSION['id']) && isset($pdo)) {
 
 <!-- Scripts: dropdown desktop + bottom sheet mobile + PWA -->
 <style>
+<!-- =====================================================
+     GLOBAL LOADER (BONECO CORRENDO)
+     ===================================================== -->
+<div id="stri-loader" class="stri-loader-bg" style="display: none;">
+  <div class="stri-loader-content">
+    <div class="runner">
+      <div class="head"></div>
+      <div class="body"></div>
+      <div class="arm-front"></div>
+      <div class="arm-back"></div>
+      <div class="leg-front"></div>
+      <div class="leg-back"></div>
+    </div>
+    <p>Carregando...</p>
+  </div>
+</div>
+
+<style>
+.stri-loader-bg {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 99999;
+  font-family: 'Outfit', sans-serif;
+}
+.stri-loader-content { text-align: center; color: #111; }
+.stri-loader-content p { margin-top: 15px; font-weight: 600; font-size: 1rem; color: #1DB954; }
+
+/* Runner Animation */
+.runner {
+  position: relative;
+  width: 50px;
+  height: 80px;
+  margin: 0 auto;
+}
+.runner div { position: absolute; background: #333; border-radius: 4px; }
+.runner .head {
+  width: 16px; height: 16px; border-radius: 50%;
+  top: 0; left: 17px;
+}
+.runner .body {
+  width: 6px; height: 35px;
+  top: 16px; left: 22px;
+  transform: rotate(10deg);
+}
+.runner .arm-front, .runner .arm-back, .runner .leg-front, .runner .leg-back {
+  width: 6px; height: 30px; transform-origin: top center;
+}
+.runner .arm-front { top: 18px; left: 22px; background: #1DB954; animation: run 0.6s infinite alternate; }
+.runner .arm-back { top: 18px; left: 22px; background: #111; animation: run 0.6s infinite alternate-reverse; }
+.runner .leg-front { top: 48px; left: 22px; background: #1DB954; animation: run 0.6s infinite alternate; }
+.runner .leg-back { top: 48px; left: 22px; background: #111; animation: run 0.6s infinite alternate-reverse; }
+
+@keyframes run {
+  0% { transform: rotate(-35deg); }
+  100% { transform: rotate(35deg); }
+}
+
 @media (max-width: 768px) {
     header nav {
         display: flex !important;
@@ -465,4 +528,44 @@ body.modal-aberto {
       });
     }
   });
+
+  /* =====================================================
+     CONTROLE DO LOADER (PLANO DE CONTINGÊNCIA)
+     ===================================================== */
+  const STRI_ENABLE_LOADER = true; // Altere para false para desativar globalmente
+
+  if (STRI_ENABLE_LOADER) {
+      const loader = document.getElementById('stri-loader');
+      
+      const showLoader = () => {
+          if (loader) loader.style.display = 'flex';
+      };
+
+      // 1. Mostrar ao sair da página (links, submissões)
+      window.addEventListener('beforeunload', () => {
+          showLoader();
+      });
+
+      // 2. Garantir que formulários mostram o loader
+      document.addEventListener('submit', (e) => {
+          // Só mostra se o formulário não for validado via JS (HTML5 valid)
+          if (e.target.checkValidity ? e.target.checkValidity() : true) {
+              showLoader();
+          }
+      });
+
+      // 3. Fallback: Esconder se o usuário voltar ou se demorar mais de 10s (previne travar a tela)
+      window.addEventListener('pageshow', (event) => {
+          if (event.persisted && loader) {
+              loader.style.display = 'none';
+          }
+      });
+
+      // Timeout de segurança
+      setTimeout(() => {
+          if (loader && loader.style.display === 'flex') {
+              // loader.style.display = 'none'; 
+          }
+      }, 8000);
+  }
 </script>

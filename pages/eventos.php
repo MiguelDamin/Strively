@@ -22,6 +22,20 @@ include '../components/head.php';
 include '../components/header.php';
 ?>
 
+<script>
+function confirmarRedirecionamento(url) {
+    if (!url || url === '#' || url === '') return;
+    
+    // Formatar a URL para exibição amigável
+    let displayUrl = url.replace(/^https?:\/\//, '');
+    if (displayUrl.length > 50) displayUrl = displayUrl.substring(0, 47) + '...';
+    
+    if (confirm("Você está sendo redirecionado para a página:\n" + displayUrl)) {
+        window.open(url, '_blank');
+    }
+}
+</script>
+
 <style>
 .card-footer {
   display: flex;
@@ -159,7 +173,7 @@ include '../components/header.php';
       <?php if (!empty($eventos)): ?>
         <?php foreach ($eventos as $evento): ?>
 
-          <div class="evento-card" onclick="window.open('<?= htmlspecialchars($evento['link_oficial']) ?>', '_blank')">
+          <div class="evento-card" onclick="confirmarRedirecionamento('<?= htmlspecialchars(addslashes($evento['link_oficial'])) ?>')">
 
             <div class="evento-banner-wrap">
               <?php if (!empty($evento['banner'])): ?>
@@ -230,7 +244,10 @@ include '../components/header.php';
                   <?php if (isset($_SESSION['id']) && ($_SESSION['id'] == $evento['usuario_id'] || $_SESSION['perfil'] === 'admin')): ?>
                     <a href="/pages/editar-evento.php?id=<?= $evento['id'] ?>" class="btn-secondary" style="flex:1; padding:8px 10px; font-size:0.85rem; background:#f5f5f5; border-color:#ccc; color:#333; text-align:center; max-width:140px; display:inline-block" onclick="event.stopPropagation()">Editar</a>
                   <?php endif; ?>
-                  <a href="<?= htmlspecialchars($evento['link_oficial']) ?>" target="_blank" rel="noopener" class="btn-secondary" style="flex:1; padding:8px 10px; font-size:0.85rem; text-align:center; max-width:140px; display:inline-block" onclick="event.stopPropagation()">Detalhes</a>
+                  <a href="javascript:void(0)" 
+                     onclick="event.stopPropagation(); confirmarRedirecionamento('<?= htmlspecialchars(addslashes($evento['link_oficial'])) ?>')" 
+                     class="btn-secondary" 
+                     style="flex:1; padding:8px 10px; font-size:0.85rem; text-align:center; max-width:140px; display:inline-block">Detalhes</a>
                 </div>
               </div>
 
