@@ -347,69 +347,67 @@ if (isset($_SESSION['id']) && isset($pdo)) {
     pointer-events: none;
 ">
     <svg id="loader-runner" width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-        <g stroke="#1DB954" stroke-width="6" stroke-linecap="round" fill="none">
+        <g class="running-body" stroke="#1DB954" stroke-width="8" stroke-linecap="round" fill="none">
             <!-- Cabeça -->
-            <circle cx="55" cy="18" r="8" fill="#1DB954" stroke="none"/>
+            <circle cx="60" cy="15" r="7" fill="#1DB954" stroke="none"/>
             <!-- Tronco -->
-            <line x1="55" y1="26" x2="45" y2="52" />
+            <line x1="60" y1="22" x2="45" y2="48" />
+            
             <!-- Braço Traseiro -->
-            <g class="arm-back">
-                <line x1="52" y1="32" x2="35" y2="42" />
-                <line x1="35" y1="42" x2="42" y2="58" />
-            </g>
-            <!-- Perna Traseira -->
-            <g class="leg-back">
-                <line x1="45" y1="52" x2="35" y2="68" />
-                <line x1="35" y1="68" x2="52" y2="82" />
-            </g>
-            <!-- Perna Frontal -->
-            <g class="leg-front">
-                <line x1="45" y1="52" x2="65" y2="70" />
-                <line x1="65" y1="70" x2="55" y2="88" />
-            </g>
+            <path class="arm-back-full" d="M 52 28 L 35 35 L 45 50" />
+            
+            <!-- Perna Traseira (Pushing) -->
+            <path class="leg-back-full" d="M 45 48 L 30 65 L 45 85" />
+            
+            <!-- Perna Frontal (Lifting) -->
+            <path class="leg-front-full" d="M 45 48 L 65 65 L 55 85" />
+            
             <!-- Braço Frontal -->
-            <g class="arm-front">
-                <line x1="52" y1="32" x2="68" y2="45" />
-                <line x1="68" y1="45" x2="58" y2="60" />
-            </g>
+            <path class="arm-front-full" d="M 52 28 L 70 35 L 60 50" />
         </g>
     </svg>
 </div>
 
 <style>
-@keyframes runBounce {
-    0%, 100% { transform: translate(-50%, -50%) translateY(0); }
-    50% { transform: translate(-50%, -50%) translateY(-5px); }
+@keyframes runBody {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-5px) rotate(-2deg); }
 }
-#global-loader {
-    animation: runBounce 0.4s ease-in-out infinite;
-}
-
-@keyframes legFrontRun {
-    0% { transform: rotate(-30deg); transform-origin: 45px 52px; }
-    50% { transform: rotate(40deg); transform-origin: 45px 52px; }
-    100% { transform: rotate(-30deg); transform-origin: 45px 52px; }
-}
-@keyframes legBackRun {
-    0% { transform: rotate(40deg); transform-origin: 45px 52px; }
-    50% { transform: rotate(-30deg); transform-origin: 45px 52px; }
-    100% { transform: rotate(40deg); transform-origin: 45px 52px; }
-}
-@keyframes armFrontRun {
-    0% { transform: rotate(30deg); transform-origin: 52px 32px; }
-    50% { transform: rotate(-40deg); transform-origin: 52px 32px; }
-    100% { transform: rotate(30deg); transform-origin: 52px 32px; }
-}
-@keyframes armBackRun {
-    0% { transform: rotate(-40deg); transform-origin: 52px 32px; }
-    50% { transform: rotate(30deg); transform-origin: 52px 32px; }
-    100% { transform: rotate(-40deg); transform-origin: 52px 32px; }
+.running-body {
+    animation: runBody 0.6s ease-in-out infinite;
+    transform-origin: 45px 48px;
 }
 
-.leg-front { animation: legFrontRun 0.4s infinite linear; }
-.leg-back { animation: legBackRun 0.4s infinite linear; }
-.arm-front { animation: armFrontRun 0.4s infinite linear; }
-.arm-back { animation: armBackRun 0.4s infinite linear; }
+@keyframes legMoveFront {
+    0% { d: path("M 45 48 L 65 65 L 55 85"); }
+    25% { d: path("M 45 48 L 50 75 L 75 88"); } /* Foot down/push */
+    50% { d: path("M 45 48 L 30 65 L 45 85"); } /* Leg back */
+    75% { d: path("M 45 48 L 55 55 L 70 65"); } /* Knee lift */
+    100% { d: path("M 45 48 L 65 65 L 55 85"); }
+}
+@keyframes legMoveBack {
+    0% { d: path("M 45 48 L 30 65 L 45 85"); }
+    25% { d: path("M 45 48 L 55 55 L 70 65"); }
+    50% { d: path("M 45 48 L 65 65 L 55 85"); }
+    75% { d: path("M 45 48 L 50 75 L 75 88"); }
+    100% { d: path("M 45 48 L 30 65 L 45 85"); }
+}
+
+@keyframes armMoveFront {
+    0%   { d: path("M 52 28 L 70 35 L 60 50"); }
+    50%  { d: path("M 52 28 L 35 35 L 45 50"); }
+    100% { d: path("M 52 28 L 70 35 L 60 50"); }
+}
+@keyframes armMoveBack {
+    0%   { d: path("M 52 28 L 35 35 L 45 50"); }
+    50%  { d: path("M 52 28 L 70 35 L 60 50"); }
+    100% { d: path("M 52 28 L 35 35 L 45 50"); }
+}
+
+.leg-front-full { animation: legMoveFront 0.6s infinite ease-in-out; }
+.leg-back-full { animation: legMoveBack 0.6s infinite ease-in-out; }
+.arm-front-full { animation: armMoveFront 0.6s infinite ease-in-out; }
+.arm-back-full { animation: armMoveBack 0.6s infinite ease-in-out; }
 
 @media (max-width: 768px) {
     header nav {
