@@ -337,68 +337,70 @@ if (isset($_SESSION['id']) && isset($pdo)) {
 
 <!-- Scripts: dropdown desktop + bottom sheet mobile + PWA -->
 <style>
-<!-- =====================================================
-     GLOBAL LOADER (BONECO CORRENDO)
-     ===================================================== -->
-<div id="stri-loader" class="stri-loader-bg" style="display: none;">
-  <div class="stri-loader-content">
-    <div class="runner">
-      <div class="head"></div>
-      <div class="body"></div>
-      <div class="arm-front"></div>
-      <div class="arm-back"></div>
-      <div class="leg-front"></div>
-      <div class="leg-back"></div>
-    </div>
-    <p>Carregando...</p>
-  </div>
+<!-- LOADER GLOBAL -->
+<div id="global-loader" style="
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 99999;
+    pointer-events: none;
+">
+    <svg id="loader-runner" width="80" height="80" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <!-- Cabeça -->
+        <circle cx="72" cy="18" r="8" fill="#1DB954"/>
+        <!-- Corpo -->
+        <line x1="72" y1="26" x2="62" y2="55" stroke="#1DB954" stroke-width="4" stroke-linecap="round"/>
+        <!-- Braço direito (frente) -->
+        <line id="arm-front" x1="68" y1="35" x2="82" y2="48" stroke="#1DB954" stroke-width="3.5" stroke-linecap="round"/>
+        <!-- Braço esquerdo (trás) -->
+        <line id="arm-back" x1="68" y1="35" x2="54" y2="44" stroke="#1DB954" stroke-width="3.5" stroke-linecap="round"/>
+        <!-- Perna direita (frente) -->
+        <line id="leg-front-upper" x1="62" y1="55" x2="72" y2="72" stroke="#1DB954" stroke-width="4" stroke-linecap="round"/>
+        <line id="leg-front-lower" x1="72" y1="72" x2="80" y2="85" stroke="#1DB954" stroke-width="4" stroke-linecap="round"/>
+        <!-- Perna esquerda (trás) -->
+        <line id="leg-back-upper" x1="62" y1="55" x2="50" y2="68" stroke="#1DB954" stroke-width="4" stroke-linecap="round"/>
+        <line id="leg-back-lower" x1="50" y1="68" x2="42" y2="82" stroke="#1DB954" stroke-width="4" stroke-linecap="round"/>
+    </svg>
 </div>
 
 <style>
-.stri-loader-bg {
-  position: fixed;
-  top: 0; left: 0; width: 100%; height: 100%;
-  background: rgba(255, 255, 255, 0.82);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 99999;
-  font-family: 'Outfit', sans-serif;
+@keyframes runnerAnim {
+    0%   { transform: translate(-50%, -50%) scaleY(1); }
+    50%  { transform: translate(-50%, -52%) scaleY(0.97); }
+    100% { transform: translate(-50%, -50%) scaleY(1); }
 }
-.stri-loader-content { text-align: center; color: #111; }
-.stri-loader-content p { margin-top: 15px; font-weight: 600; font-size: 1rem; color: #1DB954; }
+#global-loader {
+    animation: runnerAnim 0.4s ease-in-out infinite;
+}
 
-/* Runner Animation */
-.runner {
-  position: relative;
-  width: 50px;
-  height: 80px;
-  margin: 0 auto;
+/* Pernas alternando */
+@keyframes legFrontAnim {
+    0%   { transform-origin: 62px 55px; transform: rotate(0deg); }
+    50%  { transform-origin: 62px 55px; transform: rotate(25deg); }
+    100% { transform-origin: 62px 55px; transform: rotate(0deg); }
 }
-.runner div { position: absolute; background: #333; border-radius: 4px; }
-.runner .head {
-  width: 16px; height: 16px; border-radius: 50%;
-  top: 0; left: 17px;
+@keyframes legBackAnim {
+    0%   { transform-origin: 62px 55px; transform: rotate(0deg); }
+    50%  { transform-origin: 62px 55px; transform: rotate(-25deg); }
+    100% { transform-origin: 62px 55px; transform: rotate(0deg); }
 }
-.runner .body {
-  width: 6px; height: 35px;
-  top: 16px; left: 22px;
-  transform: rotate(10deg);
+@keyframes armFrontAnim {
+    0%   { transform-origin: 68px 35px; transform: rotate(0deg); }
+    50%  { transform-origin: 68px 35px; transform: rotate(-20deg); }
+    100% { transform-origin: 68px 35px; transform: rotate(0deg); }
 }
-.runner .arm-front, .runner .arm-back, .runner .leg-front, .runner .leg-back {
-  width: 6px; height: 30px; transform-origin: top center;
+@keyframes armBackAnim {
+    0%   { transform-origin: 68px 35px; transform: rotate(0deg); }
+    50%  { transform-origin: 68px 35px; transform: rotate(20deg); }
+    100% { transform-origin: 68px 35px; transform: rotate(0deg); }
 }
-.runner .arm-front { top: 18px; left: 22px; background: #1DB954; animation: run 0.6s infinite alternate; }
-.runner .arm-back { top: 18px; left: 22px; background: #111; animation: run 0.6s infinite alternate-reverse; }
-.runner .leg-front { top: 48px; left: 22px; background: #1DB954; animation: run 0.6s infinite alternate; }
-.runner .leg-back { top: 48px; left: 22px; background: #111; animation: run 0.6s infinite alternate-reverse; }
-
-@keyframes run {
-  0% { transform: rotate(-35deg); }
-  100% { transform: rotate(35deg); }
-}
+#leg-front-upper, #leg-front-lower { animation: legFrontAnim 0.4s ease-in-out infinite; }
+#leg-back-upper, #leg-back-lower   { animation: legBackAnim  0.4s ease-in-out infinite; }
+#arm-front { animation: armFrontAnim 0.4s ease-in-out infinite; }
+#arm-back  { animation: armBackAnim  0.4s ease-in-out infinite; }
+</style>
 
 @media (max-width: 768px) {
     header nav {
@@ -529,43 +531,58 @@ body.modal-aberto {
     }
   });
 
-  /* =====================================================
-     CONTROLE DO LOADER (PLANO DE CONTINGÊNCIA)
-     ===================================================== */
-  const STRI_ENABLE_LOADER = true; // Altere para false para desativar globalmente
+  // === LOADER GLOBAL ===
+  const loader = document.getElementById('global-loader');
+  let loaderTimer = null;
 
-  if (STRI_ENABLE_LOADER) {
-      const loader = document.getElementById('stri-loader');
-      
-      const showLoader = () => {
-          if (loader) loader.style.display = 'flex';
-      };
-
-      // 1. Mostrar ao sair da página (links, submissões)
-      window.addEventListener('beforeunload', () => {
-          showLoader();
-      });
-
-      // 2. Garantir que formulários mostram o loader
-      document.addEventListener('submit', (e) => {
-          // Só mostra se o formulário não for validado via JS (HTML5 valid)
-          if (e.target.checkValidity ? e.target.checkValidity() : true) {
-              showLoader();
-          }
-      });
-
-      // 3. Fallback: Esconder se o usuário voltar ou se demorar mais de 10s (previne travar a tela)
-      window.addEventListener('pageshow', (event) => {
-          if (event.persisted && loader) {
-              loader.style.display = 'none';
-          }
-      });
-
-      // Timeout de segurança
-      setTimeout(() => {
-          if (loader && loader.style.display === 'flex') {
-              // loader.style.display = 'none'; 
-          }
-      }, 8000);
+  function showLoader() {
+      // Só mostra após 150ms — se carregar antes, nem aparece
+      loaderTimer = setTimeout(() => {
+          if (loader) loader.style.display = 'block';
+      }, 150);
   }
+
+  function hideLoader() {
+      clearTimeout(loaderTimer);
+      if (loader) loader.style.display = 'none';
+  }
+
+  // Esconder loader quando página carregar
+  window.addEventListener('load', hideLoader);
+  window.addEventListener('pageshow', hideLoader);
+
+  // Interceptar TODOS os links de navegação
+  document.addEventListener('click', function(e) {
+      const link = e.target.closest('a');
+      const btn = e.target.closest('button');
+
+      // Ignorar links externos, âncoras, javascript:, e links de evento externo
+      if (link) {
+          const href = link.getAttribute('href') || '';
+          const isExternal = href.startsWith('http') && !href.includes('strively.run');
+          const isAnchor = href.startsWith('#');
+          const isVoid = href.startsWith('javascript');
+          const isEventoExterno = link.classList.contains('link-externo-evento');
+
+          if (isExternal || isAnchor || isVoid || isEventoExterno) return;
+          if (link.target === '_blank') return;
+
+          showLoader();
+      }
+
+      // Interceptar botões que fazem submit de form
+      if (btn && btn.type === 'submit') {
+          // Não mostrar em botões de modal (dentro de .modal-overlay ou similar)
+          if (btn.closest('.modal-overlay, .modal-box, .modal-criar-post, #modalCriarPost')) return;
+          showLoader();
+      }
+  });
+
+  // Interceptar submits de formulários
+  document.addEventListener('submit', function(e) {
+      const form = e.target;
+      // Ignorar forms dentro de modais
+      if (form.closest('.modal-overlay, .modal-box, .modal-criar-post, #modalCriarPost')) return;
+      showLoader();
+  });
 </script>

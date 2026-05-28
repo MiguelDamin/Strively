@@ -166,13 +166,57 @@ include '../components/header.php';
           <a href="/pages/editar-evento.php?id=<?= $evento['id'] ?>" class="btn-secondary" style="background:#f5f5f5; color:#333; border-color:#ccc;">✏️ Editar</a>
         <?php endif; ?>
         <?php if (!empty($evento['link_oficial'])): ?>
-          <a href="<?= htmlspecialchars($evento['link_oficial']) ?>" target="_blank" class="btn-primary">Acessar Site Oficial</a>
+          <a href="#" 
+             class="link-externo-evento btn-primary"
+             onclick="return redirecionarExterno('<?= htmlspecialchars($evento['link_oficial']) ?>')">
+             Acessar Site Oficial
+          </a>
         <?php endif; ?>
       </div>
 
     </div>
 
   </section>
+
+  <div id="toast-redirect" style="
+      display: none;
+      position: fixed;
+      top: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #0d0d0d;
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: 50px;
+      font-size: 13px;
+      font-weight: 500;
+      z-index: 99999;
+      white-space: nowrap;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+      font-family: 'Outfit', sans-serif;
+      max-width: 90vw;
+      text-align: center;
+      white-space: normal;
+  ">
+  </div>
+
+  <script>
+  function redirecionarExterno(url) {
+      const toast = document.getElementById('toast-redirect');
+      // Extrair domínio da URL
+      let dominio = url;
+      try { dominio = new URL(url).hostname; } catch(e) {}
+      
+      toast.textContent = 'Você está sendo redirecionado para ' + dominio + '...';
+      toast.style.display = 'block';
+      
+      setTimeout(() => {
+          window.location.href = url;
+      }, 2000);
+      
+      return false; // previne navegação imediata
+  }
+  </script>
 
 </body>
 </html>
