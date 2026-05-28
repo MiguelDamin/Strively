@@ -346,59 +346,70 @@ if (isset($_SESSION['id']) && isset($pdo)) {
     z-index: 99999;
     pointer-events: none;
 ">
-    <svg id="loader-runner" width="80" height="80" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-        <!-- Cabeça -->
-        <circle cx="72" cy="18" r="8" fill="#1DB954"/>
-        <!-- Corpo -->
-        <line x1="72" y1="26" x2="62" y2="55" stroke="#1DB954" stroke-width="4" stroke-linecap="round"/>
-        <!-- Braço direito (frente) -->
-        <line id="arm-front" x1="68" y1="35" x2="82" y2="48" stroke="#1DB954" stroke-width="3.5" stroke-linecap="round"/>
-        <!-- Braço esquerdo (trás) -->
-        <line id="arm-back" x1="68" y1="35" x2="54" y2="44" stroke="#1DB954" stroke-width="3.5" stroke-linecap="round"/>
-        <!-- Perna direita (frente) -->
-        <line id="leg-front-upper" x1="62" y1="55" x2="72" y2="72" stroke="#1DB954" stroke-width="4" stroke-linecap="round"/>
-        <line id="leg-front-lower" x1="72" y1="72" x2="80" y2="85" stroke="#1DB954" stroke-width="4" stroke-linecap="round"/>
-        <!-- Perna esquerda (trás) -->
-        <line id="leg-back-upper" x1="62" y1="55" x2="50" y2="68" stroke="#1DB954" stroke-width="4" stroke-linecap="round"/>
-        <line id="leg-back-lower" x1="50" y1="68" x2="42" y2="82" stroke="#1DB954" stroke-width="4" stroke-linecap="round"/>
+    <svg id="loader-runner" width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <g stroke="#1DB954" stroke-width="6" stroke-linecap="round" fill="none">
+            <!-- Cabeça -->
+            <circle cx="55" cy="18" r="8" fill="#1DB954" stroke="none"/>
+            <!-- Tronco -->
+            <line x1="55" y1="26" x2="45" y2="52" />
+            <!-- Braço Traseiro -->
+            <g class="arm-back">
+                <line x1="52" y1="32" x2="35" y2="42" />
+                <line x1="35" y1="42" x2="42" y2="58" />
+            </g>
+            <!-- Perna Traseira -->
+            <g class="leg-back">
+                <line x1="45" y1="52" x2="35" y2="68" />
+                <line x1="35" y1="68" x2="52" y2="82" />
+            </g>
+            <!-- Perna Frontal -->
+            <g class="leg-front">
+                <line x1="45" y1="52" x2="65" y2="70" />
+                <line x1="65" y1="70" x2="55" y2="88" />
+            </g>
+            <!-- Braço Frontal -->
+            <g class="arm-front">
+                <line x1="52" y1="32" x2="68" y2="45" />
+                <line x1="68" y1="45" x2="58" y2="60" />
+            </g>
+        </g>
     </svg>
 </div>
 
 <style>
-@keyframes runnerAnim {
-    0%   { transform: translate(-50%, -50%) scaleY(1); }
-    50%  { transform: translate(-50%, -52%) scaleY(0.97); }
-    100% { transform: translate(-50%, -50%) scaleY(1); }
+@keyframes runBounce {
+    0%, 100% { transform: translate(-50%, -50%) translateY(0); }
+    50% { transform: translate(-50%, -50%) translateY(-5px); }
 }
 #global-loader {
-    animation: runnerAnim 0.4s ease-in-out infinite;
+    animation: runBounce 0.4s ease-in-out infinite;
 }
 
-/* Pernas alternando */
-@keyframes legFrontAnim {
-    0%   { transform-origin: 62px 55px; transform: rotate(0deg); }
-    50%  { transform-origin: 62px 55px; transform: rotate(25deg); }
-    100% { transform-origin: 62px 55px; transform: rotate(0deg); }
+@keyframes legFrontRun {
+    0% { transform: rotate(-30deg); transform-origin: 45px 52px; }
+    50% { transform: rotate(40deg); transform-origin: 45px 52px; }
+    100% { transform: rotate(-30deg); transform-origin: 45px 52px; }
 }
-@keyframes legBackAnim {
-    0%   { transform-origin: 62px 55px; transform: rotate(0deg); }
-    50%  { transform-origin: 62px 55px; transform: rotate(-25deg); }
-    100% { transform-origin: 62px 55px; transform: rotate(0deg); }
+@keyframes legBackRun {
+    0% { transform: rotate(40deg); transform-origin: 45px 52px; }
+    50% { transform: rotate(-30deg); transform-origin: 45px 52px; }
+    100% { transform: rotate(40deg); transform-origin: 45px 52px; }
 }
-@keyframes armFrontAnim {
-    0%   { transform-origin: 68px 35px; transform: rotate(0deg); }
-    50%  { transform-origin: 68px 35px; transform: rotate(-20deg); }
-    100% { transform-origin: 68px 35px; transform: rotate(0deg); }
+@keyframes armFrontRun {
+    0% { transform: rotate(30deg); transform-origin: 52px 32px; }
+    50% { transform: rotate(-40deg); transform-origin: 52px 32px; }
+    100% { transform: rotate(30deg); transform-origin: 52px 32px; }
 }
-@keyframes armBackAnim {
-    0%   { transform-origin: 68px 35px; transform: rotate(0deg); }
-    50%  { transform-origin: 68px 35px; transform: rotate(20deg); }
-    100% { transform-origin: 68px 35px; transform: rotate(0deg); }
+@keyframes armBackRun {
+    0% { transform: rotate(-40deg); transform-origin: 52px 32px; }
+    50% { transform: rotate(30deg); transform-origin: 52px 32px; }
+    100% { transform: rotate(-40deg); transform-origin: 52px 32px; }
 }
-#leg-front-upper, #leg-front-lower { animation: legFrontAnim 0.4s ease-in-out infinite; }
-#leg-back-upper, #leg-back-lower   { animation: legBackAnim  0.4s ease-in-out infinite; }
-#arm-front { animation: armFrontAnim 0.4s ease-in-out infinite; }
-#arm-back  { animation: armBackAnim  0.4s ease-in-out infinite; }
+
+.leg-front { animation: legFrontRun 0.4s infinite linear; }
+.leg-back { animation: legBackRun 0.4s infinite linear; }
+.arm-front { animation: armFrontRun 0.4s infinite linear; }
+.arm-back { animation: armBackRun 0.4s infinite linear; }
 
 @media (max-width: 768px) {
     header nav {
