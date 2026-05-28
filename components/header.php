@@ -337,6 +337,53 @@ if (isset($_SESSION['id']) && isset($pdo)) {
 
 <!-- Scripts: dropdown desktop + bottom sheet mobile + PWA -->
 
+<style>
+@media (max-width: 768px) {
+    header nav {
+        display: flex !important;
+        align-items: center !important;
+    }
+    .btn-voltar-mobile {
+        display: inline-flex !important;
+        align-items: center !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+}
+@media (min-width: 769px) {
+    .btn-voltar-mobile {
+        display: none !important;
+    }
+}
+
+/* Bloquear scroll do fundo quando modal aberto */
+body.modal-aberto {
+    overflow: hidden !important;
+    height: 100% !important;
+}
+
+/* Overlay dos modais — garantir que absorve todos os eventos de toque */
+.modal-overlay,
+[id*="modal"],
+.sheet-overlay,
+.bottom-sheet-overlay {
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* O conteúdo interno do modal pode scrollar */
+.modal-box,
+.modal-body,
+.modal-content,
+.modal-card,
+.modal-box-detalhes,
+.modal-box-confirm,
+.bottom-sheet {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+}
+</style>
 
 <script>
   /* Desktop dropdown */
