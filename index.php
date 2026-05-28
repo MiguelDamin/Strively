@@ -335,7 +335,6 @@ else:
                                 <h4><?= htmlspecialchars($ev['nome']) ?></h4>
                                 <p class="nc-loc">📍 <?= htmlspecialchars($ev['cidade']) ?></p>
                                 <p class="nc-dat">📅 <?= $dt->format('d/m/Y') ?></p>
-                                <a href="/pages/login.php?msg=cadastre" class="nc-btn-v">Ver detalhes</a>
                             </div>
                         </div>
                     <?php endforeach; ?>
@@ -618,40 +617,10 @@ else:
 }
 .nc-base .nc-loc { font-size: 0.88rem; color: #777; margin-bottom: 2px; }
 .nc-base .nc-dat { font-size: 0.88rem; color: #1DB954; font-weight: 600; margin-bottom: 12px; }
-.nc-btn-v {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;          /* não encolhe */
-  margin-top: auto;
-  padding: 8px 20px;
-  border-radius: 100px;
-  border: 2px solid #1DB954;
-  color: #1DB954;
-  font-family: 'Outfit', sans-serif;
-  font-size: 0.75rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.4px;
-  text-decoration: none;
-  width: auto;
-  align-self: center;
-  white-space: nowrap;
-  transition: all 0.2s ease;
-}
+.nc-base .nc-loc { font-size: 0.88rem; color: #777; margin-bottom: 2px; }
+.nc-base .nc-dat { font-size: 0.88rem; color: #1DB954; font-weight: 600; margin-bottom: 12px; }
 
-.nc-center .nc-btn-v {
-  background: #1DB954;
-  color: #fff;
-  box-shadow: 0 3px 12px rgba(29,185,84,0.3);
-}
-.nc-btn-v:hover {
-  background: #17a348 !important;
-  color: #fff !important;
-  border-color: #17a348 !important;
-  transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(29,185,84,0.3) !important;
-}
+/* WIDGETS */
 
 /* WIDGETS */
 .home-widgets { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; max-width: 1000px; margin: 0 auto; padding: 40px 24px 0; }
@@ -675,7 +644,6 @@ else:
 }
 
 @media (max-width: 768px) {
-  .nc-btn-v { display: none !important; }
   .home-widgets { grid-template-columns: 1fr; padding: 24px 20px 0; }
   .home-widget { padding: 20px; }
 }
@@ -701,7 +669,6 @@ else:
   .nc-left      { transform: translateX(-110px) scale(0.80); }
   .nc-right     { transform: translateX(110px)  scale(0.80); }
   .nc-nav       { display: none !important; }
-  .nc-btn-v     { display: none !important; }
 }
 
 @media (max-width: 380px) {
@@ -714,7 +681,7 @@ else:
 @media (min-width: 601px) {
   .nc-card {
     width: 300px;
-    height: 470px;   /* era 460px, +10px para acomodar títulos de 2 linhas */
+    height: 460px;   /* voltou para 460px sem o botão */
   }
 }
 </style>
