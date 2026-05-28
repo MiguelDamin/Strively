@@ -194,7 +194,6 @@ if (isset($_SESSION['id'])):
               <h4><?= htmlspecialchars($ev['nome']) ?></h4>
               <p class="nc-loc">📍 <?= htmlspecialchars($ev['cidade']) ?></p>
               <p class="nc-dat">📅 <?= $dt->format('d/m/Y') ?></p>
-              <a href="/pages/eventos.php" class="nc-btn-v">Ver detalhes</a>
             </div>
           </div>
         <?php endforeach; ?>
