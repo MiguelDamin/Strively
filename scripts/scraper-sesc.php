@@ -17,8 +17,8 @@ $dotenv->load();
 // ID do usuário autor vindo do .env
 $usuario_id = $_ENV['ADMIN_ID'] ?? 2;
 
-// Banner oficial do Circuito Sesc de Corridas
-define('SESC_LOGO', 'https://www.sesc-rs.com.br/wp-content/uploads/2017/06/Circuito-de-Corridas-2026-BANNER-SITE-1-768x240.jpg');
+// Banner oficial do Circuito Sesc de Corridas (Imagem fornecida pelo usuário)
+define('SESC_LOGO', 'assets/img/eventos/sesc-banner.png');
 
 echo "=== Scraper Sesc RS Corridas ===\n";
 echo "Iniciando: " . date('d/m/Y H:i:s') . "\n";
@@ -70,6 +70,9 @@ function extrairCidade(string $nome): string {
         'caitá'         => 'Bento Gonçalves/RS',
         'caita'         => 'Bento Gonçalves/RS',
         'serafinense'   => 'Serafina Corrêa/RS',
+        'tribus run'    => 'Rio Grande/RS',
+        'contra o frio' => 'Porto Alegre/RS',
+        'alegrete'      => 'Alegrete/RS',
     ];
     
     foreach ($mapping as $key => $city) {
@@ -87,6 +90,10 @@ function extrairCidade(string $nome): string {
     foreach ($patterns as $p) {
         if (preg_match($p, $nome, $m)) {
             $c = trim($m[1]);
+            // Limpeza agressiva de prefixo "Etapa" e espaços extras
+            $c = preg_replace('/^(Etapa|Circuito|Corrida)\s+/iu', '', $c);
+            $c = trim($c);
+            
             $cUpper = mb_strtoupper($c, 'UTF-8');
             if (!in_array($cUpper, ['SESC', 'RS', 'DATA', 'KM', 'INFO', 'INSCRIÇÃO', 'ESTÁGIO', 'ETAPA'])) {
                 if (strlen($c) < 30) return ucwords(mb_strtolower($c, 'UTF-8')) . '/RS';
