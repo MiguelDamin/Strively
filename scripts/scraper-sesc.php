@@ -17,8 +17,8 @@ $dotenv->load();
 // ID do usuário autor vindo do .env
 $usuario_id = $_ENV['ADMIN_ID'] ?? 2;
 
-// Logo oficial do Sesc como fallback de banner
-define('SESC_LOGO', 'https://www.sesc-rs.com.br/wp-content/themes/sescrs/img/logos/sesc.png');
+// Banner oficial do Circuito Sesc de Corridas
+define('SESC_LOGO', 'https://www.sesc-rs.com.br/wp-content/uploads/2017/06/Circuito-de-Corridas-2026-BANNER-SITE-1-768x240.jpg');
 
 echo "=== Scraper Sesc RS Corridas ===\n";
 echo "Iniciando: " . date('d/m/Y H:i:s') . "\n";
@@ -56,14 +56,54 @@ $xpath = new DOMXPath($dom);
 // ----------------------------------------------------------
 
 function extrairCidade(string $nome): string {
-    // Tenta achar cidade no nome (padrão: "em Cidade", "Sesc Cidade", "– Cidade")
-    if (preg_match('/em\s+([A-Z][a-zÀ-ÿ]+(?:\s+[A-Z][a-zÀ-ÿ]+)*)/i', $nome, $m)) return trim($m[1]) . '/RS';
-    if (preg_match('/Sesc\s+([A-Z][a-zÀ-ÿ]+(?:\s+[A-Z][a-zÀ-ÿ]+)*)/i', $nome, $m)) return trim($m[1]) . '/RS';
+    $nomeLower = mb_strtolower($nome, 'UTF-8');
     
-    // Lista comum
-    $cidades = ['Porto Alegre', 'Caxias do Sul', 'Bento Gonçalves', 'Pelotas', 'Santa Maria', 'Passo Fundo', 'Erechim', 'Cruz Alta', 'Gramado', 'Canela', 'Lajeado', 'Torres', 'Capão da Canoa'];
+    // Mapeamento específico de eventos conhecidos ou termos chaves
+    $mapping = [
+        'caravaggio'    => 'Farroupilha/RS',
+        'festiqueijo'   => 'Carlos Barbosa/RS',
+        'nevasca'       => 'Caxias do Sul/RS',
+        'chuvisca'      => 'Chuvisca/RS',
+        'choque'        => 'Passo Fundo/RS',
+        'fogo'          => 'Porto Alegre/RS',
+        'riograndino'   => 'Rio Grande/RS',
+        'caitá'         => 'Bento Gonçalves/RS',
+        'caita'         => 'Bento Gonçalves/RS',
+        'serafinense'   => 'Serafina Corrêa/RS',
+    ];
+    
+    foreach ($mapping as $key => $city) {
+        if (mb_stripos($nomeLower, $key, 0, 'UTF-8') !== false) return $city;
+    }
+
+    // Tenta padrões comuns no nome (EM, –, / , SESC)
+    $patterns = [
+        '/EM\s+([A-ZÀ-Ÿ]{3,}(?:\s+[A-ZÀ-Ÿ]{2,})*)/u',      // EM CIDADE (maiúsculas)
+        '/–\s*([A-ZÀ-Ÿ]{3,}(?:\s+[A-ZÀ-Ÿ]{2,})*)/u',      // – CIDADE
+        '/\/\s*([A-ZÀ-Ÿ]{3,}(?:\s+[A-ZÀ-Ÿ]{2,})*)/u',       // / CIDADE
+        '/Sesc\s+([A-ZÀ-Ÿ][a-zà-ÿ]+(?:\s+[A-ZÀ-Ÿ][a-zà-ÿ]+)*)/u', // Sesc Cidade
+    ];
+
+    foreach ($patterns as $p) {
+        if (preg_match($p, $nome, $m)) {
+            $c = trim($m[1]);
+            $cUpper = mb_strtoupper($c, 'UTF-8');
+            if (!in_array($cUpper, ['SESC', 'RS', 'DATA', 'KM', 'INFO', 'INSCRIÇÃO', 'ESTÁGIO', 'ETAPA'])) {
+                if (strlen($c) < 30) return ucwords(mb_strtolower($c, 'UTF-8')) . '/RS';
+            }
+        }
+    }
+
+    // Dicionário de cidades do RS para fallback final
+    $cidades = [
+       'Porto Alegre', 'Caxias do Sul', 'Pelotas', 'Santa Maria', 'Passo Fundo', 'Rio Grande', 'Bento Gonçalves', 
+       'Erechim', 'Cruz Alta', 'Canoas', 'Lajeado', 'Santa Cruz do Sul', 'Uruguaiana', 'Ijuí', 'Bagé', 'Santana do Livramento',
+       'Carazinho', 'Alegrete', 'Farroupilha', 'Novo Hamburgo', 'Gravataí', 'Viamão', 'Guaíba', 'Tapejara', 'Paraí',
+       'Serafina Corrêa', 'Carlos Barbosa', 'Garibaldi', 'Canela', 'Gramado', 'Torres', 'Capão da Canoa', 'Tramandaí', 'Nonoai', 'Charrua'
+    ];
+    
     foreach ($cidades as $c) {
-        if (stripos($nome, $c) !== false) return "$c/RS";
+        if (mb_stripos($nomeLower, mb_strtolower($c, 'UTF-8'), 0, 'UTF-8') !== false) return "$c/RS";
     }
     
     return 'Rio Grande do Sul/RS';
