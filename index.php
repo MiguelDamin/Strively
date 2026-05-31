@@ -253,7 +253,7 @@ else:
         <nav class="hero-nav-lp">
           <!-- Logo -->
           <a href="/" style="display:flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0;">
-            <img src="/images/icon-192.png" style="width:38px;height:38px;border-radius:10px;object-fit:contain;">
+            <img id="navLogo" src="/assets/img/icon-192.png" style="width:38px;height:38px;border-radius:10px;object-fit:contain;">
             <span style="color:#fff;font-family:'Bebas Neue',sans-serif;font-size:21px;letter-spacing:3px;">STRIVELY</span>
           </a>
           <!-- Links -->
@@ -472,8 +472,8 @@ else:
 }
 .hero-lp { background: linear-gradient(160deg, #1DB954 0%, #17a34a 40%, #0f8a3e 100%); padding: 100px 32px 84px; text-align: center; position: relative; overflow: hidden; }
 .hero-lp::before { content: ''; position: absolute; top: -120px; right: -80px; width: 380px; height: 380px; background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%); border-radius: 50%; pointer-events: none; }
-.hero-nav-lp { display: flex; align-items: center; justify-content: space-between; max-width: 700px; margin: 0 auto; position: fixed; top: 16px; left: 50%; transform: translateX(-50%); z-index: 1000; background: rgba(255,255,255,0.15); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.2); padding: 10px 24px; box-sizing: border-box; border-radius: 50px; width: 92%; transition: background 0.3s, border-color 0.3s, box-shadow 0.3s; }
-.hero-nav-lp.hero-nav-scrolled { background: rgba(255,255,255,0.95); border-color: rgba(0,0,0,0.08); box-shadow: 0 4px 24px rgba(0,0,0,0.1); }
+.hero-nav-lp { display: flex; align-items: center; justify-content: space-between; max-width: 700px; margin: 0 auto; position: fixed; top: 16px; left: 50%; transform: translateX(-50%); z-index: 1000; background: rgba(255,255,255,0.15); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.2); padding: 10px 24px; box-sizing: border-box; border-radius: 50px; width: 92%; transition: all 0.3s ease; }
+.hero-nav-lp.hero-nav-scrolled { background: #fff; border-color: rgba(0,0,0,0.08); box-shadow: 0 4px 24px rgba(0,0,0,0.1); }
 .hero-nav-lp.hero-nav-scrolled a span { color: #111 !important; }
 .hero-nav-lp.hero-nav-scrolled .hero-nav-link { color: #555 !important; }
 .hero-nav-lp.hero-nav-scrolled .hero-nav-login { background: #1DB954 !important; color: #fff !important; border-color: #1DB954 !important; }
@@ -662,7 +662,20 @@ else:
 
 @media (max-width: 640px) {
     .hero-lp { padding-top: 40px; }
-    .hero-nav-lp { justify-content: space-between !important; padding: 0 4px !important; margin-bottom: 32px !important; }
+    .hero-nav-lp { 
+      position: relative !important; 
+      top: 0 !important; 
+      left: 0 !important; 
+      transform: none !important; 
+      max-width: 100% !important; 
+      width: 100% !important; 
+      margin: 0 0 32px 0 !important; 
+      justify-content: space-between !important; 
+      padding: 0 4px !important;
+      background: transparent !important;
+      backdrop-filter: none !important;
+      border: none !important;
+    }
     .hero-nav-links .hero-nav-link { display: none !important; }
     .hero-nav-brand span { font-size: 16px; letter-spacing: 2px; }
     .hero-nav-link { padding: 6px 10px; font-size: 12px; }
@@ -817,16 +830,26 @@ document.addEventListener('DOMContentLoaded', () => {
 // Scroll-aware header for LP
 const heroLp = document.querySelector('.hero-lp');
 const navLp = document.querySelector('.hero-nav-lp');
+const navLogo = document.getElementById('navLogo');
 if (heroLp && navLp) {
   function checkNavScroll() {
-    const heroBottom = heroLp.getBoundingClientRect().bottom;
-    if (heroBottom <= 60) {
-      navLp.classList.add('hero-nav-scrolled');
+    // Only apply fixed scroll logic on desktop
+    if (window.innerWidth > 640) {
+      const heroBottom = heroLp.getBoundingClientRect().bottom;
+      if (heroBottom <= 60) {
+        navLp.classList.add('hero-nav-scrolled');
+        if (navLogo) navLogo.src = '/images/icon-192.png';
+      } else {
+        navLp.classList.remove('hero-nav-scrolled');
+        if (navLogo) navLogo.src = '/assets/img/icon-192.png';
+      }
     } else {
       navLp.classList.remove('hero-nav-scrolled');
+      if (navLogo) navLogo.src = '/assets/img/icon-192.png';
     }
   }
   window.addEventListener('scroll', checkNavScroll, { passive: true });
+  window.addEventListener('resize', checkNavScroll, { passive: true });
   checkNavScroll();
 }
 </script>
