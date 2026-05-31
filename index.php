@@ -184,7 +184,13 @@ if (isset($_SESSION['id'])):
       <div class="nc-track" id="ncTrack">
         <?php foreach ($eventos_carrossel as $i => $ev): ?>
           <?php 
-            $capa = strpos($ev['banner'], 'http') === 0 || empty($ev['banner']) ? $ev['banner'] : '/' . $ev['banner'];
+            if (empty($ev['banner'])) {
+              $capa = '';
+            } elseif (strpos($ev['banner'], 'http') === 0 || strpos($ev['banner'], '/') === 0) {
+              $capa = $ev['banner'];
+            } else {
+              $capa = '/' . $ev['banner'];
+            }
             $dt = new DateTime($ev['data_evento']);
           ?>
           <div class="nc-card" data-index="<?= $i ?>" onclick="ncIrPara(<?= $i ?>)">
@@ -324,7 +330,13 @@ else:
                 <div class="nc-track" id="ncTrack">
                     <?php foreach ($eventosCarrossel as $i => $ev): ?>
                         <?php 
-                            $capa = strpos($ev['banner'], 'http') === 0 || empty($ev['banner']) ? $ev['banner'] : '/' . $ev['banner'];
+                            if (empty($ev['banner'])) {
+                              $capa = '';
+                            } elseif (strpos($ev['banner'], 'http') === 0 || strpos($ev['banner'], '/') === 0) {
+                              $capa = $ev['banner'];
+                            } else {
+                              $capa = '/' . $ev['banner'];
+                            }
                             $dt = new DateTime($ev['data_evento']);
                         ?>
                         <div class="nc-card" data-index="<?= $i ?>" onclick="ncIrPara(<?= $i ?>)">
@@ -570,54 +582,51 @@ else:
 .nc-left  { transform: translateX(-220px) scale(0.85); opacity: 0.6; filter: blur(3px); z-index: 10; pointer-events: auto; }
 .nc-right { transform: translateX(220px)  scale(0.85); opacity: 0.6; filter: blur(3px); z-index: 10; pointer-events: auto; }
 .nc-hidden { transform: translateX(0) scale(0.6); opacity: 0; filter: blur(8px); z-index: 1; pointer-events: none; }
+.nc-top img { width: 100%; height: 100%; object-fit: cover; }
 .nc-top { flex: 0 0 65%; background-color: #eee; background-size: cover; background-position: center; position: relative; display: flex; align-items: center; justify-content: center; }
 .nc-top::after { content: ''; position: absolute; inset: 0; background: linear-gradient(transparent, rgba(0,0,0,0.2)); }
 .nc-base {
-  flex: 1;
+  flex: 0 0 auto;
   background: #fff;
-  padding: 16px 16px 14px;
+  padding: 14px 14px 12px;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: 4px;
-  min-height: 0;       /* permite que flex encolha */
-  overflow: visible;   /* <- era hidden, trocar para visible */
+  gap: 2px;
+  min-height: 0;
+  overflow: hidden;
 }
 /* Título do evento no card */
 .nc-base h4 {
   font-family: 'Outfit', sans-serif;
-  font-size: 1rem;
+  font-size: 0.92rem;
   font-weight: 700;
   color: #111;
   margin: 0 0 4px 0;
-  line-height: 1.35;
-  white-space: normal;
-  overflow: visible;
-  text-overflow: unset;
-  display: block;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
   word-break: break-word;
   max-width: 100%;
 }
 
-/* Card central mostra título completo */
+/* Card central mostra título completo (up to 3 lines) */
 .nc-center .nc-base h4 {
-  font-size: 1.05rem;
-  white-space: normal;
+  font-size: 0.95rem;
+  -webkit-line-clamp: 3;
 }
 
-/* Cards laterais podem truncar pois ficam desfocados */
+/* Cards laterais truncar a 1 linha pois ficam desfocados */
 .nc-left .nc-base h4,
 .nc-right .nc-base h4 {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 100%;
+  -webkit-line-clamp: 1;
 }
-.nc-base .nc-loc { font-size: 0.88rem; color: #777; margin-bottom: 2px; }
-.nc-base .nc-dat { font-size: 0.88rem; color: #1DB954; font-weight: 600; margin-bottom: 12px; }
-.nc-base .nc-loc { font-size: 0.88rem; color: #777; margin-bottom: 2px; }
-.nc-base .nc-dat { font-size: 0.88rem; color: #1DB954; font-weight: 600; margin-bottom: 12px; }
+.nc-base .nc-loc { font-size: 0.82rem; color: #777; margin-bottom: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
+.nc-base .nc-dat { font-size: 0.82rem; color: #1DB954; font-weight: 600; margin-bottom: 0; white-space: nowrap; }
 
 /* WIDGETS */
 
@@ -663,24 +672,27 @@ else:
 }
 
 @media (max-width: 600px) {
-  .nc-container { height: 420px; }
-  .nc-card      { width: 230px; height: 360px; }
-  .nc-left      { transform: translateX(-110px) scale(0.80); }
-  .nc-right     { transform: translateX(110px)  scale(0.80); }
+  .nc-container { height: 480px; }
+  .nc-card      { width: 260px; height: 400px; }
+  .nc-left      { transform: translateX(-130px) scale(0.80); }
+  .nc-right     { transform: translateX(130px)  scale(0.80); }
   .nc-nav       { display: none !important; }
+  .nc-base h4   { font-size: 0.88rem; -webkit-line-clamp: 2; }
+  .nc-base .nc-loc { font-size: 0.78rem; }
+  .nc-base .nc-dat { font-size: 0.78rem; }
 }
 
 @media (max-width: 380px) {
-  .nc-container { height: 380px; }
-  .nc-card      { width: 200px; height: 320px; }
-  .nc-left      { transform: translateX(-95px) scale(0.78); }
-  .nc-right     { transform: translateX(95px)  scale(0.78); }
+  .nc-container { height: 440px; }
+  .nc-card      { width: 240px; height: 370px; }
+  .nc-left      { transform: translateX(-110px) scale(0.78); }
+  .nc-right     { transform: translateX(110px)  scale(0.78); }
 }
 
 @media (min-width: 601px) {
   .nc-card {
     width: 300px;
-    height: 460px;   /* voltou para 460px sem o botão */
+    height: 460px;
   }
 }
 </style>
