@@ -467,4 +467,41 @@ body.modal-aberto {
     }
   });
 
+  /* Global Toast System */
+  window.Strively = {
+    toast: function(message, type = 'success', duration = 4000) {
+      let container = document.querySelector('.toast-container');
+      if (!container) {
+        container = document.createElement('div');
+        container.className = 'toast-container';
+        document.body.appendChild(container);
+      }
+
+      const toast = document.createElement('div');
+      toast.className = 'toast-strively';
+      
+      const icon = type === 'success' ? '✓' : 'i';
+      
+      toast.innerHTML = `
+        <div class="toast-icon">${icon}</div>
+        <div class="toast-message">${message}</div>
+      `;
+
+      container.appendChild(toast);
+
+      // Auto hide
+      const timeout = setTimeout(() => {
+        toast.classList.add('hiding');
+        setTimeout(() => toast.remove(), 400);
+      }, duration);
+
+      // Click to dismiss
+      toast.onclick = () => {
+        clearTimeout(timeout);
+        toast.classList.add('hiding');
+        setTimeout(() => toast.remove(), 400);
+      };
+    }
+  };
+
 </script>

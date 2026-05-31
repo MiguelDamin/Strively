@@ -104,9 +104,18 @@ include '../components/header.php';
 
       <h1 class="detalhe-titulo"><?= htmlspecialchars($evento['nome']) ?></h1>
       <?php if (isset($_GET['msg']) && $_GET['msg'] === 'edit_sucesso'): ?>
-        <div style="background:#f0fff4;border:1px solid #b2f5c8;border-radius:10px;padding:12px 16px;font-size:0.88rem;color:#166534;margin-bottom:20px;text-align:center">
-          ✅ Evento atualizado com sucesso!
-        </div>
+        <script>
+          window.addEventListener('DOMContentLoaded', () => {
+            if (window.Strively && Strively.toast) {
+              Strively.toast('Evento atualizado com sucesso!', 'success');
+              
+              // Limpa a URL de forma elegante
+              const url = new URL(window.location);
+              url.searchParams.delete('msg');
+              window.history.replaceState({}, '', url);
+            }
+          });
+        </script>
       <?php endif; ?>
 
       <?php if (!empty($evento['autor_nome'])): ?>
