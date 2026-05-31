@@ -253,14 +253,15 @@ else:
         <nav class="hero-nav-lp">
           <!-- Logo -->
           <a href="/" style="display:flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0;">
-            <img id="navLogo" src="/assets/img/icon-192.png" style="width:38px;height:38px;border-radius:10px;object-fit:contain;">
-            <span style="color:#fff;font-family:'Bebas Neue',sans-serif;font-size:21px;letter-spacing:3px;">STRIVELY</span>
+            <img class="hero-nav-logo-desktop" src="/images/icon-192.png" style="width:38px;height:38px;border-radius:10px;object-fit:contain;">
+            <img class="hero-nav-logo-mobile" src="/assets/img/icon-192.png" style="width:38px;height:38px;border-radius:10px;object-fit:contain;display:none;">
+            <span class="hero-nav-brand-text" style="font-family:'Bebas Neue',sans-serif;font-size:21px;letter-spacing:3px;">STRIVELY</span>
           </a>
           <!-- Links -->
           <div class="hero-nav-links" style="display:flex;align-items:center;gap:8px;">
-            <a href="/pages/eventos.php" class="hero-nav-link" style="color:rgba(255,255,255,0.85);text-decoration:none;font-size:14px;font-weight:500;padding:8px 16px;border-radius:50px;transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.12)'" onmouseout="this.style.background='transparent'">Eventos</a>
-            <a href="/pages/comunidade.php" class="hero-nav-link" style="color:rgba(255,255,255,0.85);text-decoration:none;font-size:14px;font-weight:500;padding:8px 16px;border-radius:50px;transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.12)'" onmouseout="this.style.background='transparent'">Comunidade</a>
-            <a href="/pages/login.php" class="hero-nav-login" style="background:rgba(255,255,255,0.15);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,0.25);color:#fff;text-decoration:none;font-size:14px;font-weight:600;padding:8px 20px;border-radius:50px;transition:all 0.25s;" onmouseover="this.style.background='#fff';this.style.color='#1DB954'" onmouseout="this.style.background='rgba(255,255,255,0.15)';this.style.color='#fff'">Entrar</a>
+            <a href="/pages/eventos.php" class="hero-nav-link" style="color:#555;text-decoration:none;font-size:14px;font-weight:500;padding:8px 16px;border-radius:50px;transition:background 0.2s;" onmouseover="this.style.background='rgba(0,0,0,0.05)'" onmouseout="this.style.background='transparent'">Eventos</a>
+            <a href="/pages/comunidade.php" class="hero-nav-link" style="color:#555;text-decoration:none;font-size:14px;font-weight:500;padding:8px 16px;border-radius:50px;transition:background 0.2s;" onmouseover="this.style.background='rgba(0,0,0,0.05)'" onmouseout="this.style.background='transparent'">Comunidade</a>
+            <a href="/pages/login.php" class="hero-nav-login" style="background:#1DB954;color:#fff;text-decoration:none;font-size:14px;font-weight:600;padding:8px 20px;border-radius:50px;transition:all 0.25s;" onmouseover="this.style.background='#17a34a'" onmouseout="this.style.background='#1DB954'">Entrar</a>
           </div>
         </nav>
         <div class="hero-lp-content">
@@ -472,7 +473,10 @@ else:
 }
 .hero-lp { background: linear-gradient(160deg, #1DB954 0%, #17a34a 40%, #0f8a3e 100%); padding: 100px 32px 84px; text-align: center; position: relative; overflow: hidden; }
 .hero-lp::before { content: ''; position: absolute; top: -120px; right: -80px; width: 380px; height: 380px; background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%); border-radius: 50%; pointer-events: none; }
-.hero-nav-lp { display: flex; align-items: center; justify-content: space-between; max-width: 700px; margin: 0 auto; position: fixed; top: 16px; left: 50%; transform: translateX(-50%); z-index: 1000; background: rgba(255,255,255,0.15); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.2); padding: 10px 24px; box-sizing: border-box; border-radius: 50px; width: 92%; transition: all 0.3s ease; }
+.hero-nav-lp { display: flex; align-items: center; justify-content: space-between; max-width: 700px; margin: 0 auto; position: fixed; top: 16px; left: 50%; transform: translateX(-50%); z-index: 1000; background: #fff; border: 1px solid rgba(0,0,0,0.08); padding: 10px 24px; box-sizing: border-box; border-radius: 50px; width: 92%; transition: all 0.3s ease; box-shadow: 0 4px 20px rgba(0,0,0,0.06); }
+.hero-nav-brand-text { color: #111; }
+.hero-nav-logo-desktop { display: block; }
+.hero-nav-logo-mobile { display: none; }
 .hero-nav-lp.hero-nav-scrolled { background: #fff; border-color: rgba(0,0,0,0.08); box-shadow: 0 4px 24px rgba(0,0,0,0.1); }
 .hero-nav-lp.hero-nav-scrolled a span { color: #111 !important; }
 .hero-nav-lp.hero-nav-scrolled .hero-nav-link { color: #555 !important; }
@@ -675,7 +679,11 @@ else:
       background: transparent !important;
       backdrop-filter: none !important;
       border: none !important;
+      box-shadow: none !important;
     }
+    .hero-nav-brand-text { color: #fff !important; }
+    .hero-nav-logo-desktop { display: none !important; }
+    .hero-nav-logo-mobile { display: block !important; }
     .hero-nav-links .hero-nav-link { display: none !important; }
     .hero-nav-brand span { font-size: 16px; letter-spacing: 2px; }
     .hero-nav-link { padding: 6px 10px; font-size: 12px; }
@@ -830,22 +838,16 @@ document.addEventListener('DOMContentLoaded', () => {
 // Scroll-aware header for LP
 const heroLp = document.querySelector('.hero-lp');
 const navLp = document.querySelector('.hero-nav-lp');
-const navLogo = document.getElementById('navLogo');
 if (heroLp && navLp) {
   function checkNavScroll() {
-    // Only apply fixed scroll logic on desktop
+    // Only apply scroll shadow logic on desktop
     if (window.innerWidth > 640) {
       const heroBottom = heroLp.getBoundingClientRect().bottom;
       if (heroBottom <= 60) {
-        navLp.classList.add('hero-nav-scrolled');
-        if (navLogo) navLogo.src = '/images/icon-192.png';
+        navLp.style.boxShadow = '0 4px 24px rgba(0,0,0,0.12)';
       } else {
-        navLp.classList.remove('hero-nav-scrolled');
-        if (navLogo) navLogo.src = '/assets/img/icon-192.png';
+        navLp.style.boxShadow = '0 4px 20px rgba(0,0,0,0.06)';
       }
-    } else {
-      navLp.classList.remove('hero-nav-scrolled');
-      if (navLogo) navLogo.src = '/assets/img/icon-192.png';
     }
   }
   window.addEventListener('scroll', checkNavScroll, { passive: true });
