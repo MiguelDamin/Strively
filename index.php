@@ -252,16 +252,18 @@ else:
     <div class="hero-lp">
         <nav class="hero-nav-lp">
           <!-- Logo -->
-          <a href="/" style="display:flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0;">
-            <img class="hero-nav-logo-desktop" src="/images/icon-192.png" style="width:38px;height:38px;border-radius:10px;object-fit:contain;">
-            <img class="hero-nav-logo-mobile" src="/assets/img/icon-192.png" style="width:38px;height:38px;border-radius:10px;object-fit:contain;display:none;">
-            <span class="hero-nav-brand-text" style="font-family:'Bebas Neue',sans-serif;font-size:21px;letter-spacing:3px;">STRIVELY</span>
+          <a href="/" class="hero-nav-brand" style="display:flex;align-items:center;gap:12px;text-decoration:none;flex-shrink:0;transition: transform 0.3s ease;">
+            <div class="logo-wrapper" style="position:relative; width:38px; height:38px;">
+              <img class="hero-nav-logo-desktop" src="/images/icon-192.png" style="width:100%;height:100%;border-radius:10px;object-fit:contain;position:absolute;top:0;left:0;">
+              <img class="hero-nav-logo-mobile" src="/assets/img/icon-192.png" style="width:100%;height:100%;border-radius:10px;object-fit:contain;position:absolute;top:0;left:0;display:none;">
+            </div>
+            <span class="hero-nav-brand-text" style="font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:4px;font-weight:400;text-transform:uppercase;">STRIVELY</span>
           </a>
           <!-- Links -->
-          <div class="hero-nav-links" style="display:flex;align-items:center;gap:8px;">
-            <a href="/pages/eventos.php" class="hero-nav-link" style="color:#555;text-decoration:none;font-size:14px;font-weight:500;padding:8px 16px;border-radius:50px;transition:background 0.2s;" onmouseover="this.style.background='rgba(0,0,0,0.05)'" onmouseout="this.style.background='transparent'">Eventos</a>
-            <a href="/pages/comunidade.php" class="hero-nav-link" style="color:#555;text-decoration:none;font-size:14px;font-weight:500;padding:8px 16px;border-radius:50px;transition:background 0.2s;" onmouseover="this.style.background='rgba(0,0,0,0.05)'" onmouseout="this.style.background='transparent'">Comunidade</a>
-            <a href="/pages/login.php" class="hero-nav-login" style="background:#1DB954;color:#fff;text-decoration:none;font-size:14px;font-weight:600;padding:8px 20px;border-radius:50px;transition:all 0.25s;" onmouseover="this.style.background='#17a34a'" onmouseout="this.style.background='#1DB954'">Entrar</a>
+          <div class="hero-nav-links" style="display:flex;align-items:center;gap:16px;">
+            <a href="/pages/eventos.php" class="hero-nav-link" data-text="Eventos">Eventos</a>
+            <a href="/pages/comunidade.php" class="hero-nav-link" data-text="Comunidade">Comunidade</a>
+            <a href="/pages/login.php" class="hero-nav-login">Entrar</a>
           </div>
         </nav>
         <div class="hero-lp-content">
@@ -473,14 +475,110 @@ else:
 }
 .hero-lp { background: linear-gradient(160deg, #1DB954 0%, #17a34a 40%, #0f8a3e 100%); padding: 100px 32px 84px; text-align: center; position: relative; overflow: hidden; }
 .hero-lp::before { content: ''; position: absolute; top: -120px; right: -80px; width: 380px; height: 380px; background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%); border-radius: 50%; pointer-events: none; }
-.hero-nav-lp { display: flex; align-items: center; justify-content: space-between; max-width: 700px; margin: 0 auto; position: fixed; top: 16px; left: 50%; transform: translateX(-50%); z-index: 1000; background: #fff; border: 1px solid rgba(0,0,0,0.08); padding: 10px 24px; box-sizing: border-box; border-radius: 50px; width: 92%; transition: all 0.3s ease; box-shadow: 0 4px 20px rgba(0,0,0,0.06); }
-.hero-nav-brand-text { color: #111; }
-.hero-nav-logo-desktop { display: block; }
-.hero-nav-logo-mobile { display: none; }
-.hero-nav-lp.hero-nav-scrolled { background: #fff; border-color: rgba(0,0,0,0.08); box-shadow: 0 4px 24px rgba(0,0,0,0.1); }
-.hero-nav-lp.hero-nav-scrolled a span { color: #111 !important; }
-.hero-nav-lp.hero-nav-scrolled .hero-nav-link { color: #555 !important; }
-.hero-nav-lp.hero-nav-scrolled .hero-nav-login { background: #1DB954 !important; color: #fff !important; border-color: #1DB954 !important; }
+:root {
+  --nav-scale: 1;
+  --nav-bg: rgba(255, 255, 255, 0.1);
+  --nav-blur: 16px;
+  --nav-border: rgba(255, 255, 255, 0.2);
+  --nav-text: #fff;
+  --nav-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+}
+
+.hero-nav-lp {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 800px;
+  margin: 0 auto;
+  position: fixed;
+  top: calc(8px + (16px - 8px) * (1 - var(--scroll-p, 0)));
+  left: 50%;
+  transform: translateX(-50%) scale(calc(0.95 + 0.05 * (1 - var(--scroll-p, 0))));
+  z-index: 1000;
+  background: var(--nav-bg);
+  backdrop-filter: blur(var(--nav-blur));
+  -webkit-backdrop-filter: blur(var(--nav-blur));
+  border: 1px solid var(--nav-border);
+  padding: calc(8px + 6px * (1 - var(--scroll-p, 0))) 28px;
+  box-sizing: border-box;
+  border-radius: 50px;
+  width: 94%;
+  transition: background 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.02);
+}
+
+.hero-nav-lp:hover {
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+.hero-nav-brand:hover .hero-nav-brand-text {
+  animation: navShimmer 2s infinite linear;
+  background: linear-gradient(90deg, var(--nav-text) 0%, #1DB954 50%, var(--nav-text) 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+@keyframes navShimmer {
+  to { background-position: 200% center; }
+}
+
+.hero-nav-brand:hover .logo-wrapper {
+  transform: scale(1.05);
+}
+
+
+.hero-nav-brand-text {
+  color: var(--nav-text);
+  transition: color 0.4s ease;
+}
+
+.hero-nav-logo-desktop { transition: opacity 0.4s ease; opacity: calc(var(--use-green-logo, 0)); }
+.hero-nav-logo-mobile { transition: opacity 0.4s ease; opacity: calc(1 - var(--use-green-logo, 0)); }
+
+.hero-nav-link {
+  color: var(--nav-text);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 8px 4px;
+  position: relative;
+  transition: color 0.3s ease;
+}
+
+.hero-nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0;
+  height: 2px;
+  background: #1DB954;
+  transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  transform: translateX(-50%);
+}
+
+.hero-nav-link:hover { color: #1DB954; }
+.hero-nav-link:hover::after { width: 80%; }
+
+.hero-nav-login {
+  background: #1DB954;
+  color: #fff;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 10px 24px;
+  border-radius: 50px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 15px rgba(29, 185, 84, 0.2);
+}
+
+.hero-nav-login:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(29, 185, 84, 0.4);
+  background: #17a34a;
+}
+
 .hero-nav-brand img { width: 40px; height: 40px; object-fit: contain; border-radius: 10px; }
 .hero-nav-brand span { color: #fff; font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 3px; }
 .hero-nav-links { display: flex; gap: 8px; align-items: center; }
@@ -683,8 +781,9 @@ else:
     }
     .hero-nav-brand-text { color: #fff !important; }
     .hero-nav-logo-desktop { display: none !important; }
-    .hero-nav-logo-mobile { display: block !important; }
-    .hero-nav-links .hero-nav-link { display: none !important; }
+    .hero-nav-logo-mobile { display: block !important; opacity: 1 !important; }
+    .hero-nav-link { display: none !important; }
+    .hero-nav-login { padding: 8px 16px !important; font-size: 13px !important; }
     .hero-nav-brand span { font-size: 16px; letter-spacing: 2px; }
     .hero-nav-link { padding: 6px 10px; font-size: 12px; }
     .hero-nav-login { padding: 6px 14px; font-size: 12px; }
@@ -835,24 +934,42 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 });
-// Scroll-aware header for LP
+// Surreal Header Engine
 const heroLp = document.querySelector('.hero-lp');
 const navLp = document.querySelector('.hero-nav-lp');
 if (heroLp && navLp) {
-  function checkNavScroll() {
-    // Only apply scroll shadow logic on desktop
+  function updateHeader() {
+    const scrollY = window.scrollY;
+    const threshold = 100;
+    const p = Math.min(scrollY / threshold, 1);
+    
+    // Set scroll percentage for CSS interpolation
+    document.documentElement.style.setProperty('--scroll-p', p);
+    
     if (window.innerWidth > 640) {
-      const heroBottom = heroLp.getBoundingClientRect().bottom;
-      if (heroBottom <= 60) {
-        navLp.style.boxShadow = '0 4px 24px rgba(0,0,0,0.12)';
+      if (p > 0.1) {
+        // Scrolled State
+        document.documentElement.style.setProperty('--nav-bg', `rgba(255, 255, 255, ${0.15 + (0.8 * p)})`);
+        document.documentElement.style.setProperty('--nav-text', `rgb(${255 - (238 * p)}, ${255 - (238 * p)}, ${255 - (238 * p)})`);
+        document.documentElement.style.setProperty('--nav-border', `rgba(0, 0, 0, ${0.05 * p})`);
+        document.documentElement.style.setProperty('--nav-blur', `${16 + (4 * p)}px`);
+        document.documentElement.style.setProperty('--use-green-logo', p > 0.5 ? 1 : 0);
       } else {
-        navLp.style.boxShadow = '0 4px 20px rgba(0,0,0,0.06)';
+        // Initial State
+        document.documentElement.style.setProperty('--nav-bg', 'rgba(255, 255, 255, 0.12)');
+        document.documentElement.style.setProperty('--nav-text', '#fff');
+        document.documentElement.style.setProperty('--nav-border', 'rgba(255, 255, 255, 0.2)');
+        document.documentElement.style.setProperty('--nav-blur', '16px');
+        document.documentElement.style.setProperty('--use-green-logo', 0);
       }
     }
   }
-  window.addEventListener('scroll', checkNavScroll, { passive: true });
-  window.addEventListener('resize', checkNavScroll, { passive: true });
-  checkNavScroll();
+  
+  window.addEventListener('scroll', () => {
+    requestAnimationFrame(updateHeader);
+  }, { passive: true });
+  window.addEventListener('resize', updateHeader, { passive: true });
+  updateHeader();
 }
 </script>
 </body>
