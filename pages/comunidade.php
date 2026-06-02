@@ -34,8 +34,95 @@ $stmtPosts = $pdo->prepare("
 $stmtPosts->execute([$_SESSION['id']]);
 $posts = $stmtPosts->fetchAll();
 
+$feedPosts = array_filter($posts, function($p) { return $p['tipo'] !== 'equipamento'; });
+$equipPosts = array_filter($posts, function($p) { return $p['tipo'] === 'equipamento'; });
+
 // Get the boneco SVG inline for easy reuse
 $runnerIcon = '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M13.49 5.48c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm-3.6 13.9l1-4.4 2.1 2v6h2v-7.5l-2.1-2 .6-3c1.3 1.5 3.3 2.5 5.5 2.5v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1l-5.2 2.2v4.7h2v-3.4l1.8-.7-1.6 8.1-4.9-1-.4 2 7 1.4z"/></svg>';
+
+function renderPostCard($p, $runnerIcon) {
+  $dt = new DateTime($p['criado_em']); 
+  $tempoFormatado = $dt->format('d/m/Y H:i');
+  
+  $autorId = (int)$p['usuario_id'];
+  $linkAutor = (isset($_SESSION['id']) && $_SESSION['id'] === $autorId)
+    ? '/pages/perfil.php'
+    : '/pages/perfil-publico.php?id=' . $autorId;
+?>
+  <div class="post-card" id="post-<?= $p['id'] ?>">
+    <div class="post-header">
+      <a href="<?= $linkAutor ?>" style="display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit;flex:1;">
+        <?php if (!empty($p['autor_foto'])): ?>
+          <img src="<?= htmlspecialchars(strpos($p['autor_foto'], 'http') === 0 ? $p['autor_foto'] : '/'.$p['autor_foto']) ?>" 
+               class="post-avatar" 
+               style="cursor:pointer;transition:opacity 0.2s;flex-shrink:0;"
+               onmouseover="this.style.opacity='0.8'"
+               onmouseout="this.style.opacity='1'" />
+        <?php else: ?>
+          <div class="post-avatar" style="cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <svg viewBox="0 0 24 24" style="width:24px;height:24px;fill:#999;">
+              <path d="M12 12c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm0 2c-3.33 0-10 1.67-10 5v3h20v-3c0-3.33-6.67-5-10-5z"/>
+            </svg>
+          </div>
+        <?php endif; ?>
+        <div class="post-author" style="text-decoration:none;">
+          <span style="font-weight:700;color:var(--text-primary,#111);">
+            <?= htmlspecialchars($p['autor_nome']) ?>
+          </span>
+          <span class="post-date"><?= $tempoFormatado ?></span>
+        </div>
+      </a>
+    </div>
+
+    <div class="post-content">
+      <h4><?= htmlspecialchars($p['titulo']) ?></h4>
+      <?php if (!empty($p['descricao'])): ?>
+        <p><?= nl2br(htmlspecialchars($p['descricao'])) ?></p>
+      <?php endif; ?>
+    </div>
+
+    <?php 
+      $mediaTarget = $p['foto'];
+      if ($p['tipo'] === 'evento' && empty($mediaTarget)) $mediaTarget = $p['evento_banner'];
+    ?>
+
+    <?php if (!empty($mediaTarget)): ?>
+      <div class="post-media">
+        <img src="<?= htmlspecialchars(strpos($mediaTarget, 'http') === 0 ? $mediaTarget : '/'.$mediaTarget) ?>" alt="Mídia do Post" loading="lazy">
+      </div>
+    <?php elseif ($p['tipo'] === 'treino'): ?>
+      <div class="post-media empty-state">
+        <?= $runnerIcon ?>
+      </div>
+    <?php endif; ?>
+
+    <?php if ($p['tipo'] === 'treino' && !empty($p['t_treinador_id'])): ?>
+      <div class="post-trainer">
+         <?php if (!empty($p['treinador_foto'])): ?>
+            <img src="<?= htmlspecialchars(strpos($p['treinador_foto'], 'http') === 0 ? $p['treinador_foto'] : '/'.$p['treinador_foto']) ?>">
+         <?php endif; ?>
+         Treino proposto por <?= htmlspecialchars($p['treinador_nome']) ?>
+      </div>
+    <?php endif; ?>
+
+    <div class="post-footer">
+      <button class="like-btn <?= $p['curtiu'] ? 'liked' : '' ?>" onclick="toggleLike(<?= $p['id'] ?>, this)">
+        💪 <span class="like-count"><?= $p['curtidas'] ?></span>
+      </button>
+
+      <?php if ($p['usuario_id'] === $_SESSION['id']): ?>
+        <div class="post-actions">
+          <button type="button" title="Editar" onclick="abrirModalEditar(<?= $p['id'] ?>)">✏️</button>
+          <form action="/actions/action-excluir-post.php" method="POST" onsubmit="return confirm('Apagar este post?');">
+            <input type="hidden" name="post_id" value="<?= $p['id'] ?>">
+            <button type="submit" title="Excluir">🗑️</button>
+          </form>
+        </div>
+      <?php endif; ?>
+    </div>
+  </div>
+<?php
+}
 ?>
 <style>
   body { background: #f5f6f5; }
@@ -225,108 +312,29 @@ $runnerIcon = '<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path
   </div>
 
   <div id="tab-feed">
-    <?php if (empty($posts)): ?>
+    <?php if (empty($feedPosts)): ?>
       <div style="text-align:center; padding: 40px; color:#888;">
         <h2>Vazio!</h2>
         <p>Nenhuma publicação ainda. Seja o primeiro a postar!</p>
       </div>
     <?php else: ?>
-      <?php foreach ($posts as $p): ?>
-        <?php 
-          // Format date softly
-          $dt = new DateTime($p['criado_em']); 
-          $tempoFormatado = $dt->format('d/m/Y H:i');
-        ?>
-        <div class="post-card" id="post-<?= $p['id'] ?>">
-          
-          <div class="post-header">
-            <?php
-              $autorId = (int)$p['usuario_id'];
-              $linkAutor = (isset($_SESSION['id']) && $_SESSION['id'] === $autorId)
-                ? '/pages/perfil.php'
-                : '/pages/perfil-publico.php?id=' . $autorId;
-            ?>
-            <a href="<?= $linkAutor ?>" style="display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit;flex:1;">
-              <?php if (!empty($p['autor_foto'])): ?>
-                <img src="<?= htmlspecialchars(strpos($p['autor_foto'], 'http') === 0 ? $p['autor_foto'] : '/'.$p['autor_foto']) ?>" 
-                     class="post-avatar" 
-                     style="cursor:pointer;transition:opacity 0.2s;flex-shrink:0;"
-                     onmouseover="this.style.opacity='0.8'"
-                     onmouseout="this.style.opacity='1'" />
-              <?php else: ?>
-                <div class="post-avatar" style="cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                  <svg viewBox="0 0 24 24" style="width:24px;height:24px;fill:#999;">
-                    <path d="M12 12c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm0 2c-3.33 0-10 1.67-10 5v3h20v-3c0-3.33-6.67-5-10-5z"/>
-                  </svg>
-                </div>
-              <?php endif; ?>
-              <div class="post-author" style="text-decoration:none;">
-                <span style="font-weight:700;color:var(--text-primary,#111);">
-                  <?= htmlspecialchars($p['autor_nome']) ?>
-                </span>
-                <span class="post-date"><?= $tempoFormatado ?></span>
-              </div>
-            </a>
-          </div>
-
-          <div class="post-content">
-            <h4><?= htmlspecialchars($p['titulo']) ?></h4>
-            <?php if (!empty($p['descricao'])): ?>
-              <p><?= nl2br(htmlspecialchars($p['descricao'])) ?></p>
-            <?php endif; ?>
-          </div>
-
-          <?php 
-            $mediaTarget = $p['foto'];
-            if ($p['tipo'] === 'evento' && empty($mediaTarget)) $mediaTarget = $p['evento_banner'];
-          ?>
-
-          <?php if (!empty($mediaTarget)): ?>
-            <div class="post-media">
-              <img src="<?= htmlspecialchars(strpos($mediaTarget, 'http') === 0 ? $mediaTarget : '/'.$mediaTarget) ?>" alt="Mídia do Post" loading="lazy">
-            </div>
-          <?php elseif ($p['tipo'] === 'treino'): ?>
-            <div class="post-media empty-state">
-              <?= $runnerIcon ?>
-            </div>
-          <?php endif; ?>
-
-          <?php if ($p['tipo'] === 'treino' && !empty($p['t_treinador_id'])): ?>
-            <div class="post-trainer">
-               <?php if (!empty($p['treinador_foto'])): ?>
-                  <img src="<?= htmlspecialchars(strpos($p['treinador_foto'], 'http') === 0 ? $p['treinador_foto'] : '/'.$p['treinador_foto']) ?>">
-               <?php endif; ?>
-               Treino proposto por <?= htmlspecialchars($p['treinador_nome']) ?>
-            </div>
-          <?php endif; ?>
-
-          <div class="post-footer">
-            <button class="like-btn <?= $p['curtiu'] ? 'liked' : '' ?>" onclick="toggleLike(<?= $p['id'] ?>, this)">
-              💪 <span class="like-count"><?= $p['curtidas'] ?></span>
-            </button>
-
-            <?php if ($p['usuario_id'] === $_SESSION['id']): ?>
-              <div class="post-actions">
-                <button type="button" title="Editar" onclick="abrirModalEditar(<?= $p['id'] ?>)">✏️</button>
-                <form action="/actions/action-excluir-post.php" method="POST" onsubmit="return confirm('Apagar este post?');">
-                  <input type="hidden" name="post_id" value="<?= $p['id'] ?>">
-                  <button type="submit" title="Excluir">🗑️</button>
-                </form>
-              </div>
-            <?php endif; ?>
-          </div>
-
-        </div>
+      <?php foreach ($feedPosts as $p): ?>
+        <?php renderPostCard($p, $runnerIcon); ?>
       <?php endforeach; ?>
     <?php endif; ?>
   </div>
 
   <div id="tab-equipamentos" style="display: none;">
-    <!-- Equipamentos Legado Embutido -->
-    <div style="background: #fff; padding: 40px 20px; text-align: center; border-radius: var(--radius-lg); box-shadow: var(--shadow-sm);">
-        <h2>Em Desenvolvimento</h2>
-        <p style="color:#666; margin-top:10px;">Esta sessão de equipamentos está no forno. Fique ligado!</p>
-    </div>
+    <?php if (empty($equipPosts)): ?>
+      <div style="text-align:center; padding: 40px; color:#888;">
+        <h2>Vazio!</h2>
+        <p>Nenhuma publicação de equipamento/cupom ainda.</p>
+      </div>
+    <?php else: ?>
+      <?php foreach ($equipPosts as $p): ?>
+        <?php renderPostCard($p, $runnerIcon); ?>
+      <?php endforeach; ?>
+    <?php endif; ?>
   </div>
 
   <button class="fab-add" onclick="abrirModalCriarPost()">+</button>
