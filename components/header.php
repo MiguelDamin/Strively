@@ -82,12 +82,30 @@ if (isset($_SESSION['id']) && isset($pdo)) {
     <?php endif; ?>
 
     <!-- Logo -->
-    <a class="nav-brand" href="/index.php" style="display: flex; align-items: center;">
+    <a class="nav-brand" href="/index.php" style="display: flex; align-items: center; margin-right: 20px;">
       <div class="logo-icon">
         <img src="/images/logo_branca.webp" alt="Strively" style="width:38px;height:38px;object-fit:contain;border-radius:10px;" />
       </div>
       <span>Strively</span>
     </a>
+
+    <!-- Global Search -->
+    <?php if (isset($_SESSION['id'])): ?>
+    <div class="nav-search-wrapper" style="position: relative; margin-right: auto; max-width: 280px; width: 100%;">
+      <div class="search-input-box" style="display: flex; align-items: center; background: rgba(255,255,255,0.15); border-radius: 8px; padding: 6px 12px; transition: background 0.2s;">
+        <svg viewBox="0 0 24 24" style="width: 18px; height: 18px; fill: #fff; opacity: 0.8; margin-right: 8px;"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+        <input type="text" id="global-search-input" placeholder="Pesquisar..." autocomplete="off" style="border: none; background: transparent; color: #fff; width: 100%; outline: none; font-family: 'Outfit', sans-serif; font-size: 0.95rem;">
+      </div>
+      <div id="global-search-results" style="display: none; position: absolute; top: calc(100% + 5px); left: 0; right: 0; background: #fff; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.2); max-height: 400px; overflow-y: auto; z-index: 1000; padding: 8px 0; border: 1px solid rgba(0,0,0,0.05);">
+      </div>
+    </div>
+    
+    <script>
+      // Inject meId to JS so we can link accordingly
+      window.Strively = window.Strively || {};
+      window.Strively.meId = <?= json_encode((int)$_SESSION['id']) ?>;
+    </script>
+    <?php endif; ?>
 
     <!-- Links -->
     <ul class="nav-links">
@@ -515,5 +533,80 @@ body.modal-aberto {
       };
     }
   };
+
+  /* Global Search Logic */
+  document.addEventListener('DOMContentLoaded', () => {
+    const searchInput = document.getElementById('global-search-input');
+    const searchResults = document.getElementById('global-search-results');
+    const searchBox = document.querySelector('.search-input-box');
+    
+    if (!searchInput) return;
+
+    let searchTimeout = null;
+
+    searchInput.addEventListener('focus', () => {
+      searchBox.style.background = 'rgba(255,255,255,0.25)';
+      if (searchInput.value.trim().length > 0) {
+        searchResults.style.display = 'block';
+      }
+    });
+
+    searchInput.addEventListener('blur', () => {
+      searchBox.style.background = 'rgba(255,255,255,0.15)';
+    });
+
+    searchInput.addEventListener('input', (e) => {
+      const q = e.target.value.trim();
+      clearTimeout(searchTimeout);
+      
+      if (q.length < 1) {
+        searchResults.style.display = 'none';
+        return;
+      }
+      
+      searchTimeout = setTimeout(async () => {
+        try {
+          const res = await fetch('/actions/search-users.php?q=' + encodeURIComponent(q));
+          const users = await res.json();
+          
+          if (users.length === 0) {
+            searchResults.innerHTML = '<div style="padding: 16px; color: #777; font-size: 0.95rem; text-align: center;">Nenhum usuário encontrado.</div>';
+          } else {
+            searchResults.innerHTML = users.map(u => {
+              const foto = u.foto ? (u.foto.startsWith('http') ? u.foto : '/' + u.foto) : '';
+              const link = (window.Strively && window.Strively.meId === u.id) ? '/pages/perfil.php' : '/pages/perfil-publico.php?id=' + u.id;
+              const perfilStr = u.perfil === 'treinador' ? 'Treinador' : 'Corredor';
+              // highlight matched string gracefully
+              const regex = new RegExp(`(${q})`, "gi");
+              const highlightedName = u.nome.replace(regex, `<span style="color: #1DB954; font-weight: 800;">$1</span>`);
+              
+              return `
+                <a href="${link}" style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; text-decoration: none; transition: background 0.2s;" onmouseover="this.style.background='#f9f9f9'" onmouseout="this.style.background='transparent'">
+                  ${foto ? 
+                    `<img src="${foto}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 1px solid #eee;">` : 
+                    `<div style="width: 40px; height: 40px; border-radius: 50%; background: #f0f0f0; display: flex; align-items: center; justify-content: center; font-size: 16px;">👤</div>`
+                  }
+                  <div style="display: flex; flex-direction: column;">
+                    <span style="color: #111; font-weight: 600; font-size: 0.95rem; line-height: 1.2;">${highlightedName}</span>
+                    <span style="color: #888; font-size: 0.8rem; font-weight: 500; margin-top: 2px;">${perfilStr}</span>
+                  </div>
+                </a>
+              `;
+            }).join('');
+          }
+          searchResults.style.display = 'block';
+        } catch(err) {
+          console.error('Search failed', err);
+        }
+      }, 250);
+    });
+
+    // Close search dropdown on click outside
+    document.addEventListener('click', (e) => {
+      if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+        searchResults.style.display = 'none';
+      }
+    });
+  });
 
 </script>
