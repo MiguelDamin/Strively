@@ -23,11 +23,14 @@ try {
     $stmt = $pdo->prepare("
         SELECT id, nome, foto, perfil 
         FROM usuarios 
-        WHERE nome LIKE ? 
+        WHERE nome ILIKE ? OR nome ILIKE ? 
         ORDER BY nome ASC 
         LIMIT 10
     ");
-    $stmt->execute(['%' . $q . '%']);
+    $stmt->execute([
+        $q . '%', 
+        '% ' . $q . '%'
+    ]);
     $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     echo json_encode($users);

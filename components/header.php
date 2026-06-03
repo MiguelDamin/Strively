@@ -89,27 +89,26 @@ if (isset($_SESSION['id']) && isset($pdo)) {
       <span>Strively</span>
     </a>
 
-    <!-- Global Search -->
-    <?php if (isset($_SESSION['id'])): ?>
-    <div class="nav-search-wrapper" style="position: relative; margin-right: auto; max-width: 280px; width: 100%;">
-      <div class="search-input-box" style="display: flex; align-items: center; background: rgba(255,255,255,0.15); border-radius: 8px; padding: 6px 12px; transition: background 0.2s;">
-        <svg viewBox="0 0 24 24" style="width: 18px; height: 18px; fill: #fff; opacity: 0.8; margin-right: 8px;"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-        <input type="text" id="global-search-input" placeholder="Pesquisar..." autocomplete="off" style="border: none; background: transparent; color: #fff; width: 100%; outline: none; font-family: 'Outfit', sans-serif; font-size: 0.95rem;">
-      </div>
-      <div id="global-search-results" style="display: none; position: absolute; top: calc(100% + 5px); left: 0; right: 0; background: #fff; border-radius: 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.2); max-height: 400px; overflow-y: auto; z-index: 1000; padding: 8px 0; border: 1px solid rgba(0,0,0,0.05);">
-      </div>
-    </div>
-    
     <script>
       // Inject meId to JS so we can link accordingly
       window.Strively = window.Strively || {};
-      window.Strively.meId = <?= json_encode((int)$_SESSION['id']) ?>;
+      window.Strively.meId = <?= json_encode(isset($_SESSION['id']) ? (int)$_SESSION['id'] : 0) ?>;
     </script>
-    <?php endif; ?>
 
     <!-- Links -->
     <ul class="nav-links">
-      <li><a href="/index.php">Início</a></li>
+      <li style="display:flex;align-items:center;gap:12px;">
+        <a href="/index.php">Início</a>
+        <?php if (isset($_SESSION['id'])): ?>
+        <div class="desktop-search-container" style="position:relative; display:flex; align-items:center;">
+          <div id="desktop-search-expander" style="display:flex; align-items:center; background:rgba(255,255,255,0.15); border-radius:20px; overflow:hidden; width:34px; height:34px; transition:width 0.3s cubic-bezier(0.4, 0, 0.2, 1); cursor:pointer;">
+            <svg id="desktop-search-icon" viewBox="0 0 24 24" style="width:16px; height:16px; fill:#fff; flex-shrink:0; margin-left:9px;"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+            <input type="text" id="desktop-search-input" placeholder="Pesquisar..." autocomplete="off" style="border:none; background:transparent; color:#fff; outline:none; font-family:'Outfit',sans-serif; width:100%; padding-left:10px; padding-right:12px; opacity:0; transition:opacity 0.2s;">
+          </div>
+          <div id="desktop-search-results" style="display:none; position:absolute; top:calc(100% + 10px); left:0; width:280px; background:#fff; border-radius:12px; box-shadow:0 8px 30px rgba(0,0,0,0.2); max-height:400px; overflow-y:auto; z-index:1000; padding:8px 0; border:1px solid rgba(0,0,0,0.05);"></div>
+        </div>
+        <?php endif; ?>
+      </li>
       <li><a href="/pages/eventos.php">Eventos</a></li>
       <li><a href="/pages/divulgar-evento.php">Divulgue Eventos</a></li>
       <li><a href="/pages/comunidade.php">Comunidade</a></li>
@@ -256,11 +255,18 @@ if (isset($_SESSION['id']) && isset($pdo)) {
     <span>Comunidade</span>
   </a>
 
-  <!-- Eventos -->
-  <a href="/pages/eventos.php" class="bn-item">
-    <svg viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zM5 8V6h14v2H5z"/></svg>
-    <span>Eventos</span>
-  </a>
+  <!-- Pesquisar (Mobile App) / Visitantes veem eventos -->
+  <?php if (isset($_SESSION['id'])): ?>
+    <button class="bn-item" onclick="abrirPesquisaMobile()">
+      <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+      <span>Pesquisar</span>
+    </button>
+  <?php else: ?>
+    <a href="/pages/eventos.php" class="bn-item">
+      <svg viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zM5 8V6h14v2H5z"/></svg>
+      <span>Eventos</span>
+    </a>
+  <?php endif; ?>
 
 </nav>
 
@@ -288,6 +294,12 @@ if (isset($_SESSION['id']) && isset($pdo)) {
 
     <!-- Grid de opções -->
     <div class="sheet-grid">
+      <a href="/pages/eventos.php" class="sheet-item">
+        <div class="sheet-icon">
+          <svg viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zM5 8V6h14v2H5z"/></svg>
+        </div>
+        Eventos
+      </a>
       <a href="/pages/perfil.php" class="sheet-item">
         <div class="sheet-icon">
           <svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
@@ -536,77 +548,134 @@ body.modal-aberto {
 
   /* Global Search Logic */
   document.addEventListener('DOMContentLoaded', () => {
-    const searchInput = document.getElementById('global-search-input');
-    const searchResults = document.getElementById('global-search-results');
-    const searchBox = document.querySelector('.search-input-box');
+    // DESKTOP SEARCH
+    const dtExpander = document.getElementById('desktop-search-expander');
+    const dtInput = document.getElementById('desktop-search-input');
+    const dtResults = document.getElementById('desktop-search-results');
     
-    if (!searchInput) return;
+    if (dtExpander && dtInput && dtResults) {
+      let isExpanded = false;
+      let desktopTimeout = null;
 
-    let searchTimeout = null;
-
-    searchInput.addEventListener('focus', () => {
-      searchBox.style.background = 'rgba(255,255,255,0.25)';
-      if (searchInput.value.trim().length > 0) {
-        searchResults.style.display = 'block';
-      }
-    });
-
-    searchInput.addEventListener('blur', () => {
-      searchBox.style.background = 'rgba(255,255,255,0.15)';
-    });
-
-    searchInput.addEventListener('input', (e) => {
-      const q = e.target.value.trim();
-      clearTimeout(searchTimeout);
-      
-      if (q.length < 1) {
-        searchResults.style.display = 'none';
-        return;
-      }
-      
-      searchTimeout = setTimeout(async () => {
-        try {
-          const res = await fetch('/actions/search-users.php?q=' + encodeURIComponent(q));
-          const users = await res.json();
-          
-          if (users.length === 0) {
-            searchResults.innerHTML = '<div style="padding: 16px; color: #777; font-size: 0.95rem; text-align: center;">Nenhum usuário encontrado.</div>';
-          } else {
-            searchResults.innerHTML = users.map(u => {
-              const foto = u.foto ? (u.foto.startsWith('http') ? u.foto : '/' + u.foto) : '';
-              const link = (window.Strively && window.Strively.meId === u.id) ? '/pages/perfil.php' : '/pages/perfil-publico.php?id=' + u.id;
-              const perfilStr = u.perfil === 'treinador' ? 'Treinador' : 'Corredor';
-              // highlight matched string gracefully
-              const regex = new RegExp(`(${q})`, "gi");
-              const highlightedName = u.nome.replace(regex, `<span style="color: #1DB954; font-weight: 800;">$1</span>`);
-              
-              return `
-                <a href="${link}" style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; text-decoration: none; transition: background 0.2s;" onmouseover="this.style.background='#f9f9f9'" onmouseout="this.style.background='transparent'">
-                  ${foto ? 
-                    `<img src="${foto}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 1px solid #eee;">` : 
-                    `<div style="width: 40px; height: 40px; border-radius: 50%; background: #f0f0f0; display: flex; align-items: center; justify-content: center; font-size: 16px;">👤</div>`
-                  }
-                  <div style="display: flex; flex-direction: column;">
-                    <span style="color: #111; font-weight: 600; font-size: 0.95rem; line-height: 1.2;">${highlightedName}</span>
-                    <span style="color: #888; font-size: 0.8rem; font-weight: 500; margin-top: 2px;">${perfilStr}</span>
-                  </div>
-                </a>
-              `;
-            }).join('');
-          }
-          searchResults.style.display = 'block';
-        } catch(err) {
-          console.error('Search failed', err);
+      dtExpander.addEventListener('click', () => {
+        if (!isExpanded) {
+          isExpanded = true;
+          dtExpander.style.width = '240px';
+          dtInput.style.opacity = '1';
+          dtInput.focus();
         }
-      }, 250);
-    });
+      });
 
-    // Close search dropdown on click outside
-    document.addEventListener('click', (e) => {
-      if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
-        searchResults.style.display = 'none';
+      dtInput.addEventListener('input', (e) => {
+        const q = e.target.value.trim();
+        clearTimeout(desktopTimeout);
+        if (q.length < 1) { dtResults.style.display = 'none'; return; }
+        
+        desktopTimeout = setTimeout(() => doSearch(q, dtResults), 250);
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!dtExpander.contains(e.target) && !dtResults.contains(e.target)) {
+          dtResults.style.display = 'none';
+          if (dtInput.value.trim().length === 0 && isExpanded) {
+            isExpanded = false;
+            dtExpander.style.width = '34px';
+            dtInput.style.opacity = '0';
+          }
+        }
+      });
+    }
+
+    // MOBILE SEARCH
+    const mInput = document.getElementById('mobile-search-input');
+    const mResults = document.getElementById('mobile-search-results');
+    
+    if (mInput && mResults) {
+      let mobileTimeout = null;
+      mInput.addEventListener('input', (e) => {
+        const q = e.target.value.trim();
+        clearTimeout(mobileTimeout);
+        if (q.length < 1) { mResults.innerHTML = ''; return; }
+        mobileTimeout = setTimeout(() => doSearch(q, mResults), 250);
+      });
+    }
+    
+    // Core search fetch definition
+    async function doSearch(q, resultsContainer) {
+      try {
+        const res = await fetch('/actions/search-users.php?q=' + encodeURIComponent(q));
+        const users = await res.json();
+        
+        if (users.length === 0) {
+          resultsContainer.innerHTML = '<div style="padding: 16px; color: #777; font-size: 0.95rem; text-align: center;">Nenhum usuário encontrado.</div>';
+        } else {
+          resultsContainer.innerHTML = users.map(u => {
+            const foto = u.foto ? (u.foto.startsWith('http') ? u.foto : '/' + u.foto) : '';
+            const link = (window.Strively && window.Strively.meId === u.id) ? '/pages/perfil.php' : '/pages/perfil-publico.php?id=' + u.id;
+            const perfilStr = u.perfil === 'treinador' ? 'Treinador' : 'Corredor';
+            const regex = new RegExp(`(${q})`, "gi");
+            const highlightedName = u.nome.replace(regex, `<span style="color: #1DB954; font-weight: 800;">$1</span>`);
+            
+            return `
+              <a href="${link}" style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; text-decoration: none; transition: background 0.2s; border-bottom: 1px solid rgba(0,0,0,0.02);" onmouseover="this.style.background='#f9f9f9'" onmouseout="this.style.background='transparent'">
+                ${foto ? 
+                  `<img src="${foto}" style="width: 44px; height: 44px; border-radius: 50%; object-fit: cover; border: 1px solid #eee;">` : 
+                  `<div style="width: 44px; height: 44px; border-radius: 50%; background: #f0f0f0; display: flex; align-items: center; justify-content: center; font-size: 16px;">👤</div>`
+                }
+                <div style="display: flex; flex-direction: column;">
+                  <span style="color: #111; font-weight: 600; font-size: 0.95rem; line-height: 1.2;">${highlightedName}</span>
+                  <span style="color: #888; font-size: 0.8rem; font-weight: 500; margin-top: 2px;">${perfilStr}</span>
+                </div>
+              </a>
+            `;
+          }).join('');
+        }
+        resultsContainer.style.display = 'block';
+      } catch(err) {
+        console.error('Search failed', err);
       }
-    });
+    }
+  });
+
+  // Funções overlay Mobile Search
+  function abrirPesquisaMobile() {
+    const overlay = document.getElementById('mobileSearchOverlay');
+    if (overlay) {
+        overlay.style.display = 'flex';
+        const input = document.getElementById('mobile-search-input');
+        if (input) setTimeout(() => input.focus(), 100);
+        lockScroll();
+    }
+  }
+
+  function fecharPesquisaMobile() {
+    const overlay = document.getElementById('mobileSearchOverlay');
+    if (overlay) {
+        overlay.style.display = 'none';
+        document.getElementById('mobile-search-input').value = '';
+        document.getElementById('mobile-search-results').innerHTML = '';
+        unlockScroll();
+    }
+  }
+
+
   });
 
 </script>
+
+<!-- Mobile Fullscreen Search Overlay -->
+<div id="mobileSearchOverlay" style="display:none; position:fixed; top:0; left:0; right:0; bottom:0; background:#fff; z-index:99999; flex-direction:column;">
+  <!-- Header Mobile Search -->
+  <div style="display:flex; align-items:center; gap:12px; padding: 20px 20px 10px 20px; border-bottom: 1px solid #eee; background: #fff;">
+    <button onclick="fecharPesquisaMobile()" style="background:none; border:none; padding: 0; color:#111; display:flex; align-items:center; justify-content:center; width:32px; height:32px;">
+      <svg viewBox="0 0 24 24" style="width:24px; height:24px; fill:currentColor;"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+    </button>
+    <div style="flex:1; background:#f5f6f5; border-radius:12px; display:flex; align-items:center; padding:10px 14px;">
+      <svg viewBox="0 0 24 24" style="width: 18px; height: 18px; fill: #999; margin-right: 8px; flex-shrink:0;"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+      <input type="text" id="mobile-search-input" placeholder="Pesquisar..." autocomplete="off" style="border:none; background:transparent; width:100%; outline:none; font-family:'Outfit', sans-serif; font-size:1rem; color:#111;">
+    </div>
+  </div>
+  
+  <div id="mobile-search-results" style="flex:1; overflow-y:auto; padding: 10px 0; background: #fff;">
+  </div>
+</div>
