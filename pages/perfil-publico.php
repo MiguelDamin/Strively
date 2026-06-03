@@ -37,6 +37,17 @@ if (!$visitado) {
     exit();
 }
 
+$stmt_followers = $pdo->prepare("SELECT COUNT(*) FROM seguidores WHERE seguido_id = ?");
+$stmt_followers->execute([$visitado_id]);
+$total_perseguidores = (int) $stmt_followers->fetchColumn();
+
+$ja_persegue = false;
+if (isset($_SESSION['id']) && $_SESSION['id'] != $visitado_id) {
+    $stmt_check = $pdo->prepare("SELECT 1 FROM seguidores WHERE seguidor_id = ? AND seguido_id = ?");
+    $stmt_check->execute([$_SESSION['id'], $visitado_id]);
+    $ja_persegue = (bool) $stmt_check->fetch();
+}
+
 $is_treinador = ($visitado['perfil'] === 'treinador');
 $dados_treinador = null;
 $qtd_alunos_ativos = 0;
@@ -159,8 +170,12 @@ body { background-color: var(--bg); }
 .info-box-treinador { text-align: left; background: #f8f8f8; padding: 16px; border-radius: 12px; margin-top: 20px; }
 .info-box-treinador p { margin: 4px 0; font-size: 0.85rem; color: var(--text-secondary); }
 .info-box-treinador strong { color: var(--text-primary); }
-.btn-contratar { display: block; background: var(--green); color: #fff; text-align: center; font-weight: 700; padding: 12px; border-radius: 12px; text-decoration: none; margin-top: 16px; transition: opacity 0.2s; }
+.btn-contratar { display: block; background: var(--green); color: #fff; text-align: center; font-weight: 700; padding: 12px; border-radius: 12px; text-decoration: none; margin-top: 16px; transition: opacity 0.2s; border: none; cursor:pointer; }
 .btn-contratar:hover { opacity: 0.9; }
+.btn-perseguir { display: inline-block; background: var(--green); color: #fff; font-weight: 700; font-size: 0.95rem; padding: 10px 24px; border-radius: 100px; text-decoration: none; transition: all 0.2s; border: 2px solid var(--green); cursor: pointer; margin-bottom: 24px; }
+.btn-perseguir:hover { opacity: 0.9; transform: scale(1.02); }
+.btn-perseguindo { background: transparent; color: var(--text-primary); border: 2px solid #e0e0e0; }
+.btn-perseguindo:hover { background: #f5f5f5; border-color: #ccc; }
 
 /* Stats grid */
 .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 30px; }
@@ -208,6 +223,9 @@ body { background-color: var(--bg); }
         </div>
 
         <h1 class="ps-nome-view"><?= htmlspecialchars($visitado['nome']) ?></h1>
+        <div style="font-size: 0.95rem; font-weight: 700; color: var(--text-primary); margin-top: 6px;">
+            <span id="contador-perseguidores"><?= $total_perseguidores ?></span> perseguidores
+        </div>
         <p class="ps-cidade-view">📍 <?= !empty($visitado['cidade']) ? htmlspecialchars($visitado['cidade']) : 'Cidade não informada' ?></p>
         
         <div class="badges-container">
@@ -218,6 +236,12 @@ body { background-color: var(--bg); }
                 <div class="ps-nivel-badge"><?= htmlspecialchars($visitado['nivel']) ?></div>
             <?php endif; ?>
         </div>
+
+        <?php if (isset($_SESSION['id']) && $_SESSION['id'] != $visitado_id): ?>
+            <button id="btn-perseguir" class="btn-perseguir <?= $ja_persegue ? 'btn-perseguindo' : '' ?>" onclick="togglePerseguir(<?= $visitado_id ?>)">
+                <?= $ja_persegue ? 'Perseguindo' : 'Perseguir' ?>
+            </button>
+        <?php endif; ?>
 
         <?php if ($is_treinador && $dados_treinador): ?>
             <!-- INFO TREINADOR -->
@@ -325,6 +349,47 @@ body { background-color: var(--bg); }
     </main>
 
 </div>
+
+</div>
+
+<script>
+async function togglePerseguir(alvoId) {
+    try {
+        const btn = document.getElementById('btn-perseguir');
+        const cont = document.getElementById('contador-perseguidores');
+        
+        // Optimistic UI update
+        const atualmentePerseguindo = btn.classList.contains('btn-perseguindo');
+        
+        if (atualmentePerseguindo) {
+            btn.classList.remove('btn-perseguindo');
+            btn.innerText = 'Perseguir';
+            cont.innerText = Math.max(0, parseInt(cont.innerText) - 1);
+        } else {
+            btn.classList.add('btn-perseguindo');
+            btn.innerText = 'Perseguindo';
+            cont.innerText = parseInt(cont.innerText) + 1;
+        }
+
+        const formData = new FormData();
+        formData.append('alvo_id', alvoId);
+        
+        const response = await fetch('/actions/action-perseguir.php', {
+            method: 'POST',
+            body: formData
+        });
+        
+        if (!response.ok) throw new Error('Erro na requisição');
+        
+    } catch (e) {
+        console.error('Falha ao alternar perseguir:', e);
+        if (window.Strively && window.Strively.toast) {
+            window.Strively.toast('Erro de conexão', 'error');
+        }
+        // Rollback on error could go here if wanted
+    }
+}
+</script>
 
 </body>
 </html>

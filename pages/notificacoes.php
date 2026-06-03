@@ -19,9 +19,11 @@ include '../components/header.php';
 // Busca as notificacoes
 try {
     $stmt = $pdo->prepare("
-        SELECT n.*, u.foto as foto_remetente, u.nome as nome_remetente
+        SELECT n.*, u.foto as foto_remetente, u.nome as nome_remetente,
+               s.seguidor_id as am_i_following
         FROM notificacoes n
         LEFT JOIN usuarios u ON n.remetente_id = u.id
+        LEFT JOIN seguidores s ON s.seguidor_id = n.usuario_id AND s.seguido_id = n.remetente_id
         WHERE n.usuario_id = ?
         ORDER BY n.id DESC
         LIMIT 50
@@ -68,6 +70,13 @@ try {
                 </div>
                 <div class="notif-info">
                     <div class="notif-info-text" style="font-weight: 500; font-size: 0.95rem; color: var(--text-primary); line-height: 1.4;"><?= htmlspecialchars($n['texto']) ?></div>
+                    
+                    <?php if (strpos(strtolower($n['texto']), 'perseguir') !== false && empty($n['am_i_following'])): ?>
+                        <div style="margin-top:8px;">
+                            <button onclick="event.preventDefault(); followBackFast(<?= $n['remetente_id'] ?>, this)" style="background:var(--green);color:#fff;border:none;padding:6px 14px;border-radius:100px;font-size:0.8rem;font-weight:700;cursor:pointer;transition:transform 0.2s;">Persiga de volta</button>
+                        </div>
+                    <?php endif; ?>
+
                     <?php if (!empty($n['data_criacao'])): ?>
                         <?php 
                             $dt = new DateTime($n['data_criacao']);
@@ -82,6 +91,37 @@ try {
         <?php endforeach; ?>
     <?php endif; ?>
 </div>
+
+<script>
+async function followBackFast(alvoId, btnElem) {
+    try {
+        btnElem.innerText = 'Perseguindo...';
+        btnElem.style.opacity = '0.7';
+        btnElem.style.pointerEvents = 'none';
+
+        const formData = new FormData();
+        formData.append('alvo_id', alvoId);
+        
+        const response = await fetch('/actions/action-perseguir.php', {
+            method: 'POST', body: formData
+        });
+
+        if (response.ok) {
+            btnElem.innerText = 'Perseguindo';
+            btnElem.style.background = 'transparent';
+            btnElem.style.color = '#777';
+            btnElem.style.border = '1px solid #ddd';
+        } else {
+            throw new Error('Falha no request');
+        }
+    } catch(err) {
+        console.error(err);
+        btnElem.innerText = 'Persiga de volta';
+        btnElem.style.opacity = '1';
+        btnElem.style.pointerEvents = 'auto';
+    }
+}
+</script>
 
 </body>
 </html>
