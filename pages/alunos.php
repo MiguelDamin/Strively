@@ -26,7 +26,7 @@ $treinador_usuario_id = $_SESSION['id'];
 $stmt = $pdo->prepare("
   SELECT id, nome, email, foto, cidade
   FROM usuarios
-  WHERE treinador_id = ?
+  WHERE treinador_id = ? AND status_vinculo = 'aceito'
   ORDER BY nome ASC
 ");
 $stmt->execute([$treinador_usuario_id]);
