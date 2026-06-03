@@ -11,6 +11,14 @@ if (!isset($_SESSION['id'])) {
 
 // Treinador agora possui acesso livre aos seus próprios treinos.
 
+// Treinador do corredor
+$treinador = null;
+if (isset($me) && !empty($me['treinador_id']) && $me['status_vinculo'] === 'aceito') {
+  $stmtT = $pdo->prepare("SELECT id, nome, foto FROM usuarios WHERE id = ?");
+  $stmtT->execute([$me['treinador_id']]);
+  $treinador = $stmtT->fetch();
+}
+
 // Treinos do corredor
 $stmt = $pdo->prepare("SELECT * FROM treinos WHERE aluno_id = ? ORDER BY data_treino DESC");
 $stmt->execute([$_SESSION['id']]);
@@ -61,7 +69,17 @@ include '../components/header.php';
 .treinos-sub{font-size:.9rem;color:var(--text-muted);margin-bottom:28px}
 .treinos-header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:24px}
 .treinos-header h1{margin:0}
-.treinos-btns{display:flex;gap:8px;flex-wrap:wrap}
+.treinos-header-direita{display:flex;flex-direction:column;align-items:flex-end;gap:12px}
+.treinos-btns{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.meu-treinador-widget{background:#fff;border-radius:12px;padding:12px 16px;box-shadow:0 2px 8px rgba(0,0,0,.06);display:flex;flex-direction:column;gap:6px;width:fit-content;border:1px solid #eee;margin-left:auto}
+.mt-label{font-size:.75rem;font-weight:700;text-transform:uppercase;color:var(--text-muted);letter-spacing:.5px}
+.mt-info{display:flex;align-items:center;gap:16px;justify-content:space-between}
+.mt-perfil{display:flex;align-items:center;gap:10px}
+.mt-perfil img,.mt-avatar-padrao{width:34px;height:34px;border-radius:50%;object-fit:cover}
+.mt-avatar-padrao{background:#f0f0f0;display:flex;align-items:center;justify-content:center;font-size:16px}
+.mt-nome{font-size:.95rem;font-weight:600;color:#111}
+.btn-cancelar-treinador{background:#fff0f0;color:#c0392b;border:none;padding:6px 12px;border-radius:8px;font-size:.8rem;font-weight:600;cursor:pointer;font-family:'Outfit',sans-serif;transition:background .18s}
+.btn-cancelar-treinador:hover{background:#ffd5d5}
 .abas{display:flex;gap:4px;background:#fff;border-radius:14px;padding:6px;box-shadow:0 2px 8px rgba(0,0,0,.08);margin-bottom:28px;width:fit-content}
 .aba-btn{display:flex;align-items:center;gap:8px;padding:10px 22px;border-radius:10px;border:none;background:transparent;font-family:'Outfit',sans-serif;font-size:.9rem;font-weight:600;color:var(--text-muted);cursor:pointer;text-decoration:none;transition:all .2s}
 .aba-btn:hover{background:var(--bg,#f5f5f5);color:var(--text-main)}
@@ -155,8 +173,10 @@ include '../components/header.php';
 @media(max-width:640px){
   .abas{width:100%}
   .aba-btn{flex:1;justify-content:center;padding:10px 12px;font-size:.82rem}
+  .treinos-header-direita{width:100%;align-items:stretch}
   .treinos-btns{width:100%}
   .treinos-btns .btn-primary,.treinos-btns .btn-secondary{flex:1;text-align:center;justify-content:center;font-size:.82rem;padding:10px 8px}
+  .meu-treinador-widget{width:100%;margin-left:0;margin-top:4px}
   .modal-form-grid{grid-template-columns:1fr}
   .cal-dia{min-height:40px;padding:4px}
   .cal-dia-num{font-size:.78rem}
@@ -242,13 +262,31 @@ include '../components/header.php';
       <h1 class="treinos-titulo">Meus Treinos</h1>
       <p class="treinos-sub" style="margin-bottom:0">Acompanhe e registre seus treinos e eventos.</p>
     </div>
-    <div class="treinos-btns">
-      <button class="btn-primary" onclick="abrirModal('modalAdicionar')" style="font-size:.85rem;padding:10px 20px">
-        + Treino
-      </button>
-      <button class="btn-secondary" onclick="abrirModal('modalEvento')" style="font-size:.85rem;padding:10px 20px;border-color:#DAA520;color:#DAA520">
-        🏅 Evento
-      </button>
+    <div class="treinos-header-direita">
+      <div class="treinos-btns">
+        <button class="btn-primary" onclick="abrirModal('modalAdicionar')" style="font-size:.85rem;padding:10px 20px">
+          + Treino
+        </button>
+        <button class="btn-secondary" onclick="abrirModal('modalEvento')" style="font-size:.85rem;padding:10px 20px;border-color:#DAA520;color:#DAA520">
+          🏅 Evento
+        </button>
+      </div>
+      <?php if ($treinador): ?>
+      <div class="meu-treinador-widget">
+        <span class="mt-label">Seu treinador</span>
+        <div class="mt-info">
+          <div class="mt-perfil">
+            <?php if (!empty($treinador['foto'])): ?>
+                <img src="<?= htmlspecialchars(strpos($treinador['foto'], 'http')===0 ? $treinador['foto'] : '/'.$treinador['foto']) ?>" alt="Treinador">
+            <?php else: ?>
+                <div class="mt-avatar-padrao">👤</div>
+            <?php endif; ?>
+            <span class="mt-nome"><?= htmlspecialchars($treinador['nome']) ?></span>
+          </div>
+          <button class="btn-cancelar-treinador" onclick="abrirModalCancelarTreinador()">Cancelar</button>
+        </div>
+      </div>
+      <?php endif; ?>
     </div>
   </div>
 
@@ -262,6 +300,7 @@ include '../components/header.php';
           'removido'         => '🗑️ Treino removido.',
           'evento_adicionado'=> '🏅 Evento adicionado ao calendário!',
           'evento_removido'  => '🗑️ Evento removido do calendário.',
+          'treinador_removido' => '✅ Treinador desvinculado com sucesso!',
         ];
         echo $msgs[$_GET['msg']] ?? 'Ação realizada.';
       ?>
@@ -692,6 +731,52 @@ function confirmarDeletar(treinoId, titulo) {
     lockScroll();
     
     // Fechar clicando fora
+    overlay.addEventListener('click', function(e) {
+        if (e.target === overlay) { overlay.remove(); unlockScroll(); }
+    });
+}
+
+function abrirModalCancelarTreinador() {
+    const overlay = document.createElement('div');
+    overlay.style.cssText = `
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(0,0,0,0.5); z-index: 9999;
+        display: flex; align-items: center; justify-content: center;
+    `;
+    
+    overlay.innerHTML = `
+        <div class="modal-box-confirm" style="
+            background: #fff; border-radius: 16px; padding: 28px 24px;
+            max-width: 340px; width: 90%; text-align: center;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+        ">
+            <div style="font-size: 2rem; margin-bottom: 12px;">⚠️</div>
+            <h3 style="font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; margin: 0 0 8px;">
+                Desvincular treinador?
+            </h3>
+            <p style="color: #4a4a4a; font-size: 0.9rem; margin: 0 0 24px;">
+                Você deseja realmente cancelar sua assinatura com esse treinador?
+            </p>
+            <div style="display: flex; gap: 10px; justify-content: center;">
+                <button onclick="this.closest('div[style*=fixed]').remove(); unlockScroll();" style="
+                    flex: 1; padding: 12px; border: 2px solid #ddd;
+                    border-radius: 10px; background: #fff; cursor: pointer;
+                    font-size: 0.95rem; font-weight: 600; color: #4a4a4a;
+                ">Não</button>
+                <form action="/actions/action-remover-treinador.php" method="POST" style="flex: 1; margin: 0;">
+                   <button type="submit" style="
+                       width: 100%; padding: 12px; border: none;
+                       border-radius: 10px; background: #e53935; cursor: pointer;
+                       font-size: 0.95rem; font-weight: 600; color: #fff;
+                   ">Sim</button>
+                </form>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(overlay);
+    lockScroll();
+    
     overlay.addEventListener('click', function(e) {
         if (e.target === overlay) { overlay.remove(); unlockScroll(); }
     });
