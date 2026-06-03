@@ -98,7 +98,6 @@ if (isset($_SESSION['id']) && isset($pdo)) {
     <!-- Links -->
     <ul class="nav-links">
       <li style="display:flex;align-items:center;gap:12px;">
-        <a href="/index.php">Início</a>
         <?php if (isset($_SESSION['id'])): ?>
         <div class="desktop-search-container" style="position:relative; display:flex; align-items:center;">
           <div id="desktop-search-expander" style="display:flex; align-items:center; background:rgba(255,255,255,0.15); border-radius:20px; overflow:hidden; width:34px; height:34px; transition:width 0.3s cubic-bezier(0.4, 0, 0.2, 1); cursor:pointer;">
@@ -108,6 +107,7 @@ if (isset($_SESSION['id']) && isset($pdo)) {
           <div id="desktop-search-results" style="display:none; position:absolute; top:calc(100% + 10px); left:0; width:280px; background:#fff; border-radius:12px; box-shadow:0 8px 30px rgba(0,0,0,0.2); max-height:400px; overflow-y:auto; z-index:1000; padding:8px 0; border:1px solid rgba(0,0,0,0.05);"></div>
         </div>
         <?php endif; ?>
+        <a href="/index.php">Início</a>
       </li>
       <li><a href="/pages/eventos.php">Eventos</a></li>
       <li><a href="/pages/divulgar-evento.php">Divulgue Eventos</a></li>
@@ -657,9 +657,6 @@ body.modal-aberto {
         unlockScroll();
     }
   }
-
-
-  });
 
 </script>
 
