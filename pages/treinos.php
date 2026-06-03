@@ -68,19 +68,20 @@ include '../components/header.php';
 .treinos-titulo{font-family:'Bebas Neue',sans-serif;font-size:2.2rem;letter-spacing:2px;margin-bottom:4px}
 .treinos-sub{font-size:.9rem;color:var(--text-muted);margin-bottom:28px}
 .treinos-header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:24px}
-.treinos-header h1{margin:0}
 .treinos-header-direita{display:flex;flex-direction:column;align-items:flex-end;gap:12px}
 .treinos-btns{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
-.meu-treinador-widget{background:#fff;border-radius:12px;padding:12px 16px;box-shadow:0 2px 8px rgba(0,0,0,.06);display:flex;flex-direction:column;gap:6px;width:fit-content;border:1px solid #eee;margin-left:auto}
+
+/* Elementos na linha das Abas e Widget do Treinador */
+.row-abas-treinador{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;margin-bottom:28px}
+.abas{display:flex;gap:4px;background:#fff;border-radius:14px;padding:6px;box-shadow:0 2px 8px rgba(0,0,0,.08);width:fit-content;margin-bottom:0}
+.meu-treinador-widget{background:#fff;border-radius:12px;padding:12px 16px;box-shadow:0 2px 8px rgba(0,0,0,.06);display:flex;flex-direction:column;gap:6px;min-width:280px;border:1px solid #eee;margin-top:0;margin-bottom:0}
 .mt-label{font-size:.75rem;font-weight:700;text-transform:uppercase;color:var(--text-muted);letter-spacing:.5px}
 .mt-info{display:flex;align-items:center;gap:16px;justify-content:space-between}
 .mt-perfil{display:flex;align-items:center;gap:10px}
 .mt-perfil img,.mt-avatar-padrao{width:34px;height:34px;border-radius:50%;object-fit:cover}
 .mt-avatar-padrao{background:#f0f0f0;display:flex;align-items:center;justify-content:center;font-size:16px}
 .mt-nome{font-size:.95rem;font-weight:600;color:#111}
-.btn-cancelar-treinador{background:#fff0f0;color:#c0392b;border:none;padding:6px 12px;border-radius:8px;font-size:.8rem;font-weight:600;cursor:pointer;font-family:'Outfit',sans-serif;transition:background .18s}
 .btn-cancelar-treinador:hover{background:#ffd5d5}
-.abas{display:flex;gap:4px;background:#fff;border-radius:14px;padding:6px;box-shadow:0 2px 8px rgba(0,0,0,.08);margin-bottom:28px;width:fit-content}
 .aba-btn{display:flex;align-items:center;gap:8px;padding:10px 22px;border-radius:10px;border:none;background:transparent;font-family:'Outfit',sans-serif;font-size:.9rem;font-weight:600;color:var(--text-muted);cursor:pointer;text-decoration:none;transition:all .2s}
 .aba-btn:hover{background:var(--bg,#f5f5f5);color:var(--text-main)}
 .aba-btn.ativa{background:var(--green);color:#fff}
@@ -171,12 +172,15 @@ include '../components/header.php';
 .evento-tab{flex:1;padding:9px 8px;border:none;border-radius:8px;font-family:'Outfit',sans-serif;font-size:.82rem;font-weight:600;cursor:pointer;background:transparent;color:#888;transition:all .18s;text-align:center}
 .evento-tab.ativo{background:#DAA520;color:#fff}
 @media(max-width:640px){
-  .abas{width:100%}
+  .row-abas-treinador{flex-direction:column;align-items:stretch;}
+  .abas{width:100%;margin-bottom:0}
   .aba-btn{flex:1;justify-content:center;padding:10px 12px;font-size:.82rem}
   .treinos-header-direita{width:100%;align-items:stretch}
   .treinos-btns{width:100%}
   .treinos-btns .btn-primary,.treinos-btns .btn-secondary{flex:1;text-align:center;justify-content:center;font-size:.82rem;padding:10px 8px}
-  .meu-treinador-widget{width:100%;margin-left:0;margin-top:4px}
+  .meu-treinador-widget{width:100%;min-width:0;margin-top:0}
+  .mt-info{gap:8px;}
+  .btn-cancelar-treinador{padding:6px 10px;font-size:.75rem;}
   .modal-form-grid{grid-template-columns:1fr}
   .cal-dia{min-height:40px;padding:4px}
   .cal-dia-num{font-size:.78rem}
@@ -271,22 +275,6 @@ include '../components/header.php';
           🏅 Evento
         </button>
       </div>
-      <?php if ($treinador): ?>
-      <div class="meu-treinador-widget">
-        <span class="mt-label">Seu treinador</span>
-        <div class="mt-info">
-          <div class="mt-perfil">
-            <?php if (!empty($treinador['foto'])): ?>
-                <img src="<?= htmlspecialchars(strpos($treinador['foto'], 'http')===0 ? $treinador['foto'] : '/'.$treinador['foto']) ?>" alt="Treinador">
-            <?php else: ?>
-                <div class="mt-avatar-padrao">👤</div>
-            <?php endif; ?>
-            <span class="mt-nome"><?= htmlspecialchars($treinador['nome']) ?></span>
-          </div>
-          <button class="btn-cancelar-treinador" onclick="abrirModalCancelarTreinador()">Cancelar</button>
-        </div>
-      </div>
-      <?php endif; ?>
     </div>
   </div>
 
@@ -321,15 +309,34 @@ include '../components/header.php';
     </div>
   <?php endif; ?>
 
-  <div class="abas">
-    <a href="?aba=calendario" class="aba-btn <?= $aba==='calendario'?'ativa':'' ?>">
-      <svg viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5C3.9 3 3 3.9 3 5v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
-      Calendário
-    </a>
-    <a href="?aba=planilha" class="aba-btn <?= $aba==='planilha'?'ativa':'' ?>">
-      <svg viewBox="0 0 24 24"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg>
-      Planilha
-    </a>
+  <div class="row-abas-treinador">
+    <div class="abas">
+      <a href="?aba=calendario" class="aba-btn <?= $aba==='calendario'?'ativa':'' ?>">
+        <svg viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5C3.9 3 3 3.9 3 5v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
+        Calendário
+      </a>
+      <a href="?aba=planilha" class="aba-btn <?= $aba==='planilha'?'ativa':'' ?>">
+        <svg viewBox="0 0 24 24"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg>
+        Planilha
+      </a>
+    </div>
+
+    <?php if ($treinador): ?>
+    <div class="meu-treinador-widget">
+      <span class="mt-label">Seu treinador</span>
+      <div class="mt-info">
+        <div class="mt-perfil">
+          <?php if (!empty($treinador['foto'])): ?>
+              <img src="<?= htmlspecialchars(strpos($treinador['foto'], 'http')===0 ? $treinador['foto'] : '/'.$treinador['foto']) ?>" alt="Treinador">
+          <?php else: ?>
+              <div class="mt-avatar-padrao">👤</div>
+          <?php endif; ?>
+          <span class="mt-nome"><?= htmlspecialchars($treinador['nome']) ?></span>
+        </div>
+        <button class="btn-cancelar-treinador" onclick="abrirModalCancelarTreinador()">Cancelar</button>
+      </div>
+    </div>
+    <?php endif; ?>
   </div>
 
   <!-- ABA: CALENDÁRIO -->

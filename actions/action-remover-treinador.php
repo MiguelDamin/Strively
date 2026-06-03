@@ -21,7 +21,21 @@ require_once '../config/conexao.php';
 
 $usuario_id = $_SESSION['id'];
 
-// Busca info do treinador antes para notificação (opcional, vamos apenas remover)
+// Busca info antes de remover
+$stmtInfo = $pdo->prepare("SELECT nome, treinador_id FROM usuarios WHERE id = ?");
+$stmtInfo->execute([$usuario_id]);
+$alunoInfo = $stmtInfo->fetch();
+
+if ($alunoInfo && !empty($alunoInfo['treinador_id'])) {
+    $nomeAluno = htmlspecialchars($alunoInfo['nome']);
+    $textoNotif = "O aluno {$nomeAluno} cancelou a vinculação (assinatura) de treinos com você.";
+    $linkNotif = "/pages/alunos.php";
+    
+    $stmtNotif = $pdo->prepare("INSERT INTO notificacoes (usuario_id, texto, link) VALUES (?, ?, ?)");
+    $stmtNotif->execute([$alunoInfo['treinador_id'], $textoNotif, $linkNotif]);
+}
+
+// Remove a vinculação
 $stmt = $pdo->prepare("
   UPDATE usuarios
   SET treinador_id = NULL, status_vinculo = NULL
