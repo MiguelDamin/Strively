@@ -127,6 +127,7 @@ function renderPostCard($p, $runnerIcon) {
 <style>
   body { background: #f5f6f5; }
   .comunidade-wrapper { max-width: 650px; margin: 0 auto; padding: 24px 20px 100px; display: flex; flex-direction: column; }
+  #tab-feed, #tab-equipamentos { width: 100%; }
   
   .c-tabs { display: flex; gap: 4px; background: #e9ecef; border-radius: 12px; padding: 4px; margin-bottom: 24px; }
   .c-tab { flex: 1; text-align: center; padding: 12px; font-weight: 700; color: #666; cursor: pointer; border-radius: 8px; transition: 0.2s; font-size: 0.95rem; }
