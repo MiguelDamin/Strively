@@ -97,7 +97,7 @@ include '../components/header.php';
 .cal-nav-btn svg{width:18px;height:18px;fill:var(--text-main,#111)}
 .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
 .cal-dia-nome{text-align:center;font-size:.75rem;font-weight:700;color:var(--text-muted);padding:6px 0;text-transform:uppercase;letter-spacing:.5px}
-.cal-dia{aspect-ratio:1;border-radius:10px;padding:6px;cursor:pointer;transition:all .18s;display:flex;flex-direction:column;align-items:center;min-height:52px;border:2px solid transparent}
+.cal-dia{aspect-ratio:1;border-radius:10px;padding:6px;cursor:pointer;transition:all .18s;display:flex;flex-direction:column;align-items:center;min-height:72px;border:2px solid transparent}
 .cal-dia:hover{background:var(--bg,#f5f5f5);border-color:#ddd}
 .cal-dia.vazio{cursor:default;pointer-events:none}
 .cal-dia.hoje{border-color:var(--green);background:rgba(29,185,84,.07)}
@@ -106,7 +106,7 @@ include '../components/header.php';
 .cal-dia.tem-evento{background:rgba(218,165,32,.07);border-color:#DAA520}
 .cal-dia.tem-evento:hover{background:rgba(218,165,32,.12);border-color:#B8860B}
 .cal-dia.tem-treino.tem-evento{background:linear-gradient(135deg,#f0f9ff 50%,rgba(218,165,32,.1) 50%);border-color:#DAA520}
-.cal-dia-num{font-size:.85rem;font-weight:600;line-height:1;margin-bottom:3px;color:var(--text-main,#111)}
+.cal-dia-num{font-size:.95rem;font-weight:700;line-height:1;margin-bottom:3px;color:var(--text-main,#111)}
 .cal-dia.vazio .cal-dia-num{color:#ccc}
 .cal-bolinhas{display:flex;gap:3px;flex-wrap:wrap;justify-content:center;margin-top:2px}
 .cal-bolinha{width:7px;height:7px;border-radius:50%}
@@ -134,10 +134,11 @@ include '../components/header.php';
 .modal-treino-desc{font-size:.84rem;color:var(--text-muted);line-height:1.5;margin-bottom:10px}
 .badge-realizado{background:rgba(29,185,84,.2);color:#166534;font-size:.78rem;font-weight:700;padding:4px 10px;border-radius:6px;display:inline-block}
 .badge-proprio{background:#e0f2fe;color:#0369a1;font-size:.72rem;font-weight:700;padding:3px 8px;border-radius:6px;display:inline-block;margin-left:6px}
-.btn-marcar{background:#f5f5f5;color:#333;border:1px solid #ddd;border-radius:8px;padding:8px 16px;font-family:'Outfit',sans-serif;font-size:.85rem;font-weight:700;cursor:pointer;transition:all .15s}
+.btn-marcar{display:inline-flex;align-items:center;justify-content:center;gap:6px;background:#f5f5f5;color:#333;border:1.5px solid #ddd;border-radius:var(--radius-full,9999px);padding:7px 16px;font-family:'Outfit',sans-serif;font-size:.82rem;font-weight:700;cursor:pointer;transition:all .15s;white-space:nowrap}
 .btn-marcar:hover{background:#e0e0e0;border-color:#ccc}
-.btn-desmarcar{background:var(--green);color:#fff;border:none;border-radius:8px;padding:8px 16px;font-family:'Outfit',sans-serif;font-size:.85rem;font-weight:700;cursor:pointer;transition:opacity .15s}
+.btn-desmarcar{display:inline-flex;align-items:center;justify-content:center;gap:6px;background:var(--green);color:#fff;border:none;border-radius:var(--radius-full,9999px);padding:7px 16px;font-family:'Outfit',sans-serif;font-size:.82rem;font-weight:700;cursor:pointer;transition:opacity .15s;white-space:nowrap}
 .btn-desmarcar:hover{opacity:.85}
+.planilha-acoes .btn-primary{display:inline-flex;align-items:center;justify-content:center;border-radius:var(--radius-full,9999px) !important;padding:7px 16px !important;font-size:.82rem !important;font-weight:700 !important;min-width:auto !important;white-space:nowrap}
 .btn-remover-treino{background:#fff0f0;border:none;color:#c0392b;border-radius:7px;padding:6px 14px;font-size:.8rem;font-weight:600;cursor:pointer;font-family:'Outfit',sans-serif;transition:background .18s;margin-left:8px}
 .btn-remover-treino:hover{background:#ffd5d5}
 /* Planilha */
@@ -237,17 +238,26 @@ include '../components/header.php';
     grid-area:acoes !important;
     display:flex !important;
     flex-direction:column !important;
-    align-items:center !important;
+    align-items:stretch !important;
     gap:5px !important;
     flex-shrink:0 !important;
+    min-width:110px !important;
   }
   .btn-desmarcar,.btn-marcar{
-    font-size:.68rem !important;
-    padding:5px 8px !important;
-    border-radius:20px !important;
+    font-size:.75rem !important;
+    padding:7px 10px !important;
+    border-radius:var(--radius-full,9999px) !important;
     white-space:nowrap !important;
-    min-width:70px !important;
     text-align:center !important;
+    width:100% !important;
+  }
+  .planilha-acoes .btn-primary{
+    font-size:.75rem !important;
+    padding:7px 10px !important;
+    border-radius:var(--radius-full,9999px) !important;
+    margin-left:0 !important;
+    width:100% !important;
+  }
   }
   .btn-remover-treino{
     padding:4px 8px !important;
@@ -416,9 +426,9 @@ include '../components/header.php';
                 <form action="/actions/action-marcar-realizado.php" method="POST" style="display:inline">
                   <input type="hidden" name="treino_id" value="<?=(int)$item['id']?>">
                   <input type="hidden" name="aba" value="planilha">
-                  <button type="submit" class="btn-desmarcar">✅ Realizado</button>
+                  <button type="submit" class="btn-desmarcar">Realizado</button>
                 </form>
-                <button type="button" class="btn-primary" onclick="abrirModalCompartilhar(<?=(int)$item['id']?>, '<?=htmlspecialchars($item['titulo'], ENT_QUOTES)?>', '<?=htmlspecialchars($item['descricao']??'', ENT_QUOTES)?>', '<?=htmlspecialchars($item['tipo']??'')?>', 'planilha')" style="padding:5px 12px;font-size:0.75rem;border-radius:20px;margin-left:6px;min-width:auto;">Compartilhar</button>
+                <button type="button" class="btn-primary" onclick="abrirModalCompartilhar(<?=(int)$item['id']?>, '<?=htmlspecialchars($item['titulo'], ENT_QUOTES)?>', '<?=htmlspecialchars($item['descricao']??'', ENT_QUOTES)?>', '<?=htmlspecialchars($item['tipo']??'')?>', 'planilha')">Compartilhar</button>
               <?php else: ?>
                 <form action="/actions/action-marcar-realizado.php" method="POST" style="display:inline">
                   <input type="hidden" name="treino_id" value="<?=(int)$item['id']?>">
@@ -678,8 +688,8 @@ function abrirModalDia(ds,items){
       const proprio=it._proprio;
       let acoes='';
       if(realizado){
-        acoes='<form method="POST" action="/actions/action-marcar-realizado.php" style="display:inline"><input type="hidden" name="treino_id" value="'+it.id+'"><input type="hidden" name="aba" value="calendario"><button type="submit" class="btn-desmarcar">✅ Realizado</button></form>';
-        acoes+=' <button type="button" class="btn-primary" onclick="abrirModalCompartilhar('+it.id+', \''+esc(it.titulo)+'\', \''+esc(it.descricao)+'\', \''+it.tipo+'\', \'calendario\')" style="padding:5px 12px;font-size:0.75rem;border-radius:20px;margin-left:6px;min-width:auto;">Compartilhar</button>';
+        acoes='<form method="POST" action="/actions/action-marcar-realizado.php" style="display:inline"><input type="hidden" name="treino_id" value="'+it.id+'"><input type="hidden" name="aba" value="calendario"><button type="submit" class="btn-desmarcar">Realizado</button></form>';
+        acoes+='<button type="button" class="btn-primary planilha-acoes" style="margin-left:6px;" onclick="abrirModalCompartilhar('+it.id+', \''+esc(it.titulo)+'\', \''+esc(it.descricao)+'\', \''+it.tipo+'\', \'calendario\')">Compartilhar</button>';
       } else {
         acoes='<form method="POST" action="/actions/action-marcar-realizado.php" style="display:inline"><input type="hidden" name="treino_id" value="'+it.id+'"><input type="hidden" name="aba" value="calendario"><button type="submit" class="btn-marcar">Marcar como realizado</button></form>';
       }
