@@ -418,6 +418,7 @@ include '../components/header.php';
                   <input type="hidden" name="aba" value="planilha">
                   <button type="submit" class="btn-desmarcar">✅ Realizado</button>
                 </form>
+                <button type="button" class="btn-primary" onclick="abrirModalCompartilhar(<?=(int)$item['id']?>, '<?=htmlspecialchars($item['titulo'], ENT_QUOTES)?>', '<?=htmlspecialchars($item['descricao']??'', ENT_QUOTES)?>', '<?=htmlspecialchars($item['tipo']??'')?>', 'planilha')" style="padding:5px 12px;font-size:0.75rem;border-radius:20px;margin-left:6px;min-width:auto;">Compartilhar</button>
               <?php else: ?>
                 <form action="/actions/action-marcar-realizado.php" method="POST" style="display:inline">
                   <input type="hidden" name="treino_id" value="<?=(int)$item['id']?>">
@@ -588,6 +589,34 @@ include '../components/header.php';
   </div>
 </div>
 
+<!-- MODAL: COMPARTILHAR TREINO -->
+<div class="modal-overlay" id="modalCompartilhar" onclick="fecharModalSeFora(event,'modalCompartilhar')">
+  <div class="modal-box" style="text-align: center;">
+    <div class="modal-header">
+      <h3>Compartilhar Treino</h3>
+      <button class="modal-fechar" onclick="fecharModal('modalCompartilhar')"><svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size: 0.9rem; color: #555; margin-bottom: 20px;">Você está prestes a publicar este treino no feed da comunidade. Todos poderão ver as seguintes informações:</p>
+      
+      <div style="background: #f5f5f5; padding: 16px; border-radius: 12px; margin-bottom: 24px; text-align: left;">
+        <h4 id="mc-titulo" style="font-family: 'Bebas Neue', sans-serif; font-size: 1.4rem; margin: 0 0 8px; color: #111;"></h4>
+        <p id="mc-desc" style="font-size: 0.85rem; color: #666; margin: 0;"></p>
+        <p id="mc-strava-aviso" style="font-size: 0.8rem; color: #FC4C02; font-weight: 700; margin: 10px 0 0 0; display: none;">* Este treino foi sincronizado no Strava e suas métricas ficarão visíveis para a comunidade.</p>
+      </div>
+
+      <form action="/actions/action-compartilhar-treino.php" method="POST" id="formCompartilhar">
+        <input type="hidden" name="treino_id" id="mc-treino-id">
+        <input type="hidden" name="aba" id="mc-aba">
+        <div style="display: flex; gap: 10px;">
+          <button type="button" class="btn-secondary" style="flex:1;" onclick="fecharModal('modalCompartilhar')">Cancelar</button>
+          <button type="submit" class="btn-primary" style="flex:1;">Confirmar Postagem</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
 <script>
 const treinosPorData = <?= $treinos_json ?>;
 let anoAtual = new Date().getFullYear(), mesAtual = new Date().getMonth();
@@ -650,6 +679,7 @@ function abrirModalDia(ds,items){
       let acoes='';
       if(realizado){
         acoes='<form method="POST" action="/actions/action-marcar-realizado.php" style="display:inline"><input type="hidden" name="treino_id" value="'+it.id+'"><input type="hidden" name="aba" value="calendario"><button type="submit" class="btn-desmarcar">✅ Realizado</button></form>';
+        acoes+=' <button type="button" class="btn-primary" onclick="abrirModalCompartilhar('+it.id+', \''+esc(it.titulo)+'\', \''+esc(it.descricao)+'\', \''+it.tipo+'\', \'calendario\')" style="padding:5px 12px;font-size:0.75rem;border-radius:20px;margin-left:6px;min-width:auto;">Compartilhar</button>';
       } else {
         acoes='<form method="POST" action="/actions/action-marcar-realizado.php" style="display:inline"><input type="hidden" name="treino_id" value="'+it.id+'"><input type="hidden" name="aba" value="calendario"><button type="submit" class="btn-marcar">Marcar como realizado</button></form>';
       }
@@ -692,6 +722,22 @@ function trocarAbaEvento(tab,btn){
   btn.classList.add('ativo');
   document.getElementById('formEventoStrive').style.display=tab==='strive'?'':'none';
   document.getElementById('formEventoManual').style.display=tab==='manual'?'':'none';
+}
+
+function abrirModalCompartilhar(id, titulo, descricao, tipo, aba) {
+  document.getElementById('mc-treino-id').value = id;
+  document.getElementById('mc-aba').value = aba;
+  document.getElementById('mc-titulo').textContent = titulo;
+  const descEl = document.getElementById('mc-desc');
+  descEl.textContent = descricao || '';
+  descEl.style.display = descricao ? 'block' : 'none';
+  const aviso = document.getElementById('mc-strava-aviso');
+  if (tipo === 'strava') {
+    aviso.style.display = 'block';
+  } else {
+    aviso.style.display = 'none';
+  }
+  abrirModal('modalCompartilhar');
 }
 
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){fecharModal('modalDia');fecharModal('modalAdicionar');fecharModal('modalEvento');}});
