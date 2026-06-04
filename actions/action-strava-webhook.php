@@ -55,14 +55,7 @@ function processarAtividadeStrava(PDO $pdo, int $usuarioId, array $act): void
             VALUES (?, NULL, ?, ?, ?, ?, 'realizado', ?)
         ");
         $stmtIn->execute([$usuarioId, $titulo, $descricao, $dataTreino, $tipo, $activityId]);
-        $novoTreinoId = $pdo->lastInsertId();
-
-        // Criar post automático na comunidade
-        $stmtPost = $pdo->prepare("
-            INSERT INTO posts (usuario_id, tipo, titulo, descricao, treino_id, criado_em)
-            VALUES (?, 'treino', ?, ?, ?, NOW())
-        ");
-        $stmtPost->execute([$usuarioId, $titulo, $descricao, $novoTreinoId]);
+        // Post automático removido — usuário pode compartilhar manualmente via botão "Compartilhar"
     }
 }
 

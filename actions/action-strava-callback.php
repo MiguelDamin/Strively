@@ -191,13 +191,7 @@ if ($actResp) {
                     VALUES (?, NULL, ?, ?, ?, ?, 'realizado', ?)
                 ");
                 $stmtIn->execute([$_SESSION['id'], $titulo, $descricao, $dataTreino, $tipo, $activityId]);
-                $novoTreinoId = $pdo->lastInsertId();
-
-                $stmtPost = $pdo->prepare("
-                    INSERT INTO posts (usuario_id, tipo, titulo, descricao, treino_id, criado_em)
-                    VALUES (?, 'treino', ?, ?, ?, NOW())
-                ");
-                $stmtPost->execute([$_SESSION['id'], $titulo, $descricao, $novoTreinoId]);
+                // Post automático removido — usuário pode compartilhar manualmente via botão "Compartilhar"
             }
         }
     }

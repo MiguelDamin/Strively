@@ -208,21 +208,7 @@ try {
                 }
             }
 
-            // CRIAR POST NA COMUNIDADE (se não existir)
-            if ($treinoIdFinal) {
-                $stmtPostCheck = $pdo->prepare("
-                    SELECT id FROM posts WHERE treino_id = ? AND usuario_id = ?
-                ");
-                $stmtPostCheck->execute([$treinoIdFinal, $usuarioId]);
-
-                if (!$stmtPostCheck->fetch()) {
-                    $tituloPost = "Atividade de {$kmTexto} realizada.";
-                    $pdo->prepare("
-                        INSERT INTO posts (usuario_id, tipo, titulo, descricao, treino_id, criado_em)
-                        VALUES (?, 'treino', ?, '', ?, NOW())
-                    ")->execute([$usuarioId, $tituloPost, $treinoIdFinal]);
-                }
-            }
+            // Post automático removido — usuário pode compartilhar manualmente via botão "Compartilhar"
         }
     }
 } catch (Exception $e) {
