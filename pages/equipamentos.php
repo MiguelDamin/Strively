@@ -13,3 +13,7 @@ ob_start(); include '../components/head.php'; ?>
 </div>
 
 
+
+<?php include_once dirname(__DIR__) . '/components/footer.php'; ?>
+</body>
+</html>

@@ -274,5 +274,6 @@ function confirmarRedirecionamento(url) {
 
   </section>
 
+<?php include_once dirname(__DIR__) . '/components/footer.php'; ?>
 </body>
 </html>

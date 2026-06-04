@@ -390,3 +390,6 @@ include '../components/header.php';
   <?php endif; ?>
 
 </div>
+<?php include_once dirname(__DIR__) . '/components/footer.php'; ?>
+</body>
+</html>

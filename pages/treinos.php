@@ -920,3 +920,7 @@ document.getElementById('modal-treino-detalhe')?.addEventListener('click', funct
         <div id="modal-treino-status"></div>
     </div>
 </div>
+
+<?php include_once dirname(__DIR__) . '/components/footer.php'; ?>
+</body>
+</html>

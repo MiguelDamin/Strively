@@ -199,5 +199,6 @@ include '../components/header.php';
   });
   </script>
 
+<?php include_once dirname(__DIR__) . '/components/footer.php'; ?>
 </body>
 </html>

@@ -855,5 +855,6 @@ if (heroLp && navLp) {
   checkNavScroll();
 }
 </script>
+<?php include_once __DIR__ . '/components/footer.php'; ?>
 </body>
 </html>

@@ -391,5 +391,6 @@ async function togglePerseguir(alvoId) {
 }
 </script>
 
+<?php include_once dirname(__DIR__) . '/components/footer.php'; ?>
 </body>
 </html>

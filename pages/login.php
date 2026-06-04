@@ -98,5 +98,6 @@ if (isset($_SESSION['id'])) {
 
   </section>
 
+<?php include_once dirname(__DIR__) . '/components/footer.php'; ?>
 </body>
 </html>
