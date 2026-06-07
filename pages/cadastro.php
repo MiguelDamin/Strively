@@ -135,7 +135,7 @@ if (isset($_SESSION['id'])) {
             />
             <span>
               Li e aceito os
-              <a href="/termos" target="_blank" rel="noopener noreferrer">Termos de Uso</a>
+              <a href="/pages/termos" target="_blank" rel="noopener noreferrer">Termos de Uso</a>
               do Strively
             </span>
           </label>
