@@ -1,9 +1,9 @@
 <?php
 $tituloPagina = "Termos de Uso – Strively";
-include '../components/head.php';
-require_once '../config/conexao.php';
+require_once __DIR__ . '/../config/conexao.php';
 if (session_status() === PHP_SESSION_NONE) { session_start(); }
-include '../components/header.php';
+include __DIR__ . '/../components/head.php';
+include __DIR__ . '/../components/header.php';
 ?>
 
 <style>
