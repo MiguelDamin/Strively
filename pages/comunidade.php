@@ -49,7 +49,7 @@ function renderPostCard($p, $runnerIcon) {
     ? '/pages/perfil.php'
     : '/pages/perfil-publico.php?id=' . $autorId;
 ?>
-  <div class="post-card" id="post-<?= $p['id'] ?>">
+  <div class="post-card" id="post-<?= $p['id'] ?>" style="width: 100% !important; min-width: 100% !important; box-sizing: border-box !important;">
     <div class="post-header">
       <a href="<?= $linkAutor ?>" style="display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit;flex:1;">
         <?php if (!empty($p['autor_foto'])): ?>
@@ -124,16 +124,204 @@ function renderPostCard($p, $runnerIcon) {
 <?php
 }
 ?>
+
+
+<div class="comunidade-wrapper" id="comunidade-wrapper-id" style="width: 100% !important; max-width: 650px !important; margin: 0 auto !important; align-self: stretch !important; flex: 1 1 auto !important; display: flex !important; flex-direction: column !important;">
+
+  <div class="c-tabs">
+    <div class="c-tab active" onclick="switchTab('feed')">Feed</div>
+    <div class="c-tab" onclick="switchTab('equipamentos')">Equipamentos</div>
+  </div>
+
+  <div id="tab-feed">
+    <?php if (empty($feedPosts)): ?>
+      <div style="text-align:center; padding: 40px; color:#888;">
+        <h2>Vazio!</h2>
+        <p>Nenhuma publicação ainda. Seja o primeiro a postar!</p>
+      </div>
+    <?php else: ?>
+      <?php foreach ($feedPosts as $p): ?>
+        <?php renderPostCard($p, $runnerIcon); ?>
+      <?php endforeach; ?>
+    <?php endif; ?>
+  </div>
+
+  <div id="tab-equipamentos" style="display: none;">
+    <?php if (empty($equipPosts)): ?>
+      <div style="text-align:center; padding: 40px; color:#888;">
+        <h2>Vazio!</h2>
+        <p>Nenhuma publicação de equipamento/cupom ainda.</p>
+      </div>
+    <?php else: ?>
+      <?php foreach ($equipPosts as $p): ?>
+        <?php renderPostCard($p, $runnerIcon); ?>
+      <?php endforeach; ?>
+    <?php endif; ?>
+  </div>
+
+  <button class="fab-add" onclick="abrirModalCriarPost()">+</button>
+  </div> <!-- .comunidade-wrapper -->
+
+  <!-- Modal Criar -->  <div class="modal-criar-post-overlay" id="modalCriarPost">
+    <div class="modal-criar-post">
+      <button class="btn-fechar-modal" onclick="fecharModalCriarPost()">✕</button>
+      <h3>Nova publicação</h3>
+      <form action="/actions/action-criar-post.php" method="POST" enctype="multipart/form-data">
+        <label>Nome da publicação</label>
+        <input type="text" name="titulo" placeholder="Ex: Cupom de desconto" required>
+        
+        <label>Foto (opcional)</label>
+        <input type="file" name="foto" accept="image/*">
+        
+        <label>Descrição (opcional)</label>
+        <textarea name="descricao" placeholder="Adicione detalhes..."></textarea>
+        
+        <label>Tipo</label>
+        <select name="tipo">
+          <option value="manual">Post geral</option>
+          <option value="equipamento">Equipamento/Cupom</option>
+        </select>
+        
+        <button type="submit" class="btn-publicar">Publicar</button>
+      </form>
+    </div>
+  </div>
+
+<!-- Modais de edição -->
+<?php foreach ($posts as $post): ?>
+  <?php if ($post['usuario_id'] === $_SESSION['id']): ?>
+    <div id="modal-editar-<?= $post['id'] ?>" class="modal-overlay">
+      <div class="modal-box">
+        <div class="m-close" onclick="fecharModal(<?= $post['id'] ?>)">&times;</div>
+        <h3>Editar publicação</h3>
+        <form action="/actions/action-editar-post.php" method="POST" enctype="multipart/form-data">
+          <input type="hidden" name="post_id" value="<?= $post['id'] ?>">
+          <input type="text" name="titulo" value="<?= htmlspecialchars($post['titulo'] ?? '') ?>" placeholder="Título" required>
+          <textarea name="descricao" placeholder="Descrição (opcional)"><?= htmlspecialchars($post['descricao'] ?? '') ?></textarea>
+          <label style="display:block;margin-bottom:8px;font-size:0.9rem;font-weight:600;color:var(--text-secondary);">Nova foto (opcional):</label>
+          <input type="file" name="foto" accept="image/*">
+          <?php if (!empty($post['foto'])): ?>
+            <img src="<?= htmlspecialchars(strpos($post['foto'], 'http') === 0 ? $post['foto'] : '/'.$post['foto']) ?>" style="width:100px;height:100px;object-fit:cover;border-radius:10px;margin-bottom:12px;border:1px solid #ddd;">
+          <?php endif; ?>
+          <button type="submit" class="btn-submit">Salvar Alterações</button>
+        </form>
+      </div>
+    </div>
+  <?php endif; ?>
+<?php endforeach; ?>
+
+<script>
+function switchTab(tab) {
+  document.querySelectorAll('.c-tab').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-feed').style.display = 'none';
+  document.getElementById('tab-equipamentos').style.display = 'none';
+  
+  if (tab === 'feed') {
+    document.querySelector('.c-tab:nth-child(1)').classList.add('active');
+    document.getElementById('tab-feed').style.display = 'block';
+  } else {
+    document.querySelector('.c-tab:nth-child(2)').classList.add('active');
+    document.getElementById('tab-equipamentos').style.display = 'block';
+  }
+}
+
+async function toggleLike(postId, btn) {
+  // Otimização visual imediata
+  let span = btn.querySelector('.like-count');
+  let currentCnt = parseInt(span.innerText);
+  let isCurrentlyLiked = btn.classList.contains('liked');
+  
+  btn.classList.toggle('liked');
+  span.innerText = isCurrentlyLiked ? currentCnt - 1 : currentCnt + 1;
+
+  // Chamada Background
+  let fd = new FormData();
+  fd.append('post_id', postId);
+  
+  try {
+    const res = await fetch('/actions/action-curtir-post.php', {
+       method: 'POST',
+       body: fd
+    });
+    const json = await res.json();
+    if(json.total !== undefined) {
+       span.innerText = json.total; // Fix real from DB server
+       if(json.curtido) btn.classList.add('liked');
+       else btn.classList.remove('liked');
+    }
+  } catch(e) {
+    console.error("Erro validando curtida", e);
+  }
+}
+
+// Funções do Modal de Criar
+function abrirModalCriarPost() {
+    document.getElementById('modalCriarPost').style.display = 'flex';
+    lockScroll();
+}
+function fecharModalCriarPost() {
+    document.getElementById('modalCriarPost').style.display = 'none';
+    unlockScroll();
+}
+
+// Fechar modal no overlay
+document.getElementById('modalCriarPost')?.addEventListener('click', function(e) {
+  if (e.target === this) fecharModalCriarPost();
+});
+
+// Funções do Modal de Edição
+function abrirModalEditar(postId) {
+    const el = document.getElementById('modal-editar-' + postId);
+    if(el) { el.classList.add('open'); lockScroll(); }
+}
+function fecharModal(postId) {
+    const el = document.getElementById('modal-editar-' + postId);
+    if(el) { el.classList.remove('open'); unlockScroll(); }
+}
+document.querySelectorAll('.modal-overlay').forEach(el => {
+    el.addEventListener('click', function(e) {
+        if (e.target === this) {
+            this.classList.remove('open');
+            unlockScroll();
+        }
+    });
+});
+</script>
 <style>
   body { background: #f5f6f5; }
-  .comunidade-wrapper { max-width: 650px; margin: 0 auto; padding: 24px 20px 100px; }
-  #tab-feed, #tab-equipamentos { width: 100%; }
+  #comunidade-wrapper-id { 
+    width: 100% !important; 
+    max-width: 650px !important; 
+    margin: 0 auto !important; 
+    padding: 24px 20px 100px !important; 
+    align-self: stretch !important;
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 1 1 auto !important;
+  }
+  #tab-feed, #tab-equipamentos { 
+    width: 100% !important; 
+    min-width: 100% !important;
+    display: block; /* Ensure it's not inline-block or similar */
+  }
   
-  .c-tabs { display: flex; gap: 4px; background: #e9ecef; border-radius: 12px; padding: 4px; margin-bottom: 24px; }
+  .c-tabs { display: flex; gap: 4px; background: #e9ecef; border-radius: 12px; padding: 4px; margin-bottom: 24px; width: 100% !important; }
   .c-tab { flex: 1; text-align: center; padding: 12px; font-weight: 700; color: #666; cursor: pointer; border-radius: 8px; transition: 0.2s; font-size: 0.95rem; }
   .c-tab.active { background: #fff; color: var(--green); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
 
-  .post-card { background: #fff; border-radius: var(--radius-lg); padding: 18px; border: 1px solid var(--border); box-shadow: 0 4px 12px rgba(0,0,0,0.03); margin-bottom: 24px; display: flex; flex-direction: column; }
+  .post-card { 
+    background: #fff; 
+    border-radius: var(--radius-lg); 
+    padding: 18px; 
+    border: 1px solid var(--border); 
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03); 
+    margin-bottom: 24px; 
+    display: flex; 
+    flex-direction: column; 
+    width: 100% !important;
+    min-width: 100% !important;
+    box-sizing: border-box !important;
+  }
   
   .post-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
   .post-avatar { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; background: #eee; border: 2px solid var(--green-tint); }
@@ -305,167 +493,6 @@ function renderPostCard($p, $runnerIcon) {
   }
 </style>
 
-<div class="comunidade-wrapper">
-
-  <div class="c-tabs">
-    <div class="c-tab active" onclick="switchTab('feed')">Feed</div>
-    <div class="c-tab" onclick="switchTab('equipamentos')">Equipamentos</div>
-  </div>
-
-  <div id="tab-feed">
-    <?php if (empty($feedPosts)): ?>
-      <div style="text-align:center; padding: 40px; color:#888;">
-        <h2>Vazio!</h2>
-        <p>Nenhuma publicação ainda. Seja o primeiro a postar!</p>
-      </div>
-    <?php else: ?>
-      <?php foreach ($feedPosts as $p): ?>
-        <?php renderPostCard($p, $runnerIcon); ?>
-      <?php endforeach; ?>
-    <?php endif; ?>
-  </div>
-
-  <div id="tab-equipamentos" style="display: none;">
-    <?php if (empty($equipPosts)): ?>
-      <div style="text-align:center; padding: 40px; color:#888;">
-        <h2>Vazio!</h2>
-        <p>Nenhuma publicação de equipamento/cupom ainda.</p>
-      </div>
-    <?php else: ?>
-      <?php foreach ($equipPosts as $p): ?>
-        <?php renderPostCard($p, $runnerIcon); ?>
-      <?php endforeach; ?>
-    <?php endif; ?>
-  </div>
-
-  <button class="fab-add" onclick="abrirModalCriarPost()">+</button>
-  </div> <!-- .comunidade-wrapper -->
-
-  <!-- Modal Criar -->  <div class="modal-criar-post-overlay" id="modalCriarPost">
-    <div class="modal-criar-post">
-      <button class="btn-fechar-modal" onclick="fecharModalCriarPost()">✕</button>
-      <h3>Nova publicação</h3>
-      <form action="/actions/action-criar-post.php" method="POST" enctype="multipart/form-data">
-        <label>Nome da publicação</label>
-        <input type="text" name="titulo" placeholder="Ex: Cupom de desconto" required>
-        
-        <label>Foto (opcional)</label>
-        <input type="file" name="foto" accept="image/*">
-        
-        <label>Descrição (opcional)</label>
-        <textarea name="descricao" placeholder="Adicione detalhes..."></textarea>
-        
-        <label>Tipo</label>
-        <select name="tipo">
-          <option value="manual">Post geral</option>
-          <option value="equipamento">Equipamento/Cupom</option>
-        </select>
-        
-        <button type="submit" class="btn-publicar">Publicar</button>
-      </form>
-    </div>
-  </div>
-
-<!-- Modais de edição -->
-<?php foreach ($posts as $post): ?>
-  <?php if ($post['usuario_id'] === $_SESSION['id']): ?>
-    <div id="modal-editar-<?= $post['id'] ?>" class="modal-overlay">
-      <div class="modal-box">
-        <div class="m-close" onclick="fecharModal(<?= $post['id'] ?>)">&times;</div>
-        <h3>Editar publicação</h3>
-        <form action="/actions/action-editar-post.php" method="POST" enctype="multipart/form-data">
-          <input type="hidden" name="post_id" value="<?= $post['id'] ?>">
-          <input type="text" name="titulo" value="<?= htmlspecialchars($post['titulo'] ?? '') ?>" placeholder="Título" required>
-          <textarea name="descricao" placeholder="Descrição (opcional)"><?= htmlspecialchars($post['descricao'] ?? '') ?></textarea>
-          <label style="display:block;margin-bottom:8px;font-size:0.9rem;font-weight:600;color:var(--text-secondary);">Nova foto (opcional):</label>
-          <input type="file" name="foto" accept="image/*">
-          <?php if (!empty($post['foto'])): ?>
-            <img src="<?= htmlspecialchars(strpos($post['foto'], 'http') === 0 ? $post['foto'] : '/'.$post['foto']) ?>" style="width:100px;height:100px;object-fit:cover;border-radius:10px;margin-bottom:12px;border:1px solid #ddd;">
-          <?php endif; ?>
-          <button type="submit" class="btn-submit">Salvar Alterações</button>
-        </form>
-      </div>
-    </div>
-  <?php endif; ?>
-<?php endforeach; ?>
-
-<script>
-function switchTab(tab) {
-  document.querySelectorAll('.c-tab').forEach(b => b.classList.remove('active'));
-  document.getElementById('tab-feed').style.display = 'none';
-  document.getElementById('tab-equipamentos').style.display = 'none';
-  
-  if (tab === 'feed') {
-    document.querySelector('.c-tab:nth-child(1)').classList.add('active');
-    document.getElementById('tab-feed').style.display = 'block';
-  } else {
-    document.querySelector('.c-tab:nth-child(2)').classList.add('active');
-    document.getElementById('tab-equipamentos').style.display = 'block';
-  }
-}
-
-async function toggleLike(postId, btn) {
-  // Otimização visual imediata
-  let span = btn.querySelector('.like-count');
-  let currentCnt = parseInt(span.innerText);
-  let isCurrentlyLiked = btn.classList.contains('liked');
-  
-  btn.classList.toggle('liked');
-  span.innerText = isCurrentlyLiked ? currentCnt - 1 : currentCnt + 1;
-
-  // Chamada Background
-  let fd = new FormData();
-  fd.append('post_id', postId);
-  
-  try {
-    const res = await fetch('/actions/action-curtir-post.php', {
-       method: 'POST',
-       body: fd
-    });
-    const json = await res.json();
-    if(json.total !== undefined) {
-       span.innerText = json.total; // Fix real from DB server
-       if(json.curtido) btn.classList.add('liked');
-       else btn.classList.remove('liked');
-    }
-  } catch(e) {
-    console.error("Erro validando curtida", e);
-  }
-}
-
-// Funções do Modal de Criar
-function abrirModalCriarPost() {
-    document.getElementById('modalCriarPost').style.display = 'flex';
-    lockScroll();
-}
-function fecharModalCriarPost() {
-    document.getElementById('modalCriarPost').style.display = 'none';
-    unlockScroll();
-}
-
-// Fechar modal no overlay
-document.getElementById('modalCriarPost')?.addEventListener('click', function(e) {
-  if (e.target === this) fecharModalCriarPost();
-});
-
-// Funções do Modal de Edição
-function abrirModalEditar(postId) {
-    const el = document.getElementById('modal-editar-' + postId);
-    if(el) { el.classList.add('open'); lockScroll(); }
-}
-function fecharModal(postId) {
-    const el = document.getElementById('modal-editar-' + postId);
-    if(el) { el.classList.remove('open'); unlockScroll(); }
-}
-document.querySelectorAll('.modal-overlay').forEach(el => {
-    el.addEventListener('click', function(e) {
-        if (e.target === this) {
-            this.classList.remove('open');
-            unlockScroll();
-        }
-    });
-});
-</script>
 <?php include_once dirname(__DIR__) . '/components/footer.php'; ?>
 </body>
 </html>
