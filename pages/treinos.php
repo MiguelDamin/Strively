@@ -134,11 +134,13 @@ include '../components/header.php';
 .modal-treino-desc{font-size:.84rem;color:var(--text-muted);line-height:1.5;margin-bottom:10px}
 .badge-realizado{background:rgba(29,185,84,.2);color:#166534;font-size:.78rem;font-weight:700;padding:4px 10px;border-radius:6px;display:inline-block}
 .badge-proprio{background:#e0f2fe;color:#0369a1;font-size:.72rem;font-weight:700;padding:3px 8px;border-radius:6px;display:inline-block;margin-left:6px}
-.btn-marcar{display:inline-flex;align-items:center;justify-content:center;gap:6px;background:#f5f5f5;color:#333;border:1.5px solid #ddd;border-radius:var(--radius-full,9999px);padding:7px 16px;font-family:'Outfit',sans-serif;font-size:.82rem;font-weight:700;cursor:pointer;transition:all .15s;white-space:nowrap}
+.btn-marcar{display:inline-flex;align-items:center;justify-content:center;gap:6px;background:#f5f5f5;color:#333;border:1.5px solid #ddd;border-radius:var(--radius-full,9999px);padding:7px 16px;font-family:'Outfit',sans-serif;font-size:.82rem;font-weight:700;cursor:pointer;transition:all .15s;white-space:nowrap;height:36px;min-width:110px}
 .btn-marcar:hover{background:#e0e0e0;border-color:#ccc}
-.btn-desmarcar{display:inline-flex;align-items:center;justify-content:center;gap:6px;background:var(--green);color:#fff;border:none;border-radius:var(--radius-full,9999px);padding:7px 16px;font-family:'Outfit',sans-serif;font-size:.82rem;font-weight:700;cursor:pointer;transition:opacity .15s;white-space:nowrap}
+.btn-desmarcar{display:inline-flex;align-items:center;justify-content:center;gap:6px;background:var(--green);color:#fff;border:none;border-radius:var(--radius-full,9999px);padding:7px 16px;font-family:'Outfit',sans-serif;font-size:.82rem;font-weight:700;cursor:pointer;transition:opacity .15s;white-space:nowrap;height:36px;min-width:110px}
 .btn-desmarcar:hover{opacity:.85}
-.planilha-acoes .btn-primary{display:inline-flex;align-items:center;justify-content:center;border-radius:var(--radius-full,9999px) !important;padding:7px 16px !important;font-size:.82rem !important;font-weight:700 !important;min-width:auto !important;white-space:nowrap}
+.planilha-acoes .btn-primary{display:inline-flex;align-items:center;justify-content:center;border-radius:var(--radius-full,9999px) !important;padding:7px 16px !important;font-size:.82rem !important;font-weight:700 !important;min-width:110px !important;white-space:nowrap;height:36px !important}
+.modal-dia-acoes{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px}
+@media(max-width:480px){.modal-dia-acoes{flex-direction:column;align-items:stretch}.modal-dia-acoes form,.modal-dia-acoes button{width:100%}.btn-desmarcar,.planilha-acoes .btn-primary{min-width:0 !important;width:100%}}
 .btn-remover-treino{background:#fff0f0;border:none;color:#c0392b;border-radius:7px;padding:6px 14px;font-size:.8rem;font-weight:600;cursor:pointer;font-family:'Outfit',sans-serif;transition:background .18s;margin-left:8px}
 .btn-remover-treino:hover{background:#ffd5d5}
 /* Planilha */
@@ -688,12 +690,12 @@ function abrirModalDia(ds,items){
       const proprio=it._proprio;
       let acoes='';
       if(realizado){
-        acoes='<form method="POST" action="/actions/action-marcar-realizado.php" style="display:inline"><input type="hidden" name="treino_id" value="'+it.id+'"><input type="hidden" name="aba" value="calendario"><button type="submit" class="btn-desmarcar">Realizado</button></form>';
-        acoes+='<button type="button" class="btn-primary planilha-acoes" style="margin-left:6px;" onclick="abrirModalCompartilhar('+it.id+', \''+esc(it.titulo)+'\', \''+esc(it.descricao)+'\', \''+it.tipo+'\', \'calendario\')">Compartilhar</button>';
+        acoes='<form method="POST" action="/actions/action-marcar-realizado.php" style="display:contents"><input type="hidden" name="treino_id" value="'+it.id+'"><input type="hidden" name="aba" value="calendario"><button type="submit" class="btn-desmarcar">Realizado</button></form>';
+        acoes+='<button type="button" class="btn-primary planilha-acoes" onclick="abrirModalCompartilhar('+it.id+', \''+esc(it.titulo)+'\', \''+esc(it.descricao)+'\', \''+it.tipo+'\', \'calendario\')">Compartilhar</button>';
       } else {
-        acoes='<form method="POST" action="/actions/action-marcar-realizado.php" style="display:inline"><input type="hidden" name="treino_id" value="'+it.id+'"><input type="hidden" name="aba" value="calendario"><button type="submit" class="btn-marcar">Marcar como realizado</button></form>';
+        acoes='<form method="POST" action="/actions/action-marcar-realizado.php" style="display:contents"><input type="hidden" name="treino_id" value="'+it.id+'"><input type="hidden" name="aba" value="calendario"><button type="submit" class="btn-marcar">Realizado</button></form>';
       }
-      acoes+=' <button type="button" class="btn-remover-treino" onclick="confirmarDeletar('+it.id+', \''+esc(it.titulo)+'\')">Remover</button>';
+      acoes+=' <button type="button" class="btn-remover-treino" onclick="confirmarDeletar('+it.id+', \''+esc(it.titulo)+'\')" style="margin-left:auto">Remover</button>';
       const badgeStrava = '<div style="background:#FC4C02;color:#fff;font-size:0.72rem;font-weight:700;padding:3px 8px;border-radius:20px;letter-spacing:0.5px;font-family:\'Outfit\',sans-serif;display:inline-block;margin-bottom:6px;">STRAVA</div>';
       const badgeNormal = '<div class="modal-treino-tipo">'+esc(tipo)+'</div>';
       const badgeRenderizado = it.tipo === 'strava' ? badgeStrava : badgeNormal;
@@ -704,7 +706,7 @@ function abrirModalDia(ds,items){
         (proprio?'<span class="badge-proprio">Meu treino</span>':'')+
         '<div class="modal-treino-titulo">'+esc(it.titulo)+'</div>'+
         (it.descricao?'<div class="modal-treino-desc">'+esc(it.descricao)+'</div>':'')+
-        '<div style="margin-top:10px">'+acoes+'</div>';
+        '<div class="modal-dia-acoes">'+acoes+'</div>';
     }
     body.appendChild(div);
   });
