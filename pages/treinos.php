@@ -451,7 +451,7 @@ include '../components/header.php';
 
                 if ($mostrarComparacao) {
                   $planejado  = (float)$item['distancia_planejada_km'];
-                  $realizado  = (float)($item['km_realizado_strava'] ?? $planejado);
+                  $realizado  = !empty($item['km_realizado_strava']) ? (float)$item['km_realizado_strava'] : $planejado;
                   $percentual = $planejado > 0 ? round(($realizado / $planejado) * 100) : 100;
                   if ($percentual >= 100)      { $corPerc = '#1DB954'; $iconePerc = '↗️'; }
                   elseif ($percentual >= 80)   { $corPerc = '#FFA726'; $iconePerc = '➡️'; }

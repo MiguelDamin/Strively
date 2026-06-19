@@ -302,7 +302,7 @@ include '../components/header.php';
             $mostrarComparacao = $temPlanejado && $realizado;
             if ($mostrarComparacao) {
               $planejado  = (float)$item['distancia_planejada_km'];
-              $realizado_ = (float)($item['km_realizado_strava'] ?? $planejado);
+              $realizado_ = !empty($item['km_realizado_strava']) ? (float)$item['km_realizado_strava'] : $planejado;
               $percentual = $planejado > 0 ? round(($realizado_ / $planejado) * 100) : 100;
               if ($percentual >= 100)     { $corPerc = '#1DB954'; $iconePerc = '↗️'; }
               elseif ($percentual >= 80)  { $corPerc = '#FFA726'; $iconePerc = '➡️'; }
@@ -552,7 +552,10 @@ function abrirModalDia(ds, tt) {
       let distHtml = '';
       if (realizado) {
         const planejado = parseFloat(it.distancia_planejada_km) || 0;
-        const kmReal    = parseFloat(it.km_realizado_strava) || 0;
+        let kmReal      = parseFloat(it.km_realizado_strava);
+        if (isNaN(kmReal) || kmReal === 0) kmReal = planejado;
+
+        const eStravaSemPlan = (it.tipo === 'strava' && !planejado && kmReal > 0);
         if (planejado > 0) {
           const pct = Math.round((kmReal / planejado) * 100);
           const cor = pct >= 100 ? '#1DB954' : (pct >= 80 ? '#FFA726' : '#EF5350');
@@ -560,7 +563,7 @@ function abrirModalDia(ds, tt) {
           const fR = kmReal.toFixed(1).replace('.0','').replace('.',',');
           const fP = planejado.toFixed(1).replace('.0','').replace('.',',');
           distHtml = `<div style="display:flex;align-items:center;gap:8px;background:#f5f6f5;border-radius:10px;padding:7px 10px;margin-top:8px;font-size:0.78rem;"><span>${icone}</span><span style="color:#0d0d0d;font-weight:600;">${fR}km de ${fP}km planejados</span><span style="margin-left:auto;font-weight:700;color:${cor};">${pct}%</span></div>`;
-        } else if (it.tipo === 'strava' && kmReal > 0) {
+        } else if (eStravaSemPlan) {
           const fR = kmReal.toFixed(1).replace('.0','').replace('.',',');
           distHtml = `<div style="display:inline-flex;align-items:center;gap:6px;background:#fff3f0;border-radius:20px;padding:5px 12px;margin-top:8px;font-size:0.78rem;font-weight:700;color:#FC4C02;">📍 ${fR}km realizados</div>`;
         }

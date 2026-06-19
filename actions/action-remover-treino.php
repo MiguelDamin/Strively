@@ -21,7 +21,7 @@ if ($user_id == $aluno_id) {
     $stmt = $pdo->prepare("
         SELECT t.id 
         FROM treinos t
-        JOIN alunos a ON a.id = t.aluno_id
+        JOIN usuarios a ON a.id = t.aluno_id
         WHERE t.id = ? AND t.aluno_id = ? AND a.treinador_id = ?
     ");
     $stmt->execute([$treino_id, $aluno_id, $user_id]);

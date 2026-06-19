@@ -161,7 +161,7 @@ try {
                 AND data_treino = ? 
                 AND treinador_id IS NOT NULL 
                 AND treinador_id != aluno_id
-                AND status != 'realizado'
+                AND strava_activity_id IS NULL
                 LIMIT 1
             ");
             $stmtTreinador->execute([$usuarioId, $dataLocal]);
@@ -185,7 +185,7 @@ try {
                     AND data_treino = ? 
                     AND treinador_id IS NULL
                     AND tipo NOT IN ('strava', 'evento')
-                    AND status != 'realizado'
+                    AND strava_activity_id IS NULL
                     LIMIT 1
                 ");
                 $stmtProprio->execute([$usuarioId, $dataLocal]);
