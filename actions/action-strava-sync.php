@@ -184,7 +184,7 @@ try {
                     WHERE aluno_id = ? 
                     AND data_treino = ? 
                     AND treinador_id IS NULL
-                    AND tipo IN ('unico', 'planilha')
+                    AND tipo NOT IN ('strava', 'evento')
                     AND status != 'realizado'
                     LIMIT 1
                 ");

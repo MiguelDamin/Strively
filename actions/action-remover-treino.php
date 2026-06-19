@@ -9,22 +9,35 @@ if (!isset($_SESSION['id'])) {
 }
 
 $treino_id = (int)($_POST['treino_id'] ?? 0);
+$aluno_id  = (int)($_POST['aluno_id'] ?? $_SESSION['id']);
+$user_id   = $_SESSION['id'];
 
-// Verificar que o treino pertence ao usuário logado
-$stmt = $pdo->prepare("SELECT id FROM treinos WHERE id = ? AND aluno_id = ?");
-$stmt->execute([$treino_id, $_SESSION['id']]);
+// Verificar permissão
+if ($user_id == $aluno_id) {
+    $stmt = $pdo->prepare("SELECT id FROM treinos WHERE id = ? AND aluno_id = ?");
+    $stmt->execute([$treino_id, $aluno_id]);
+} else {
+    // Treinador apagando treino do aluno
+    $stmt = $pdo->prepare("
+        SELECT t.id 
+        FROM treinos t
+        JOIN alunos a ON a.id = t.aluno_id
+        WHERE t.id = ? AND t.aluno_id = ? AND a.treinador_id = ?
+    ");
+    $stmt->execute([$treino_id, $aluno_id, $user_id]);
+}
+
 if (!$stmt->fetch()) {
     header('Location: /pages/treinos.php?erro=sem_permissao');
     exit();
 }
 
-// Deletar post associado se existir
-$pdo->prepare("DELETE FROM posts WHERE treino_id = ? AND usuario_id = ?")
-    ->execute([$treino_id, $_SESSION['id']]);
+$pdo->prepare("DELETE FROM posts WHERE treino_id = ?")->execute([$treino_id]);
+$pdo->prepare("DELETE FROM treinos WHERE id = ?")->execute([$treino_id]);
 
-// Deletar treino
-$pdo->prepare("DELETE FROM treinos WHERE id = ? AND aluno_id = ?")
-    ->execute([$treino_id, $_SESSION['id']]);
-
-header('Location: /pages/treinos.php?msg=removido');
+if ($user_id != $aluno_id) {
+    header("Location: /pages/treinos-alunos.php?id={$aluno_id}&msg=removido&aba=" . ($_POST['aba'] ?? 'calendario'));
+} else {
+    header('Location: /pages/treinos.php?msg=removido');
+}
 exit();
