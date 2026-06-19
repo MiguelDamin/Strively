@@ -126,17 +126,12 @@ try {
     ]);
 
     $modo = $_GET['modo'] ?? 'rotina';
-    $timestamp_sync = !empty($user['strava_sincronizado_em']) ? strtotime($user['strava_sincronizado_em']) : null;
     
-    $urlParams = "page=1";
-    if (!$timestamp_sync || $modo === '30dias') {
-        $urlParams .= "&per_page=30"; 
-    } else {
-        $urlParams .= "&per_page=30&after=" . $timestamp_sync;
-    }
-
+    // Se o modo for 30dias puxa 30 atividades, se não puxa as 10 mais recentes
+    $perPage = ($modo === '30dias') ? 30 : 10;
+    
     $respostaAtiv = @file_get_contents(
-        "https://www.strava.com/api/v3/athlete/activities?{$urlParams}",
+        "https://www.strava.com/api/v3/athlete/activities?per_page={$perPage}&page=1",
         false, $ctxAtiv
     );
 
