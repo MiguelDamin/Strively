@@ -403,7 +403,10 @@ include '../components/header.php';
                    '<?= htmlspecialchars($item['tipo'] ?? '') ?>',
                    '<?= date('d/m/Y', strtotime($item['data_treino'])) ?>',
                    '<?= $item['status'] ?>',
-                   <?= !empty($item['treinador_id']) ? 'true' : 'false' ?>
+                   <?= !empty($item['treinador_id']) ? 'true' : 'false' ?>,
+                   '<?= !empty($item['distancia_planejada_km']) ? (float)$item['distancia_planejada_km'] : '' ?>',
+                   '<?= !empty($item['km_realizado_strava']) ? (float)$item['km_realizado_strava'] : '' ?>',
+                   '<?= htmlspecialchars($item['strava_activity_id'] ?? '') ?>'
                )"
                style="cursor: pointer;">
             <div class="planilha-data">
@@ -422,6 +425,50 @@ include '../components/header.php';
               <?php if ($item['_proprio']): ?><span class="badge-proprio">Meu treino</span><?php endif; ?>
               <div class="planilha-titulo"><?=htmlspecialchars($item['titulo'])?></div>
               <?php if(!empty($item['descricao'])): ?><div class="planilha-desc"><?=htmlspecialchars($item['descricao'])?></div><?php endif; ?>
+
+              <?php
+                // Link Strava
+                $temStravaLink = !empty($item['strava_activity_id']);
+                // Comparação de distância
+                $temPlanejado = !empty($item['distancia_planejada_km']);
+                $eStravaSemPlanejado = ($item['tipo'] === 'strava' && !$temPlanejado && !empty($item['km_realizado_strava']));
+                $mostrarComparacao = $temPlanejado && $item['status'] === 'realizado';
+
+                if ($mostrarComparacao) {
+                  $planejado  = (float)$item['distancia_planejada_km'];
+                  $realizado  = (float)($item['km_realizado_strava'] ?? $planejado);
+                  $percentual = $planejado > 0 ? round(($realizado / $planejado) * 100) : 100;
+                  if ($percentual >= 100)      { $corPerc = '#1DB954'; $iconePerc = '↗️'; }
+                  elseif ($percentual >= 80)   { $corPerc = '#FFA726'; $iconePerc = '➡️'; }
+                  else                         { $corPerc = '#EF5350'; $iconePerc = '↘️'; }
+                  $fmtReal  = rtrim(rtrim(number_format($realizado, 1, ',', '.'), '0'), ',');
+                  $fmtPlan  = rtrim(rtrim(number_format($planejado, 1, ',', '.'), '0'), ',');
+                }
+              ?>
+
+              <?php if ($mostrarComparacao): ?>
+              <div style="display:flex;align-items:center;gap:8px;background:#f5f6f5;border-radius:10px;padding:8px 12px;margin-top:8px;font-size:0.8rem;">
+                <span style="font-size:1rem;"><?= $iconePerc ?></span>
+                <span style="color:#0d0d0d;font-weight:600;"><?= $fmtReal ?>km de <?= $fmtPlan ?>km planejados</span>
+                <span style="margin-left:auto;font-weight:700;color:<?= $corPerc ?>;"><?= $percentual ?>%</span>
+              </div>
+              <?php elseif ($eStravaSemPlanejado): ?>
+              <div style="display:inline-flex;align-items:center;gap:6px;background:#fff3f0;border-radius:20px;padding:5px 12px;margin-top:8px;font-size:0.78rem;font-weight:700;color:#FC4C02;">
+                📍 <?= rtrim(rtrim(number_format((float)$item['km_realizado_strava'], 1, ',', '.'), '0'), ',') ?>km realizados
+              </div>
+              <?php elseif ($item['status'] === 'realizado'): ?>
+              <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(29,185,84,0.1);border-radius:20px;padding:5px 12px;margin-top:8px;font-size:0.78rem;font-weight:700;color:#166534;">
+                ✅ Realizado
+              </div>
+              <?php endif; ?>
+
+              <?php if ($temStravaLink): ?>
+              <a href="https://www.strava.com/activities/<?= $item['strava_activity_id'] ?>" target="_blank"
+                 style="display:inline-flex;align-items:center;gap:6px;background:#FC4C02;color:#fff;border-radius:20px;padding:6px 13px;font-size:0.76rem;font-weight:700;text-decoration:none;font-family:'Outfit',sans-serif;margin-top:8px;">
+                <svg viewBox="0 0 24 24" style="width:13px;height:13px;fill:#fff;"><path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.598h4.172L10.463 0l-7 13.828h4.169"/></svg>
+                Ver no Strava
+              </a>
+              <?php endif; ?>
             </div>
             <div class="planilha-acoes" onclick="event.stopPropagation()">
               <?php if($realizado): ?>
@@ -535,6 +582,11 @@ include '../components/header.php';
         <div class="form-grupo">
           <label for="f-desc">Descrição</label>
           <textarea id="f-desc" name="descricao" placeholder="Detalhe o treino..."></textarea>
+        </div>
+
+        <div class="form-grupo">
+          <label for="f-distancia">Distância planejada (km) <span style="color:#bbb;font-weight:400;">— opcional</span></label>
+          <input type="number" id="f-distancia" name="distancia_planejada_km" step="0.1" min="0" placeholder="Ex: 14 (deixe vazio para treinos sem distância fixa)">
         </div>
 
         <button type="submit" class="btn-primary btn-full" style="margin-top:6px">
@@ -700,12 +752,35 @@ function abrirModalDia(ds,items){
       const badgeNormal = '<div class="modal-treino-tipo">'+esc(tipo)+'</div>';
       const badgeRenderizado = it.tipo === 'strava' ? badgeStrava : badgeNormal;
 
+      // Distância / aderência para modal do dia
+      let distHtml = '';
+      if (realizado) {
+        const planejado = parseFloat(it.distancia_planejada_km) || 0;
+        const kmReal    = parseFloat(it.km_realizado_strava) || 0;
+        const eStravaSemPlan = (it.tipo === 'strava' && !planejado && kmReal > 0);
+        if (planejado > 0) {
+          const pct = Math.round((kmReal / planejado) * 100);
+          const cor = pct >= 100 ? '#1DB954' : (pct >= 80 ? '#FFA726' : '#EF5350');
+          const icone = pct >= 100 ? '↗️' : (pct >= 80 ? '➡️' : '↘️');
+          const fR = kmReal.toFixed(1).replace('.0','').replace('.',',');
+          const fP = planejado.toFixed(1).replace('.0','').replace('.',',');
+          distHtml = `<div style="display:flex;align-items:center;gap:8px;background:#f5f6f5;border-radius:10px;padding:7px 10px;margin-top:8px;font-size:0.78rem;"><span>${icone}</span><span style="color:#0d0d0d;font-weight:600;">${fR}km de ${fP}km planejados</span><span style="margin-left:auto;font-weight:700;color:${cor};">${pct}%</span></div>`;
+        } else if (eStravaSemPlan) {
+          const fR = kmReal.toFixed(1).replace('.0','').replace('.',',');
+          distHtml = `<div style="display:inline-flex;align-items:center;gap:6px;background:#fff3f0;border-radius:20px;padding:5px 12px;margin-top:8px;font-size:0.78rem;font-weight:700;color:#FC4C02;">📍 ${fR}km realizados</div>`;
+        }
+      }
+
+      // Link Strava para modal do dia
+      const stravaHtml = it.strava_activity_id ? `<a href="https://www.strava.com/activities/${it.strava_activity_id}" target="_blank" style="display:inline-flex;align-items:center;gap:6px;background:#FC4C02;color:#fff;border-radius:20px;padding:5px 12px;font-size:0.75rem;font-weight:700;text-decoration:none;font-family:'Outfit',sans-serif;margin-top:8px;"><svg viewBox="0 0 24 24" style="width:12px;height:12px;fill:#fff;"><path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.598h4.172L10.463 0l-7 13.828h4.169"/></svg>Ver no Strava</a>` : '';
+
       div.className='modal-treino-item'+(realizado?' realizado':'');
       div.innerHTML=
         badgeRenderizado+
         (proprio?'<span class="badge-proprio">Meu treino</span>':'')+
         '<div class="modal-treino-titulo">'+esc(it.titulo)+'</div>'+
         (it.descricao?'<div class="modal-treino-desc">'+esc(it.descricao)+'</div>':'')+
+        distHtml+stravaHtml+
         '<div class="modal-dia-acoes">'+acoes+'</div>';
     }
     body.appendChild(div);
@@ -866,7 +941,7 @@ function deletarTreino(treinoId) {
     document.body.appendChild(form);
     form.submit();
 }
-function abrirDetalhesTreino(titulo, descricao, tipo, data, status, temTreinador) {
+function abrirDetalhesTreino(titulo, descricao, tipo, data, status, temTreinador, distanciaPlanejada, kmRealizado, stravaId) {
     const modal = document.getElementById('modal-treino-detalhe');
     
     // Badge tipo
@@ -890,9 +965,37 @@ function abrirDetalhesTreino(titulo, descricao, tipo, data, status, temTreinador
     }
     
     // Status
-    document.getElementById('modal-treino-status').innerHTML = status === 'realizado'
-        ? '<span style="color:#1DB954;font-weight:600;font-size:0.9rem;">✅ Treino realizado</span>'
-        : '<span style="color:#8a8a8a;font-size:0.9rem;">⏳ Pendente</span>';
+    let statusHtml = '';
+    if (status === 'realizado') {
+        const planejado  = parseFloat(distanciaPlanejada) || 0;
+        const realizado  = parseFloat(kmRealizado) || 0;
+        const eStravaSemPlan = (tipo === 'strava' && !planejado && realizado > 0);
+
+        if (planejado > 0) {
+            const pct = Math.round((realizado / planejado) * 100);
+            const cor = pct >= 100 ? '#1DB954' : (pct >= 80 ? '#FFA726' : '#EF5350');
+            const icone = pct >= 100 ? '↗️' : (pct >= 80 ? '➡️' : '↘️');
+            const fmtR = realizado.toFixed(1).replace('.0','').replace('.',',');
+            const fmtP = planejado.toFixed(1).replace('.0','').replace('.',',');
+            statusHtml = `<div style="display:flex;align-items:center;gap:8px;background:#f5f6f5;border-radius:10px;padding:8px 12px;font-size:0.82rem;margin-bottom:8px;">
+                <span>${icone}</span>
+                <span style="color:#0d0d0d;font-weight:600;">${fmtR}km de ${fmtP}km planejados</span>
+                <span style="margin-left:auto;font-weight:700;color:${cor};">${pct}%</span>
+            </div>`;
+        } else if (eStravaSemPlan) {
+            const fmtR = realizado.toFixed(1).replace('.0','').replace('.',',');
+            statusHtml = `<div style="display:inline-flex;align-items:center;gap:6px;background:#fff3f0;border-radius:20px;padding:5px 12px;font-size:0.78rem;font-weight:700;color:#FC4C02;margin-bottom:8px;">📍 ${fmtR}km realizados</div>`;
+        } else {
+            statusHtml = `<div style="display:inline-flex;align-items:center;gap:6px;background:rgba(29,185,84,0.1);border-radius:20px;padding:5px 12px;font-size:0.78rem;font-weight:700;color:#166534;margin-bottom:8px;">✅ Treino realizado</div>`;
+        }
+    } else {
+        statusHtml = '<span style="color:#8a8a8a;font-size:0.9rem;">⏳ Pendente</span>';
+    }
+
+    // Link Strava
+    const linkStrava = stravaId ? `<a href="https://www.strava.com/activities/${stravaId}" target="_blank" style="display:inline-flex;align-items:center;gap:6px;background:#FC4C02;color:#fff;border-radius:20px;padding:6px 13px;font-size:0.76rem;font-weight:700;text-decoration:none;font-family:'Outfit',sans-serif;margin-top:4px;"><svg viewBox="0 0 24 24" style="width:13px;height:13px;fill:#fff;"><path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.598h4.172L10.463 0l-7 13.828h4.169"/></svg>Ver no Strava</a>` : '';
+
+    document.getElementById('modal-treino-status').innerHTML = statusHtml + linkStrava;
     
     modal.style.display = 'flex';
     lockScroll();
@@ -907,6 +1010,73 @@ function fecharDetalhesTreino() {
 document.getElementById('modal-treino-detalhe')?.addEventListener('click', function(e) {
     if (e.target === this) fecharDetalhesTreino();
 });
+
+// ============================================================
+// MODAL RPE — interceptar marcar como realizado
+// ============================================================
+let rpeSelecionado = null;
+
+document.querySelectorAll('form[action="/actions/action-marcar-realizado.php"]').forEach(form => {
+    const btn = form.querySelector('button[type="submit"]');
+    if (btn && btn.classList.contains('btn-marcar')) {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const treinoId = form.querySelector('input[name="treino_id"]').value;
+            abrirModalRPE(treinoId, form);
+        });
+    }
+});
+
+function abrirModalRPE(treinoId, formOriginal) {
+    window.treinoIdPendente = treinoId;
+    window.formMarcarPendente = formOriginal;
+    document.getElementById('rpe-treino-id').value = treinoId;
+    document.getElementById('modal-rpe').style.display = 'flex';
+    lockScroll();
+}
+
+function fecharModalRPE() {
+    document.getElementById('modal-rpe').style.display = 'none';
+    unlockScroll();
+    rpeSelecionado = null;
+    for (let i = 1; i <= 10; i++) {
+        const b = document.getElementById('rpe-btn-' + i);
+        if (b) { b.style.background = '#fff'; b.style.borderColor = '#e0e0e0'; b.style.color = '#0d0d0d'; }
+    }
+    document.getElementById('rpe-duracao').value = '';
+}
+
+function selecionarRPE(valor) {
+    rpeSelecionado = valor;
+    const cores = {1:'#4CAF50',2:'#66BB6A',3:'#9CCC65',4:'#D4E157',5:'#FFEE58',
+                   6:'#FFA726',7:'#FF7043',8:'#EF5350',9:'#E53935',10:'#B71C1C'};
+    for (let i = 1; i <= 10; i++) {
+        const b = document.getElementById('rpe-btn-' + i);
+        if (i === valor) { b.style.background = cores[i]; b.style.borderColor = cores[i]; b.style.color = '#fff'; }
+        else { b.style.background = '#fff'; b.style.borderColor = '#e0e0e0'; b.style.color = '#0d0d0d'; }
+    }
+}
+
+async function pularRPE() {
+    const form = window.formMarcarPendente;
+    fecharModalRPE();
+    if (form) form.submit();
+}
+
+async function confirmarRPE() {
+    const duracao = document.getElementById('rpe-duracao').value;
+    const treinoId = window.treinoIdPendente;
+    if (rpeSelecionado || duracao) {
+        const fd = new FormData();
+        fd.append('treino_id', treinoId);
+        fd.append('rpe', rpeSelecionado || '');
+        fd.append('duracao_minutos', duracao || '');
+        await fetch('/actions/action-salvar-rpe.php', { method: 'POST', body: fd });
+    }
+    const form = window.formMarcarPendente;
+    fecharModalRPE();
+    if (form) form.submit();
+}
 </script>
 
 <!-- Modal detalhes do treino -->
@@ -980,5 +1150,69 @@ document.getElementById('modal-treino-detalhe')?.addEventListener('click', funct
 </div>
 
 <?php include_once dirname(__DIR__) . '/components/footer.php'; ?>
+
+<!-- MODAL RPE -->
+<div id="modal-rpe" style="
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.5); z-index: 10000;
+    align-items: center; justify-content: center;
+    padding: 16px; box-sizing: border-box;
+">
+    <div style="
+        background: #fff; border-radius: 20px; padding: 28px 24px;
+        max-width: 380px; width: 100%; text-align: center;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+    ">
+        <div style="font-size: 2rem; margin-bottom: 8px;">💪</div>
+        <h3 style="font-family:'Bebas Neue',sans-serif;font-size:1.6rem;margin:0 0 6px;color:#0d0d0d;">
+            Treino concluído!
+        </h3>
+        <p style="font-size:0.88rem;color:#8a8a8a;margin:0 0 20px;">
+            De 1 a 10, como você se sentiu nesse treino?
+        </p>
+
+        <div style="display:flex;gap:6px;justify-content:center;margin-bottom:8px;flex-wrap:wrap;">
+            <?php for($i=1;$i<=10;$i++): ?>
+            <button type="button" onclick="selecionarRPE(<?=$i?>)" id="rpe-btn-<?=$i?>"
+                style="width:34px;height:34px;border-radius:50%;border:2px solid #e0e0e0;
+                background:#fff;font-size:0.8rem;font-weight:700;cursor:pointer;
+                transition:all 0.15s;color:#0d0d0d;font-family:'Outfit',sans-serif;">
+                <?=$i?>
+            </button>
+            <?php endfor; ?>
+        </div>
+
+        <div style="display:flex;justify-content:space-between;font-size:0.72rem;color:#8a8a8a;margin-bottom:18px;padding:0 4px;">
+            <span>😌 Muito fácil</span>
+            <span>😤 Esforço máximo</span>
+        </div>
+
+        <div style="margin-bottom:16px;text-align:left;">
+            <label style="font-size:0.78rem;color:#8a8a8a;font-weight:600;display:block;margin-bottom:5px;">
+                Duração (minutos) — opcional
+            </label>
+            <input type="number" id="rpe-duracao" placeholder="ex: 45" min="1"
+                style="width:100%;box-sizing:border-box;border:1.5px solid #e0e0e0;
+                border-radius:10px;padding:9px 12px;font-family:'Outfit',sans-serif;
+                font-size:0.88rem;outline:none;">
+        </div>
+
+        <input type="hidden" id="rpe-treino-id" value="">
+
+        <div style="display:flex;gap:10px;">
+            <button type="button" onclick="pularRPE()" style="
+                flex:1;padding:12px;border:1.5px solid #e0e0e0;border-radius:10px;
+                background:#fff;cursor:pointer;font-size:0.9rem;font-weight:600;
+                color:#8a8a8a;font-family:'Outfit',sans-serif;
+            ">Pular</button>
+            <button type="button" onclick="confirmarRPE()" style="
+                flex:1;padding:12px;border:none;border-radius:10px;
+                background:#1DB954;cursor:pointer;font-size:0.9rem;
+                font-weight:700;color:#fff;font-family:'Outfit',sans-serif;
+            ">Confirmar</button>
+        </div>
+    </div>
+</div>
+
 </body>
 </html>

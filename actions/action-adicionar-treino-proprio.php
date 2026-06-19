@@ -13,12 +13,13 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_SESSION['id'])) {
   exit();
 }
 
-$titulo      = trim($_POST['titulo']       ?? '');
-$data_treino = $_POST['data_treino']       ?? '';
-$tipo_sel    = $_POST['tipo_treino']       ?? '';
-$tipo_outro  = trim($_POST['tipo_outro']   ?? '');
-$descricao   = trim($_POST['descricao']    ?? '');
-$aba         = $_POST['aba']               ?? 'calendario';
+$titulo             = trim($_POST['titulo']                 ?? '');
+$data_treino        = $_POST['data_treino']                 ?? '';
+$tipo_sel           = $_POST['tipo_treino']                 ?? '';
+$tipo_outro         = trim($_POST['tipo_outro']             ?? '');
+$descricao          = trim($_POST['descricao']              ?? '');
+$aba                = $_POST['aba']                         ?? 'calendario';
+$distanciaPlanejada = !empty($_POST['distancia_planejada_km']) ? (float)$_POST['distancia_planejada_km'] : null;
 
 $tipo_final = ($tipo_sel === 'outro') ? $tipo_outro : $tipo_sel;
 
@@ -30,8 +31,8 @@ if (empty($titulo) || empty($data_treino) || empty($tipo_final)) {
 $tituloFinal = $tipo_final . ' — ' . $titulo;
 
 // treinador_id = aluno_id marca como auto-treino
-$stmt = $pdo->prepare("INSERT INTO treinos (treinador_id, aluno_id, titulo, descricao, data_treino, tipo) VALUES (?, ?, ?, ?, ?, 'unico')");
-$stmt->execute([$_SESSION['id'], $_SESSION['id'], $tituloFinal, $descricao ?: '', $data_treino]);
+$stmt = $pdo->prepare("INSERT INTO treinos (treinador_id, aluno_id, titulo, descricao, data_treino, tipo, distancia_planejada_km) VALUES (?, ?, ?, ?, ?, 'unico', ?)");
+$stmt->execute([$_SESSION['id'], $_SESSION['id'], $tituloFinal, $descricao ?: '', $data_treino, $distanciaPlanejada]);
 
 header("Location: /pages/treinos.php?aba={$aba}&msg=criado");
 exit();

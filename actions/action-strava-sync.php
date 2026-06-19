@@ -168,9 +168,9 @@ try {
                 // Marcar treino do treinador como realizado
                 $pdo->prepare("
                     UPDATE treinos 
-                    SET status = 'realizado', strava_activity_id = ?
+                    SET status = 'realizado', strava_activity_id = ?, km_realizado_strava = ?
                     WHERE id = ?
-                ")->execute([$stravaId, $treinoDoTreinador['id']]);
+                ")->execute([$stravaId, $km, $treinoDoTreinador['id']]);
                 $treinoIdFinal = $treinoDoTreinador['id'];
 
             } else {
@@ -191,19 +191,19 @@ try {
                     // Marcar treino próprio como realizado
                     $pdo->prepare("
                         UPDATE treinos 
-                        SET status = 'realizado', strava_activity_id = ?
+                        SET status = 'realizado', strava_activity_id = ?, km_realizado_strava = ?
                         WHERE id = ?
-                    ")->execute([$stravaId, $treinoProprio['id']]);
+                    ")->execute([$stravaId, $km, $treinoProprio['id']]);
                     $treinoIdFinal = $treinoProprio['id'];
 
                 } else {
                     // Criar novo treino tipo 'strava'
                     $stmtCria = $pdo->prepare("
                         INSERT INTO treinos 
-                        (aluno_id, treinador_id, titulo, descricao, data_treino, tipo, status, strava_activity_id)
-                        VALUES (?, NULL, ?, ?, ?, 'strava', 'realizado', ?)
+                        (aluno_id, treinador_id, titulo, descricao, data_treino, tipo, status, strava_activity_id, km_realizado_strava)
+                        VALUES (?, NULL, ?, ?, ?, 'strava', 'realizado', ?, ?)
                     ");
-                    $stmtCria->execute([$usuarioId, $titulo, $descricao, $dataLocal, $stravaId]);
+                    $stmtCria->execute([$usuarioId, $titulo, $descricao, $dataLocal, $stravaId, $km]);
                     $treinoIdFinal = $pdo->lastInsertId();
                 }
             }

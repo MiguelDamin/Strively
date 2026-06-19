@@ -388,6 +388,11 @@ include '../components/header.php';
           <textarea id="f-desc" name="descricao" placeholder="Detalhe o treino..."></textarea>
         </div>
 
+        <div class="form-grupo">
+          <label for="f-distancia">Distância planejada (km) <span style="color:#bbb;font-weight:400;">— opcional</span></label>
+          <input type="number" id="f-distancia" name="distancia_planejada_km" step="0.1" min="0" placeholder="Ex: 14 (deixe vazio para treinos sem distância fixa, como tiros)">
+        </div>
+
         <button type="submit" class="btn-primary btn-full" style="margin-top:6px">
           Salvar Treino
         </button>
