@@ -293,18 +293,63 @@ include '../components/header.php';
             </div>
           </div>
         <?php else: ?>
-          <?php $dt = new DateTime($item['data_treino']); ?>
-          <div class="planilha-item">
+          <?php
+            $dt = new DateTime($item['data_treino']);
+            $realizado = ($item['status'] === 'realizado');
+            $temStravaLink = !empty($item['strava_activity_id']);
+            $temPlanejado = !empty($item['distancia_planejada_km']);
+            $eStravaSemPlanejado = ($item['tipo'] === 'strava' && !$temPlanejado && !empty($item['km_realizado_strava']));
+            $mostrarComparacao = $temPlanejado && $realizado;
+            if ($mostrarComparacao) {
+              $planejado  = (float)$item['distancia_planejada_km'];
+              $realizado_ = (float)($item['km_realizado_strava'] ?? $planejado);
+              $percentual = $planejado > 0 ? round(($realizado_ / $planejado) * 100) : 100;
+              if ($percentual >= 100)     { $corPerc = '#1DB954'; $iconePerc = '↗️'; }
+              elseif ($percentual >= 80)  { $corPerc = '#FFA726'; $iconePerc = '➡️'; }
+              else                        { $corPerc = '#EF5350'; $iconePerc = '↘️'; }
+              $fmtReal = rtrim(rtrim(number_format($realizado_, 1, ',', '.'), '0'), ',');
+              $fmtPlan = rtrim(rtrim(number_format($planejado,  1, ',', '.'), '0'), ',');
+            }
+          ?>
+          <div class="planilha-item<?= $realizado ? ' realizado' : '' ?>">
             <div class="planilha-data">
               <div class="dia"><?= $dt->format('d') ?></div>
               <div class="mes"><?= $meses[(int)$dt->format('m') - 1] ?></div>
             </div>
             <div class="planilha-info">
-              <?php $partes = explode(' — ', $item['titulo'], 2); $tipo = $partes[0]; ?>
-              <div class="planilha-tipo-badge"><?= htmlspecialchars($tipo) ?></div>
+              <?php if (isset($item['tipo']) && $item['tipo'] === 'strava'): ?>
+                <div style="background:#FC4C02;color:#fff;font-size:0.72rem;font-weight:700;padding:3px 9px;border-radius:20px;letter-spacing:0.5px;font-family:'Outfit',sans-serif;display:inline-block;margin-bottom:5px;">STRAVA</div>
+              <?php else: ?>
+                <?php $partes = explode(' — ', $item['titulo'], 2); ?>
+                <div class="planilha-tipo-badge"><?= htmlspecialchars($partes[0]) ?></div>
+              <?php endif; ?>
               <?php if ($item['_proprio']): ?><span class="badge-proprio">Auto-treino</span><?php endif; ?>
               <div class="planilha-titulo"><?= htmlspecialchars($item['titulo']) ?></div>
               <?php if (!empty($item['descricao'])): ?><div class="planilha-desc"><?= htmlspecialchars($item['descricao']) ?></div><?php endif; ?>
+
+              <?php if ($mostrarComparacao): ?>
+              <div style="display:flex;align-items:center;gap:8px;background:#f5f6f5;border-radius:10px;padding:8px 12px;margin-top:8px;font-size:0.8rem;">
+                <span><?= $iconePerc ?></span>
+                <span style="color:#0d0d0d;font-weight:600;"><?= $fmtReal ?>km de <?= $fmtPlan ?>km planejados</span>
+                <span style="margin-left:auto;font-weight:700;color:<?= $corPerc ?>;"><?= $percentual ?>%</span>
+              </div>
+              <?php elseif ($eStravaSemPlanejado): ?>
+              <div style="display:inline-flex;align-items:center;gap:6px;background:#fff3f0;border-radius:20px;padding:5px 12px;margin-top:8px;font-size:0.78rem;font-weight:700;color:#FC4C02;">
+                📍 <?= rtrim(rtrim(number_format((float)$item['km_realizado_strava'], 1, ',', '.'), '0'), ',') ?>km realizados
+              </div>
+              <?php elseif ($realizado): ?>
+              <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(29,185,84,0.1);border-radius:20px;padding:5px 12px;margin-top:8px;font-size:0.78rem;font-weight:700;color:#166534;">
+                ✅ Realizado
+              </div>
+              <?php endif; ?>
+
+              <?php if ($temStravaLink): ?>
+              <a href="https://www.strava.com/activities/<?= $item['strava_activity_id'] ?>" target="_blank"
+                 style="display:inline-flex;align-items:center;gap:6px;background:#FC4C02;color:#fff;border-radius:20px;padding:6px 13px;font-size:0.76rem;font-weight:700;text-decoration:none;font-family:'Outfit',sans-serif;margin-top:8px;">
+                <svg viewBox="0 0 24 24" style="width:13px;height:13px;fill:#fff;"><path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.598h4.172L10.463 0l-7 13.828h4.169"/></svg>
+                Ver no Strava
+              </a>
+              <?php endif; ?>
             </div>
             <div class="planilha-acoes">
               <?php if (!$item['_proprio']): ?>
@@ -473,21 +518,56 @@ function abrirModalDia(ds, tt) {
   document.getElementById('modalDia-titulo').textContent = d + ' de ' + mn[parseInt(m) - 1] + ' de ' + a;
   const body = document.getElementById('modalDia-body');
   body.innerHTML = '';
-  tt.forEach(t => {
-    const item = document.createElement('div');
-      if (it._tipo_item === 'evento') {
-        const nome = it.evento_nome || it.nome_manual || 'Evento';
-        div.className='modal-treino-item evento-item';
-        div.innerHTML='<div class="modal-treino-tipo evento-badge">🏅 Evento</div><div class="modal-treino-titulo">'+esc(nome)+'</div>'+(it.evento_cidade?'<div class="modal-treino-desc">📍 '+esc(it.evento_cidade)+'</div>':'');
-      } else {
-        const tipo = it.titulo && it.titulo.includes(' — ') ? it.titulo.split(' — ')[0] : 'Treino';
-        const proprio = it._proprio;
-        let acoes = '';
-        if(!proprio) acoes='<form method="POST" action="/actions/action-remover-treino.php" onsubmit="return confirm(\'Remover este treino?\')"><input type="hidden" name="treino_id" value="'+it.id+'"><input type="hidden" name="aluno_id" value="'+it.aluno_id+'"><input type="hidden" name="aba" value="calendario"><button type="submit" class="btn-remover-treino">Remover</button></form>';
-        div.className='modal-treino-item';
-        div.innerHTML='<div class="modal-treino-tipo">'+esc(tipo)+'</div>'+(proprio?'<span class="badge-proprio" style="margin-left:0;margin-bottom:6px;display:inline-block">Auto-treino</span>':'')+'<div class="modal-treino-titulo">'+esc(it.titulo)+'</div>'+(it.descricao?'<div class="modal-treino-desc">'+esc(it.descricao)+'</div>':'')+(acoes?'<div class="modal-treino-acoes">'+acoes+'</div>':'');
+  tt.forEach(it => {
+    const div = document.createElement('div');
+    if (it._tipo_item === 'evento') {
+      const nome = it.evento_nome || it.nome_manual || 'Evento';
+      div.className = 'modal-treino-item evento-item';
+      div.innerHTML = '<div class="modal-treino-tipo evento-badge">🏅 Evento</div><div class="modal-treino-titulo">'+esc(nome)+'</div>'+(it.evento_cidade?'<div class="modal-treino-desc">📍 '+esc(it.evento_cidade)+'</div>':'');
+    } else {
+      const tipo = it.titulo && it.titulo.includes(' — ') ? it.titulo.split(' — ')[0] : (it.tipo === 'strava' ? 'STRAVA' : 'Treino');
+      const proprio = it._proprio;
+      const realizado = it.status === 'realizado';
+
+      // Badge tipo
+      const badgeTipo = it.tipo === 'strava'
+        ? '<div style="background:#FC4C02;color:#fff;font-size:0.72rem;font-weight:700;padding:3px 8px;border-radius:20px;letter-spacing:0.5px;display:inline-block;margin-bottom:6px;">STRAVA</div>'
+        : '<div class="modal-treino-tipo">'+esc(tipo)+'</div>';
+
+      // Distância / aderência
+      let distHtml = '';
+      if (realizado) {
+        const planejado = parseFloat(it.distancia_planejada_km) || 0;
+        const kmReal    = parseFloat(it.km_realizado_strava) || 0;
+        if (planejado > 0) {
+          const pct = Math.round((kmReal / planejado) * 100);
+          const cor = pct >= 100 ? '#1DB954' : (pct >= 80 ? '#FFA726' : '#EF5350');
+          const icone = pct >= 100 ? '↗️' : (pct >= 80 ? '➡️' : '↘️');
+          const fR = kmReal.toFixed(1).replace('.0','').replace('.',',');
+          const fP = planejado.toFixed(1).replace('.0','').replace('.',',');
+          distHtml = `<div style="display:flex;align-items:center;gap:8px;background:#f5f6f5;border-radius:10px;padding:7px 10px;margin-top:8px;font-size:0.78rem;"><span>${icone}</span><span style="color:#0d0d0d;font-weight:600;">${fR}km de ${fP}km planejados</span><span style="margin-left:auto;font-weight:700;color:${cor};">${pct}%</span></div>`;
+        } else if (it.tipo === 'strava' && kmReal > 0) {
+          const fR = kmReal.toFixed(1).replace('.0','').replace('.',',');
+          distHtml = `<div style="display:inline-flex;align-items:center;gap:6px;background:#fff3f0;border-radius:20px;padding:5px 12px;margin-top:8px;font-size:0.78rem;font-weight:700;color:#FC4C02;">📍 ${fR}km realizados</div>`;
+        }
       }
-    body.appendChild(item);
+
+      // Link Strava
+      const stravaHtml = it.strava_activity_id ? `<a href="https://www.strava.com/activities/${it.strava_activity_id}" target="_blank" style="display:inline-flex;align-items:center;gap:6px;background:#FC4C02;color:#fff;border-radius:20px;padding:5px 12px;font-size:0.75rem;font-weight:700;text-decoration:none;margin-top:8px;"><svg viewBox="0 0 24 24" style="width:12px;height:12px;fill:#fff;"><path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.598h4.172L10.463 0l-7 13.828h4.169"/></svg>Ver no Strava</a>` : '';
+
+      // Botão remover
+      let acoes = '';
+      if (!proprio) acoes = '<form method="POST" action="/actions/action-remover-treino.php" onsubmit="return confirm(\'Remover este treino?\')" style="display:inline"><input type="hidden" name="treino_id" value="'+it.id+'"><input type="hidden" name="aluno_id" value="'+it.aluno_id+'"><input type="hidden" name="aba" value="calendario"><button type="submit" class="btn-remover-treino">Remover</button></form>';
+
+      div.className = 'modal-treino-item' + (realizado ? ' realizado' : '');
+      div.innerHTML = badgeTipo
+        + (proprio ? '<span class="badge-proprio" style="margin-left:0;margin-bottom:6px;display:inline-block;">Auto-treino</span>' : '')
+        + '<div class="modal-treino-titulo">'+esc(it.titulo)+'</div>'
+        + (it.descricao ? '<div class="modal-treino-desc">'+esc(it.descricao)+'</div>' : '')
+        + distHtml + stravaHtml
+        + (acoes ? '<div class="modal-treino-acoes" style="margin-top:10px;">'+acoes+'</div>' : '');
+    }
+    body.appendChild(div);
   });
   document.getElementById('modalDia').classList.add('aberto');
   lockScroll();

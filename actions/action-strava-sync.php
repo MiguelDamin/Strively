@@ -106,6 +106,7 @@ $stmt = $pdo->prepare("
 $stmt->execute([$kmTotal, $kmAno, $atividadesTotal, $_SESSION['id']]);
 
 // 3. Busca atividades recentes e cria/atualiza treinos no calendário
+$treinosParaRPE = []; // IDs de treinos planejados recém-marcados como realizados
 try {
     $usuarioId = $_SESSION['id'];
     
@@ -145,19 +146,21 @@ try {
             $titulo      = $kmTexto;         // ex: "5KM" ou "10.50KM"
             $descricao   = '';               // descrição vazia conforme solicitado
 
-            // VERIFICAR DUPLICATA por strava_activity_id
-            $stmtDup = $pdo->prepare("SELECT id FROM treinos WHERE strava_activity_id = ?");
-            $stmtDup->execute([$stravaId]);
+            // VERIFICAR DUPLICATA por strava_activity_id (em qualquer tipo de treino)
+            $stmtDup = $pdo->prepare("SELECT id FROM treinos WHERE strava_activity_id = ? AND aluno_id = ?");
+            $stmtDup->execute([$stravaId, $usuarioId]);
             if ($stmtDup->fetch()) continue; // já importado
 
             $treinoIdFinal = null;
 
             // VERIFICAR se treinador setou treino nesse dia ainda não realizado
+            // treinador_id IS NOT NULL E diferente do aluno (evita pegar auto-treinos)
             $stmtTreinador = $pdo->prepare("
                 SELECT id FROM treinos 
                 WHERE aluno_id = ? 
                 AND data_treino = ? 
                 AND treinador_id IS NOT NULL 
+                AND treinador_id != aluno_id
                 AND status != 'realizado'
                 LIMIT 1
             ");
@@ -172,6 +175,7 @@ try {
                     WHERE id = ?
                 ")->execute([$stravaId, $km, $treinoDoTreinador['id']]);
                 $treinoIdFinal = $treinoDoTreinador['id'];
+                $treinosParaRPE[] = $treinoIdFinal; // treino planejado -> pedir RPE
 
             } else {
                 // Verificar treino próprio não realizado nesse dia
@@ -195,6 +199,7 @@ try {
                         WHERE id = ?
                     ")->execute([$stravaId, $km, $treinoProprio['id']]);
                     $treinoIdFinal = $treinoProprio['id'];
+                    $treinosParaRPE[] = $treinoIdFinal; // treino planejado -> pedir RPE
 
                 } else {
                     // Criar novo treino tipo 'strava'
@@ -281,5 +286,5 @@ try {
     error_log("Erro ao verificar exclusões Strava: " . $e->getMessage());
 }
 
-header('Location: /pages/perfil.php?msg=strava_sincronizado');
+header('Location: /pages/treinos.php?msg=strava_sincronizado' . (!empty($treinosParaRPE) ? '&rpe_ids=' . implode(',', $treinosParaRPE) : ''));
 exit();

@@ -58,6 +58,18 @@ $eventos_strive = $stmt->fetchAll();
 $treinos_json = json_encode($treinos_por_data);
 $aba = $_GET['aba'] ?? 'calendario';
 
+// Treinos para pedir RPE após sync do Strava
+$treinosRPEFila = [];
+if (!empty($_GET['rpe_ids'])) {
+  $rpeIds = array_filter(array_map('intval', explode(',', $_GET['rpe_ids'])));
+  if (!empty($rpeIds)) {
+    $inPlaceholders = implode(',', array_fill(0, count($rpeIds), '?'));
+    $stmtRpe = $pdo->prepare("SELECT id, titulo, km_realizado_strava, distancia_planejada_km FROM treinos WHERE id IN ({$inPlaceholders}) AND aluno_id = ?");
+    $stmtRpe->execute(array_merge($rpeIds, [$_SESSION['id']]));
+    $treinosRPEFila = $stmtRpe->fetchAll();
+  }
+}
+
 unset($only_session);
 $tituloPagina = "Meus Treinos";
 include '../components/head.php';
@@ -294,13 +306,14 @@ include '../components/header.php';
     <div class="msg-sucesso">
       <?php
         $msgs = [
-          'realizado'        => '✅ Treino marcado como realizado!',
-          'desmarcado'       => '✅ Treino desmarcado com sucesso!',
-          'criado'           => '✅ Treino adicionado com sucesso!',
-          'removido'         => '🗑️ Treino removido.',
-          'evento_adicionado'=> '🏅 Evento adicionado ao calendário!',
-          'evento_removido'  => '🗑️ Evento removido do calendário.',
+          'realizado'          => '✅ Treino marcado como realizado!',
+          'desmarcado'         => '✅ Treino desmarcado com sucesso!',
+          'criado'             => '✅ Treino adicionado com sucesso!',
+          'removido'           => '🗑️ Treino removido.',
+          'evento_adicionado'  => '🏅 Evento adicionado ao calendário!',
+          'evento_removido'    => '🗑️ Evento removido do calendário.',
           'treinador_removido' => '✅ Treinador desvinculado com sucesso!',
+          'strava_sincronizado'=> '✅ Strava sincronizado com sucesso!',
         ];
         echo $msgs[$_GET['msg']] ?? 'Ação realizada.';
       ?>
@@ -1014,7 +1027,6 @@ document.getElementById('modal-treino-detalhe')?.addEventListener('click', funct
 // ============================================================
 // MODAL RPE — interceptar marcar como realizado
 // ============================================================
-let rpeSelecionado = null;
 
 document.querySelectorAll('form[action="/actions/action-marcar-realizado.php"]').forEach(form => {
     const btn = form.querySelector('button[type="submit"]');
@@ -1030,7 +1042,11 @@ document.querySelectorAll('form[action="/actions/action-marcar-realizado.php"]')
 function abrirModalRPE(treinoId, formOriginal) {
     window.treinoIdPendente = treinoId;
     window.formMarcarPendente = formOriginal;
+    window.modoSyncRPE = false;
     document.getElementById('rpe-treino-id').value = treinoId;
+    // Ocultar info do treino (só aparece no modo sync)
+    const infoDiv = document.getElementById('rpe-treino-info');
+    if (infoDiv) infoDiv.style.display = 'none';
     document.getElementById('modal-rpe').style.display = 'flex';
     lockScroll();
 }
@@ -1057,26 +1073,7 @@ function selecionarRPE(valor) {
     }
 }
 
-async function pularRPE() {
-    const form = window.formMarcarPendente;
-    fecharModalRPE();
-    if (form) form.submit();
-}
 
-async function confirmarRPE() {
-    const duracao = document.getElementById('rpe-duracao').value;
-    const treinoId = window.treinoIdPendente;
-    if (rpeSelecionado || duracao) {
-        const fd = new FormData();
-        fd.append('treino_id', treinoId);
-        fd.append('rpe', rpeSelecionado || '');
-        fd.append('duracao_minutos', duracao || '');
-        await fetch('/actions/action-salvar-rpe.php', { method: 'POST', body: fd });
-    }
-    const form = window.formMarcarPendente;
-    fecharModalRPE();
-    if (form) form.submit();
-}
 </script>
 
 <!-- Modal detalhes do treino -->
@@ -1160,15 +1157,23 @@ async function confirmarRPE() {
 ">
     <div style="
         background: #fff; border-radius: 20px; padding: 28px 24px;
-        max-width: 380px; width: 100%; text-align: center;
+        max-width: 400px; width: 100%; text-align: center;
         box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+        max-height: 90vh; overflow-y: auto;
     ">
+        <!-- Info do treino (visível apenas no modo pós-sync) -->
+        <div id="rpe-treino-info" style="display:none;background:#f5f6f5;border-radius:14px;padding:14px 16px;margin-bottom:18px;text-align:left;">
+            <div style="font-size:0.7rem;font-weight:700;color:#8a8a8a;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Treino sincronizado</div>
+            <div id="rpe-treino-nome" style="font-weight:700;font-size:1rem;color:#111;margin-bottom:6px;"></div>
+            <div id="rpe-treino-km" style="font-size:0.85rem;color:#555;"></div>
+        </div>
+
         <div style="font-size: 2rem; margin-bottom: 8px;">💪</div>
         <h3 style="font-family:'Bebas Neue',sans-serif;font-size:1.6rem;margin:0 0 6px;color:#0d0d0d;">
-            Treino concluído!
+            Como foi o treino?
         </h3>
         <p style="font-size:0.88rem;color:#8a8a8a;margin:0 0 20px;">
-            De 1 a 10, como você se sentiu nesse treino?
+            De 1 a 10, qual foi a percepção de esforço?
         </p>
 
         <div style="display:flex;gap:6px;justify-content:center;margin-bottom:8px;flex-wrap:wrap;">
@@ -1213,6 +1218,81 @@ async function confirmarRPE() {
         </div>
     </div>
 </div>
+
+<script>
+// Fila de RPE do Strava sync
+const rpeFilaStrava = <?= json_encode(array_values($treinosRPEFila)) ?>;
+let rpeSelecionado = null;
+let rpeFilaIndex = 0;
+// rpeFilaStrava existe e rpe_ids foi passado? Abrir automaticamente
+if (rpeFilaStrava.length > 0) {
+    window.addEventListener('DOMContentLoaded', () => { abrirProximoRPEFila(); });
+}
+
+function abrirProximoRPEFila() {
+    if (rpeFilaIndex >= rpeFilaStrava.length) return;
+    const t = rpeFilaStrava[rpeFilaIndex];
+    // Mostrar info do treino
+    const infoDiv = document.getElementById('rpe-treino-info');
+    const nomeEl  = document.getElementById('rpe-treino-nome');
+    const kmEl    = document.getElementById('rpe-treino-km');
+    if (infoDiv && t) {
+        nomeEl.textContent = t.titulo || 'Treino';
+        const km = parseFloat(t.km_realizado_strava) || 0;
+        const plan = parseFloat(t.distancia_planejada_km) || 0;
+        if (plan > 0 && km > 0) {
+            const pct = Math.round((km / plan) * 100);
+            const cor = pct >= 100 ? '#1DB954' : (pct >= 80 ? '#FFA726' : '#EF5350');
+            const icon = pct >= 100 ? '↗️' : (pct >= 80 ? '➡️' : '↘️');
+            const fKm = km.toFixed(1).replace('.0','').replace('.',',');
+            const fPl = plan.toFixed(1).replace('.0','').replace('.',',');
+            kmEl.innerHTML = `${icon} <strong style="color:${cor};">${fKm}km</strong> de ${fPl}km planejados <span style="color:${cor};font-weight:700;">(${pct}%)</span>`;
+        } else if (km > 0) {
+            const fKm = km.toFixed(1).replace('.0','').replace('.',',');
+            kmEl.innerHTML = `📍 <strong>${fKm}km</strong> realizados`;
+        } else {
+            kmEl.innerHTML = '';
+        }
+        infoDiv.style.display = 'block';
+    }
+    // Abrir modal como sync-mode (sem formOriginal)
+    window.treinoIdPendente = t.id;
+    window.formMarcarPendente = null;
+    window.modoSyncRPE = true;
+    document.getElementById('rpe-treino-id').value = t.id;
+    document.getElementById('modal-rpe').style.display = 'flex';
+    if (typeof lockScroll === 'function') lockScroll();
+}
+
+async function pularRPE() {
+    fecharModalRPE();
+    rpeFilaIndex++;
+    if (window.modoSyncRPE && rpeFilaIndex < rpeFilaStrava.length) {
+        setTimeout(abrirProximoRPEFila, 200);
+    } else if (window.formMarcarPendente) {
+        window.formMarcarPendente.submit();
+    }
+}
+
+async function confirmarRPE() {
+    const duracao  = document.getElementById('rpe-duracao').value;
+    const treinoId = window.treinoIdPendente;
+    if (rpeSelecionado || duracao) {
+        const fd = new FormData();
+        fd.append('treino_id', treinoId);
+        fd.append('rpe', rpeSelecionado || '');
+        fd.append('duracao_minutos', duracao || '');
+        await fetch('/actions/action-salvar-rpe.php', { method: 'POST', body: fd });
+    }
+    fecharModalRPE();
+    rpeFilaIndex++;
+    if (window.modoSyncRPE && rpeFilaIndex < rpeFilaStrava.length) {
+        setTimeout(abrirProximoRPEFila, 200);
+    } else if (window.formMarcarPendente) {
+        window.formMarcarPendente.submit();
+    }
+}
+</script>
 
 </body>
 </html>
