@@ -859,7 +859,7 @@ include '../components/header.php';
                     echo "<script>
                         setTimeout(() => {
                             if (confirm('Strava conectado com sucesso!\\n\\nDeseja carregar suas corridas dos últimos 30 dias para o calendário? Se clicar em OK, elas serão importadas.\\nSe clicar em Cancelar, apenas sincronizaremos seus próximos treinos de hoje em diante.')) {
-                                window.location.href = '/actions/action-strava-sync.php?modo=30dias';
+                                if (typeof sincronizarStrava === 'function') sincronizarStrava('30dias');
                             }
                         }, 500);
                     </script>";
@@ -966,17 +966,19 @@ include '../components/header.php';
                     </div>
                 </div>
 
-                <!-- AÇÕES -->
+                <!-- AÇÕES E CONFIRMAÇÕES -->
                 <div class="strava-btns">
-                    <a href="/actions/action-strava-sync.php" class="btn-secondary">
+                    <button type="button" class="btn-secondary" id="btnSyncStrava" onclick="sincronizarStrava('rotina')">
                         🔄Atualizar
-                    </a>
+                    </button>
                     <a href="/actions/action-strava-disconnect.php"
                         onclick="return confirm('Desconectar o Strava? Seus dados de km serão zerados.')"
                         style="color:#cc0000; border:1.5px solid #cc0000;">
                         Desconectar
                     </a>
                 </div>
+                
+                <div id="stravaConfirmacoes" style="margin-top: 16px; display: none; flex-direction: column; gap: 12px;"></div>
 
                 <?php if ($usuario['strava_sincronizado_em']): ?>
                     <p style="font-size:.75rem; color:#aaa; margin-top:8px;">
@@ -1251,6 +1253,124 @@ include '../components/header.php';
                 preview.src = e.target.result;
             };
             reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    // --- STRAVA AJAX SYNC ---
+    function sincronizarStrava(modo) {
+        const btn = document.getElementById('btnSyncStrava');
+        if (btn) {
+            btn.innerHTML = '🔄 Sincronizando...';
+            btn.disabled = true;
+        }
+
+        fetch('/actions/action-strava-sync.php?modo=' + modo)
+        .then(r => r.json())
+        .then(data => {
+            if (btn) {
+                btn.innerHTML = '🔄 Atualizar';
+                btn.disabled = false;
+            }
+            
+            if (!data.success) {
+                alert('Erro: ' + (data.erro || 'Desconhecido'));
+                return;
+            }
+            
+            if (data.pendentes && data.pendentes.length > 0) {
+                renderPendenciasStrava(data.pendentes);
+            } else if (data.criados > 0) {
+                alert(data.criados + ' novo(s) treino(s) importado(s)!');
+                window.location.reload();
+            } else {
+                alert('Tudo atualizado! Nenhuma nova atividade pendente ou adicionada.');
+            }
+        })
+        .catch(err => {
+            if (btn) {
+                btn.innerHTML = '🔄 Atualizar';
+                btn.disabled = false;
+            }
+            alert('Erro ao sincronizar Strava.');
+            console.error(err);
+        });
+    }
+
+    function renderPendenciasStrava(atividades) {
+        const container = document.getElementById('stravaConfirmacoes');
+        container.style.display = 'flex';
+        container.innerHTML = `<div style="font-size:0.85rem;font-weight:700;color:#111;margin-bottom:4px;">Confirmação Necessária:</div>`;
+        
+        atividades.forEach(ativ => {
+            const d = document.createElement('div');
+            d.className = 'strava-confirm-card';
+            d.id = `strava-confirm-${ativ.strava_activity_id}`;
+            d.style = "background:#f9f9f9; border:1px solid #ddd; border-radius:12px; padding:12px; font-size:0.82rem;";
+            d.innerHTML = `
+                <div style="margin-bottom:10px;">
+                    <strong>${ativ.strava_km}km</strong> dia ${ativ.strava_data}.<br>Você tinha planejado: <strong>${ativ.treino_titulo}</strong>.<br>É a mesma atividade?
+                </div>
+                <div style="display:flex; gap:6px;">
+                    <button onclick="responderVinculo(${ativ.strava_activity_id}, '${ativ.strava_data_iso}', ${ativ.strava_km}, ${ativ.treino_id}, 'vincular')" style="flex:1; background:var(--green); color:#fff; border:none; border-radius:6px; padding:8px 4px; font-weight:600; cursor:pointer;">Sim, é esse</button>
+                    <button onclick="responderVinculo(${ativ.strava_activity_id}, '${ativ.strava_data_iso}', ${ativ.strava_km}, 0, 'separar')" style="flex:1; background:#e0e0e0; color:#333; border:none; border-radius:6px; padding:8px 4px; font-weight:600; cursor:pointer;">Não, separado</button>
+                </div>
+                <div id="rpe-container-${ativ.strava_activity_id}" style="display:none; margin-top:12px; background:#fff; padding:10px; border-radius:8px; border:1px solid #eee;">
+                    <label style="font-size:0.75rem;font-weight:700;display:block;margin-bottom:6px;">Esforço percebido (1-10):</label>
+                    <div style="display:flex; gap:6px;">
+                        <input type="number" id="rpe-input-${ativ.strava_activity_id}" min="1" max="10" placeholder="Ex: 6" style="flex:1; padding:6px; border-radius:6px; border:1.5px solid #ccc; font-family:inherit; outline:none;">
+                        <button onclick="salvarRpeVinculo(${ativ.treino_id}, ${ativ.strava_activity_id})" style="background:#111; color:#fff; border:none; border-radius:6px; padding:6px 12px; font-weight:600; cursor:pointer;">OK</button>
+                    </div>
+                </div>
+            `;
+            container.appendChild(d);
+        });
+    }
+
+    function responderVinculo(stravaId, dataIso, km, treinoId, acao) {
+        fetch('/actions/action-confirmar-vinculo-strava.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ acao, strava_activity_id: stravaId, strava_km: km, strava_data_iso: dataIso, treino_id: treinoId })
+        }).then(r => r.json()).then(res => {
+            if (!res.success) {
+                alert('Erro ao vincular: ' + res.erro);
+                return;
+            }
+            
+            if (acao === 'vincular') {
+                const card = document.getElementById(`strava-confirm-${stravaId}`);
+                card.children[1].style.display = 'none'; // Esconde botões sim/não
+                document.getElementById(`rpe-container-${stravaId}`).style.display = 'block'; // Mostra RPE
+            } else {
+                document.getElementById(`strava-confirm-${stravaId}`).remove();
+                verificarRecarregarSync();
+            }
+        });
+    }
+    
+    function salvarRpeVinculo(treinoId, stravaId) {
+        const rpe = document.getElementById(`rpe-input-${stravaId}`).value;
+        if (!rpe) {
+            document.getElementById(`strava-confirm-${stravaId}`).remove();
+            verificarRecarregarSync();
+            return;
+        }
+        
+        const formData = new FormData();
+        formData.append('treino_id', treinoId);
+        formData.append('rpe', rpe);
+        
+        fetch('/actions/action-salvar-rpe.php', { method: 'POST', body: formData })
+        .then(() => {
+            document.getElementById(`strava-confirm-${stravaId}`).remove();
+            verificarRecarregarSync();
+        });
+    }
+    
+    function verificarRecarregarSync() {
+        const cards = document.querySelectorAll('.strava-confirm-card');
+        if (cards.length === 0) {
+            window.location.reload();
         }
     }
 </script>

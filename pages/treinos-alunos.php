@@ -130,9 +130,10 @@ include '../components/header.php';
 
 /* Planilha */
 .planilha-wrap{display:flex;flex-direction:column;gap:10px}
-.planilha-item{background:#fff;border-radius:14px;padding:16px 20px;border:1px solid rgba(0,0,0,.07);box-shadow:0 1px 4px rgba(0,0,0,.05);display:flex;align-items:center;gap:16px;transition:box-shadow .18s}
+.planilha-item{background:#fff;border-radius:14px;padding:16px 20px;border:1px solid rgba(0,0,0,.07);box-shadow:0 1px 4px rgba(0,0,0,.05);display:flex;align-items:center;gap:16px;transition:box-shadow .18s;border-left:4px solid transparent}
 .planilha-item:hover{box-shadow:0 4px 16px rgba(0,0,0,.09)}
-.planilha-item.evento-item{border-left:4px solid #DAA520;background:#FFFCF0}
+.planilha-item.realizado{background:#f0fff4;border-left-color:var(--green)}
+.planilha-item.evento-item{border-left-color:#DAA520;background:#FFFCF0}
 .planilha-data{min-width:58px;text-align:center;background:#f5f5f5;border-radius:10px;padding:8px 6px;flex-shrink:0}
 .planilha-data .dia{font-family:'Bebas Neue',sans-serif;font-size:1.7rem;line-height:1;color:var(--green)}
 .planilha-item.evento-item .planilha-data .dia{color:#DAA520}
