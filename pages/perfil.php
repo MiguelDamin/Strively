@@ -854,13 +854,23 @@ include '../components/header.php';
         <?php if (isset($_GET['msg'])): ?>
             <div class="alert-msg alert-success">
                 <?php
-                $mensagens = [
-                    'atualizado' => 'Perfil atualizado com sucesso!',
-                    'strava_conectado' => '✅ Strava conectado com sucesso! Seus dados foram sincronizados.',
-                    'strava_sincronizado' => '🔄 Dados do Strava atualizados!',
-                    'strava_desconectado' => 'Strava desconectado.',
-                ];
-                echo $mensagens[$_GET['msg']] ?? 'Ação realizada com sucesso!';
+                if ($_GET['msg'] === 'strava_conectado') {
+                    echo "✅ Strava conectado com sucesso!";
+                    echo "<script>
+                        setTimeout(() => {
+                            if (confirm('Strava conectado com sucesso!\\n\\nDeseja carregar suas corridas dos últimos 30 dias para o calendário? Se clicar em OK, elas serão importadas.\\nSe clicar em Cancelar, apenas sincronizaremos seus próximos treinos de hoje em diante.')) {
+                                window.location.href = '/actions/action-strava-sync.php?modo=30dias';
+                            }
+                        }, 500);
+                    </script>";
+                } else {
+                    $mensagens = [
+                        'atualizado' => 'Perfil atualizado com sucesso!',
+                        'strava_sincronizado' => '🔄 Dados do Strava atualizados!',
+                        'strava_desconectado' => 'Strava desconectado.',
+                    ];
+                    echo $mensagens[$_GET['msg']] ?? 'Ação realizada com sucesso!';
+                }
                 ?>
             </div>
         <?php endif; ?>

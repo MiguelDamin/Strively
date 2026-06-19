@@ -122,8 +122,10 @@ try {
         ],
     ]);
 
+    $modo = $_GET['modo'] ?? 'rotina';
+    $perPage = ($modo === '30dias') ? 30 : 5;
     $respostaAtiv = @file_get_contents(
-        "https://www.strava.com/api/v3/athlete/activities?per_page=30&page=1",
+        "https://www.strava.com/api/v3/athlete/activities?per_page={$perPage}&page=1",
         false, $ctxAtiv
     );
 
@@ -201,8 +203,8 @@ try {
                     $treinoIdFinal = $treinoProprio['id'];
                     $treinosParaRPE[] = $treinoIdFinal; // treino planejado -> pedir RPE
 
-                } else {
-                    // Criar novo treino tipo 'strava'
+                } else if ($modo === '30dias') {
+                    // Criar novo treino tipo 'strava' APENAS no modo 30 dias
                     $stmtCria = $pdo->prepare("
                         INSERT INTO treinos 
                         (aluno_id, treinador_id, titulo, descricao, data_treino, tipo, status, strava_activity_id, km_realizado_strava)
