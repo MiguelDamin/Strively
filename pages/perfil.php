@@ -977,8 +977,6 @@ include '../components/header.php';
                         Desconectar
                     </a>
                 </div>
-                
-                <div id="stravaConfirmacoes" style="margin-top: 16px; display: none; flex-direction: column; gap: 12px;"></div>
 
                 <?php if ($usuario['strava_sincronizado_em']): ?>
                     <p style="font-size:.75rem; color:#aaa; margin-top:8px;">
@@ -1116,6 +1114,17 @@ include '../components/header.php';
         </div>
 
     </main>
+</div>
+
+<!-- MODAL GENÉRICO DE MENSAGENS E STRAVA -->
+<div class="modal-overlay" id="modalMensagem">
+    <div class="modal-content" style="max-width: 450px; text-align: center; padding: 24px;">
+        <div class="modal-header" style="justify-content:space-between; margin-bottom: 20px;">
+            <h2 id="modalMensagemTitulo" style="font-size: 1.6rem; text-align:left;">Strava</h2>
+            <button class="btn-close-modal" onclick="fecharModalMensagem()">&times;</button>
+        </div>
+        <div id="modalMensagemBody" style="font-size: 0.95rem; color: var(--text-secondary); text-align:left;"></div>
+    </div>
 </div>
 
 <!-- MODAL DE EDIÇÃO -->
@@ -1256,6 +1265,18 @@ include '../components/header.php';
         }
     }
 
+    // --- MODAL GENÉRICO ---
+    function abrirModalMensagem(titulo, htm) {
+        document.getElementById('modalMensagemTitulo').innerText = titulo;
+        document.getElementById('modalMensagemBody').innerHTML = htm;
+        document.getElementById('modalMensagem').classList.add('show');
+        if (typeof lockScroll === 'function') lockScroll();
+    }
+    function fecharModalMensagem() {
+        document.getElementById('modalMensagem').classList.remove('show');
+        if (typeof unlockScroll === 'function') unlockScroll();
+    }
+
     // --- STRAVA AJAX SYNC ---
     function sincronizarStrava(modo) {
         const btn = document.getElementById('btnSyncStrava');
@@ -1273,17 +1294,17 @@ include '../components/header.php';
             }
             
             if (!data.success) {
-                alert('Erro: ' + (data.erro || 'Desconhecido'));
+                abrirModalMensagem('Erro', data.erro || 'Erro desconhecido');
                 return;
             }
             
             if (data.pendentes && data.pendentes.length > 0) {
-                renderPendenciasStrava(data.pendentes);
+                renderPendenciasStravaModal(data.pendentes);
             } else if (data.criados > 0) {
-                alert(data.criados + ' novo(s) treino(s) importado(s)!');
-                window.location.reload();
+                abrirModalMensagem('Sucesso!', `${data.criados} novo(s) treino(s) importado(s)!`);
+                setTimeout(() => window.location.reload(), 2000);
             } else {
-                alert('Tudo atualizado! Nenhuma nova atividade pendente ou adicionada.');
+                abrirModalMensagem('Tudo atualizado!', 'Nenhuma nova atividade pendente ou adicionada do Strava.');
             }
         })
         .catch(err => {
@@ -1291,39 +1312,37 @@ include '../components/header.php';
                 btn.innerHTML = '🔄 Atualizar';
                 btn.disabled = false;
             }
-            alert('Erro ao sincronizar Strava.');
+            abrirModalMensagem('Erro', 'Erro ao sincronizar Strava.');
             console.error(err);
         });
     }
 
-    function renderPendenciasStrava(atividades) {
-        const container = document.getElementById('stravaConfirmacoes');
-        container.style.display = 'flex';
-        container.innerHTML = `<div style="font-size:0.85rem;font-weight:700;color:#111;margin-bottom:4px;">Confirmação Necessária:</div>`;
+    function renderPendenciasStravaModal(atividades) {
+        let html = '<div style="text-align: left;">';
+        html += '<p style="margin-bottom: 16px; font-size:0.95rem;">Encontramos atividades que parecem com as planejadas no seu calendário. Confirme:</p>';
         
         atividades.forEach(ativ => {
-            const d = document.createElement('div');
-            d.className = 'strava-confirm-card';
-            d.id = `strava-confirm-${ativ.strava_activity_id}`;
-            d.style = "background:#f9f9f9; border:1px solid #ddd; border-radius:12px; padding:12px; font-size:0.82rem;";
-            d.innerHTML = `
-                <div style="margin-bottom:10px;">
-                    <strong>${ativ.strava_km}km</strong> dia ${ativ.strava_data}.<br>Você tinha planejado: <strong>${ativ.treino_titulo}</strong>.<br>É a mesma atividade?
+            html += `
+            <div class="strava-confirm-card" id="strava-confirm-${ativ.strava_activity_id}" style="background:#f9f9f9; border:1px solid #ddd; border-radius:12px; padding:16px; margin-bottom:12px; font-size:0.9rem;">
+                <div style="margin-bottom:12px;">
+                    <strong>${ativ.strava_km}km</strong> dia ${ativ.strava_data}.<br>Você tinha planejado: <strong>${ativ.treino_titulo}</strong>. É a mesma atividade?
                 </div>
-                <div style="display:flex; gap:6px;">
-                    <button onclick="responderVinculo(${ativ.strava_activity_id}, '${ativ.strava_data_iso}', ${ativ.strava_km}, ${ativ.treino_id}, 'vincular')" style="flex:1; background:var(--green); color:#fff; border:none; border-radius:6px; padding:8px 4px; font-weight:600; cursor:pointer;">Sim, é esse</button>
-                    <button onclick="responderVinculo(${ativ.strava_activity_id}, '${ativ.strava_data_iso}', ${ativ.strava_km}, 0, 'separar')" style="flex:1; background:#e0e0e0; color:#333; border:none; border-radius:6px; padding:8px 4px; font-weight:600; cursor:pointer;">Não, separado</button>
+                <div style="display:flex; gap:8px;">
+                    <button onclick="responderVinculo(${ativ.strava_activity_id}, '${ativ.strava_data_iso}', ${ativ.strava_km}, ${ativ.treino_id}, 'vincular')" style="flex:1; background:var(--green); color:#fff; border:none; border-radius:8px; padding:10px 4px; font-weight:700; cursor:pointer; font-size:0.85rem;">Sim, vincular</button>
+                    <button onclick="responderVinculo(${ativ.strava_activity_id}, '${ativ.strava_data_iso}', ${ativ.strava_km}, 0, 'separar')" style="flex:1; background:#e0e0e0; color:#333; border:none; border-radius:8px; padding:10px 4px; font-weight:700; cursor:pointer; font-size:0.85rem;">Não, separar</button>
                 </div>
-                <div id="rpe-container-${ativ.strava_activity_id}" style="display:none; margin-top:12px; background:#fff; padding:10px; border-radius:8px; border:1px solid #eee;">
-                    <label style="font-size:0.75rem;font-weight:700;display:block;margin-bottom:6px;">Esforço percebido (1-10):</label>
-                    <div style="display:flex; gap:6px;">
-                        <input type="number" id="rpe-input-${ativ.strava_activity_id}" min="1" max="10" placeholder="Ex: 6" style="flex:1; padding:6px; border-radius:6px; border:1.5px solid #ccc; font-family:inherit; outline:none;">
-                        <button onclick="salvarRpeVinculo(${ativ.treino_id}, ${ativ.strava_activity_id})" style="background:#111; color:#fff; border:none; border-radius:6px; padding:6px 12px; font-weight:600; cursor:pointer;">OK</button>
+                <div id="rpe-container-${ativ.strava_activity_id}" style="display:none; margin-top:16px; background:#fff; padding:12px; border-radius:8px; border:1.5px solid #eee;">
+                    <label style="font-size:0.85rem;font-weight:700;display:block;margin-bottom:8px;">Esforço percebido (1-10):</label>
+                    <div style="display:flex; gap:8px;">
+                        <input type="number" id="rpe-input-${ativ.strava_activity_id}" min="1" max="10" placeholder="Ex: 6" style="flex:1; padding:8px; border-radius:8px; border:1.5px solid #ccc; font-family:inherit; outline:none; font-size:0.95rem;">
+                        <button onclick="salvarRpeVinculo(${ativ.treino_id}, ${ativ.strava_activity_id})" style="background:#111; color:#fff; border:none; border-radius:8px; padding:8px 16px; font-weight:700; cursor:pointer;">Salvar</button>
                     </div>
                 </div>
-            `;
-            container.appendChild(d);
+            </div>`;
         });
+        html += '</div>';
+        
+        abrirModalMensagem('Confirmar Atividade', html);
     }
 
     function responderVinculo(stravaId, dataIso, km, treinoId, acao) {
@@ -1339,11 +1358,11 @@ include '../components/header.php';
             
             if (acao === 'vincular') {
                 const card = document.getElementById(`strava-confirm-${stravaId}`);
-                card.children[1].style.display = 'none'; // Esconde botões sim/não
-                document.getElementById(`rpe-container-${stravaId}`).style.display = 'block'; // Mostra RPE
+                card.children[1].style.display = 'none';
+                document.getElementById(`rpe-container-${stravaId}`).style.display = 'block';
             } else {
                 document.getElementById(`strava-confirm-${stravaId}`).remove();
-                verificarRecarregarSync();
+                verificarRecarregarSyncModal();
             }
         });
     }
@@ -1352,7 +1371,7 @@ include '../components/header.php';
         const rpe = document.getElementById(`rpe-input-${stravaId}`).value;
         if (!rpe) {
             document.getElementById(`strava-confirm-${stravaId}`).remove();
-            verificarRecarregarSync();
+            verificarRecarregarSyncModal();
             return;
         }
         
@@ -1363,11 +1382,11 @@ include '../components/header.php';
         fetch('/actions/action-salvar-rpe.php', { method: 'POST', body: formData })
         .then(() => {
             document.getElementById(`strava-confirm-${stravaId}`).remove();
-            verificarRecarregarSync();
+            verificarRecarregarSyncModal();
         });
     }
     
-    function verificarRecarregarSync() {
+    function verificarRecarregarSyncModal() {
         const cards = document.querySelectorAll('.strava-confirm-card');
         if (cards.length === 0) {
             window.location.reload();
