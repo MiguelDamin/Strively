@@ -121,14 +121,16 @@ include '../components/header.php';
 ?>
 
 <style>
-.painel-wrap { max-width: 1000px; margin: 40px auto; padding: 0 24px 100px; }
+.painel-wrap { max-width: 1200px; margin: 40px auto; padding: 0 24px 100px; }
 .painel-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 32px; flex-wrap: wrap; gap: 16px; }
 .painel-header h1 { font-family: 'Bebas Neue', sans-serif; font-size: 2.2rem; letter-spacing: 2px; margin: 0; color: #111; }
 .painel-header .voltar { display: flex; align-items: center; gap: 6px; color: #555; text-decoration: none; font-size: .85rem; font-weight: 500; transition: color .2s; }
 .painel-header .voltar:hover { color: var(--green); }
 
 /* STATS CARDS */
-.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 32px; }
+.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 32px; }
+@media (max-width: 900px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 600px) { .stats-grid { grid-template-columns: 1fr; } }
 .stat-card { background: #fff; border-radius: 16px; padding: 22px; border: 1px solid rgba(0,0,0,.06); box-shadow: 0 4px 12px rgba(0,0,0,.03); display: flex; flex-direction: column; gap: 6px; }
 .stat-icon { margin-bottom: 4px; }
 .stat-icon svg { width: 26px; height: 26px; fill: #777; }

@@ -47,7 +47,7 @@ include '../components/header.php';
 ?>
 
 <style>
-.overview-wrap { max-width: 1000px; margin: 40px auto; padding: 0 24px 100px; }
+.overview-wrap { max-width: 1200px; margin: 40px auto; padding: 0 24px 100px; }
 
 /* Header do aluno */
 .aluno-header { display: flex; align-items: center; gap: 16px; margin-bottom: 32px; flex-wrap: wrap; }
@@ -67,7 +67,9 @@ include '../components/header.php';
 .btn-primary-small:hover { opacity: .85; }
 
 /* Widgets Grid */
-.widgets-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
+.widgets-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+@media (max-width: 900px) { .widgets-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 600px) { .widgets-grid { grid-template-columns: 1fr; } }
 .widget-card { background: #fff; border-radius: 16px; padding: 20px; border: 1px solid rgba(0,0,0,.06); box-shadow: 0 4px 12px rgba(0,0,0,.03); display: flex; flex-direction: column; gap: 6px; }
 .widget-icon { margin-bottom: 4px; }
 .widget-icon svg { width: 26px; height: 26px; fill: #777; }
@@ -311,7 +313,7 @@ include '../components/header.php';
         ?>
         <div class="<?= $tipoBadgeClass ?>"><?= htmlspecialchars($tipoTexto) ?></div>
         <div class="ut-titulo"><?= htmlspecialchars($ultimoTreino['titulo']) ?></div>
-        <div class="ut-data"><?= (new DateTime($ultimoTreino['data_treino']))->format('d de M') ?></div>
+        <div class="ut-data"><?= (new DateTime($ultimoTreino['data_treino']))->format('d \d\e M') ?></div>
         
         <?php 
           $planejado = (float)$ultimoTreino['distancia_planejada_km'];
