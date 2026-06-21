@@ -289,7 +289,10 @@ include '../components/header.php';
 
 <div class="alunos-wrap">
 
-  <h1 class="alunos-titulo">Seus Alunos</h1>
+  <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:4px; flex-wrap:wrap; gap:10px;">
+    <h1 class="alunos-titulo" style="margin-bottom:0;">Seus Alunos</h1>
+    <a href="/pages/painel-treinador.php" class="btn-ver" style="margin-bottom:5px;background:#111;">Ver Painel Geral →</a>
+  </div>
   <p class="alunos-sub">Gerencie os corredores vinculados a você.</p>
 
   <?php if (isset($_GET['msg'])): ?>
@@ -374,7 +377,7 @@ include '../components/header.php';
         </div>
 
         <div class="aluno-acoes">
-          <a href="/pages/treinos-alunos.php?aluno_id=<?= (int)$aluno['id'] ?>" class="btn-treinos">
+          <a href="/pages/aluno-overview.php?aluno_id=<?= (int)$aluno['id'] ?>" class="btn-treinos">
             <svg viewBox="0 0 24 24"><path d="M13.49 5.48c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm-3.6 13.9l1-4.4 2.1 2v6h2v-7.5l-2.1-2 .6-3c1.3 1.5 3.3 2.5 5.5 2.5v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1l-5.2 2.2v4.7h2v-3.4l1.8-.7-1.6 8.1-4.9-1-.4 2 7 1.4z"/></svg>
             Treinos
           </a>
