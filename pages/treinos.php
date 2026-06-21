@@ -2,6 +2,7 @@
 ob_start();
 $only_session = true;
 require_once '../components/header.php';
+require_once '../components/strava-progress-bar.php';
 require_once '../config/conexao.php';
 
 if (!isset($_SESSION['id'])) {
@@ -452,21 +453,11 @@ include '../components/header.php';
                 if ($mostrarComparacao) {
                   $planejado  = (float)$item['distancia_planejada_km'];
                   $realizado  = !empty($item['km_realizado_strava']) ? (float)$item['km_realizado_strava'] : $planejado;
-                  $percentual = $planejado > 0 ? round(($realizado / $planejado) * 100) : 100;
-                  if ($percentual >= 100)      { $corPerc = '#1DB954'; $iconePerc = '↗️'; }
-                  elseif ($percentual >= 80)   { $corPerc = '#FFA726'; $iconePerc = '➡️'; }
-                  else                         { $corPerc = '#EF5350'; $iconePerc = '↘️'; }
-                  $fmtReal  = rtrim(rtrim(number_format($realizado, 1, ',', '.'), '0'), ',');
-                  $fmtPlan  = rtrim(rtrim(number_format($planejado, 1, ',', '.'), '0'), ',');
                 }
               ?>
 
               <?php if ($mostrarComparacao): ?>
-              <div style="display:flex;align-items:center;gap:8px;background:#f5f6f5;border-radius:10px;padding:8px 12px;margin-top:8px;font-size:0.8rem;">
-                <span style="font-size:1rem;"><?= $iconePerc ?></span>
-                <span style="color:#0d0d0d;font-weight:600;"><?= $fmtReal ?>km de <?= $fmtPlan ?>km planejados</span>
-                <span style="margin-left:auto;font-weight:700;color:<?= $corPerc ?>;"><?= $percentual ?>%</span>
-              </div>
+              <?= getStravaProgressBarHtml($planejado, $realizado) ?>
               <?php elseif ($eStravaSemPlanejado): ?>
               <div style="display:inline-flex;align-items:center;gap:6px;background:#fff3f0;border-radius:20px;padding:5px 12px;margin-top:8px;font-size:0.78rem;font-weight:700;color:#FC4C02;">
                 📍 <?= rtrim(rtrim(number_format((float)$item['km_realizado_strava'], 1, ',', '.'), '0'), ',') ?>km realizados
@@ -776,12 +767,7 @@ function abrirModalDia(ds,items){
 
         const eStravaSemPlan = (it.tipo === 'strava' && !planejado && kmReal > 0);
         if (planejado > 0) {
-          const pct = Math.round((kmReal / planejado) * 100);
-          const cor = pct >= 100 ? '#1DB954' : (pct >= 80 ? '#FFA726' : '#EF5350');
-          const icone = pct >= 100 ? '↗️' : (pct >= 80 ? '➡️' : '↘️');
-          const fR = kmReal.toFixed(1).replace('.0','').replace('.',',');
-          const fP = planejado.toFixed(1).replace('.0','').replace('.',',');
-          distHtml = `<div style="display:flex;align-items:center;gap:8px;background:#f5f6f5;border-radius:10px;padding:7px 10px;margin-top:8px;font-size:0.78rem;"><span>${icone}</span><span style="color:#0d0d0d;font-weight:600;">${fR}km de ${fP}km planejados</span><span style="margin-left:auto;font-weight:700;color:${cor};">${pct}%</span></div>`;
+          distHtml = getStravaProgressBarHtmlJS(planejado, kmReal);
         } else if (eStravaSemPlan) {
           const fR = kmReal.toFixed(1).replace('.0','').replace('.',',');
           distHtml = `<div style="display:inline-flex;align-items:center;gap:6px;background:#fff3f0;border-radius:20px;padding:5px 12px;margin-top:8px;font-size:0.78rem;font-weight:700;color:#FC4C02;">📍 ${fR}km realizados</div>`;
@@ -1015,16 +1001,7 @@ function abrirDetalhesTreino(titulo, descricao, tipo, data, status, temTreinador
         const eStravaSemPlan = (tipo === 'strava' && !planejado && realizado > 0);
 
         if (planejado > 0) {
-            const pct = Math.round((realizado / planejado) * 100);
-            const cor = pct >= 100 ? '#1DB954' : (pct >= 80 ? '#FFA726' : '#EF5350');
-            const icone = pct >= 100 ? '↗️' : (pct >= 80 ? '➡️' : '↘️');
-            const fmtR = realizado.toFixed(1).replace('.0','').replace('.',',');
-            const fmtP = planejado.toFixed(1).replace('.0','').replace('.',',');
-            statusHtml = `<div style="display:flex;align-items:center;gap:8px;background:#f5f6f5;border-radius:10px;padding:8px 12px;font-size:0.82rem;margin-bottom:8px;">
-                <span>${icone}</span>
-                <span style="color:#0d0d0d;font-weight:600;">${fmtR}km de ${fmtP}km planejados</span>
-                <span style="margin-left:auto;font-weight:700;color:${cor};">${pct}%</span>
-            </div>`;
+            statusHtml = getStravaProgressBarHtmlJS(planejado, realizado);
         } else if (eStravaSemPlan) {
             const fmtR = realizado.toFixed(1).replace('.0','').replace('.',',');
             statusHtml = `<div style="display:inline-flex;align-items:center;gap:6px;background:#fff3f0;border-radius:20px;padding:5px 12px;font-size:0.78rem;font-weight:700;color:#FC4C02;margin-bottom:8px;">📍 ${fmtR}km realizados</div>`;
@@ -1271,12 +1248,7 @@ function abrirProximoRPEFila() {
         const km = parseFloat(t.km_realizado_strava) || 0;
         const plan = parseFloat(t.distancia_planejada_km) || 0;
         if (plan > 0 && km > 0) {
-            const pct = Math.round((km / plan) * 100);
-            const cor = pct >= 100 ? '#1DB954' : (pct >= 80 ? '#FFA726' : '#EF5350');
-            const icon = pct >= 100 ? '↗️' : (pct >= 80 ? '➡️' : '↘️');
-            const fKm = km.toFixed(1).replace('.0','').replace('.',',');
-            const fPl = plan.toFixed(1).replace('.0','').replace('.',',');
-            kmEl.innerHTML = `${icon} <strong style="color:${cor};">${fKm}km</strong> de ${fPl}km planejados <span style="color:${cor};font-weight:700;">(${pct}%)</span>`;
+            kmEl.innerHTML = getStravaProgressBarHtmlJS(plan, km);
         } else if (km > 0) {
             const fKm = km.toFixed(1).replace('.0','').replace('.',',');
             kmEl.innerHTML = `📍 <strong>${fKm}km</strong> realizados`;
