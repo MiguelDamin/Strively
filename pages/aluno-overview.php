@@ -130,32 +130,14 @@ include '../components/header.php';
 <section class="overview-wrap">
 
   <!-- CABEÇALHO -->
-  <div class="aluno-header">
-    <a href="/pages/alunos.php" class="voltar">
-      <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
-      Meus alunos
-    </a>
-
-    <div style="display:flex;align-items:center;gap:16px;width:100%;">
-      <?php if (!empty($aluno['foto'])): ?>
-        <img src="<?= htmlspecialchars($aluno['foto']) ?>" alt="Foto" class="aluno-foto">
-      <?php else: ?>
-        <div class="aluno-foto-padrao">
-          <svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
-        </div>
-      <?php endif; ?>
-
-      <div class="aluno-info">
-        <h1><?= htmlspecialchars($aluno['nome']) ?></h1>
-        <span><?= htmlspecialchars($aluno['cidade'] ?? 'Sem cidade registrada') ?></span>
-      </div>
-
-      <div class="acoes-topo">
-        <a href="/pages/treinos-alunos.php?aba=calendario&aluno_id=<?= $aluno_id ?>" class="btn-outline">Calendário</a>
-        <a href="/pages/treinos-alunos.php?aba=planilha&aluno_id=<?= $aluno_id ?>" class="btn-primary-small">Planilha completa</a>
-      </div>
-    </div>
-  </div>
+  <?php 
+  $header_link_voltar = '/pages/alunos.php';
+  $header_label_voltar = 'Meus alunos';
+  $header_foto = $aluno['foto'] ?? '';
+  $header_nome = $aluno['nome'] ?? '';
+  $header_cidade = $aluno['cidade'] ?? 'Sem cidade registrada';
+  include '../components/header-perfil-nome.php';
+  ?>
 
   <!-- ALERTAS -->
   <?php if (!empty($alertas)): ?>
@@ -347,6 +329,11 @@ include '../components/header.php';
     <?php else: ?>
       <p style="color:#888;font-size:.9rem;">Nenhum treino realizado ainda.</p>
     <?php endif; ?>
+  </div>
+  
+  <div style="display:flex;gap:12px;margin-top:24px;justify-content:center;flex-wrap:wrap;">
+      <a href="/pages/treinos-alunos.php?aba=calendario&aluno_id=<?= $aluno_id ?>" class="btn-outline" style="min-width: 150px; text-align: center;">Ver Calendário</a>
+      <a href="/pages/treinos-alunos.php?aba=planilha&aluno_id=<?= $aluno_id ?>" class="btn-primary-small" style="min-width: 150px; text-align: center;">Planilha Completa</a>
   </div>
 
 </section>

@@ -20,5 +20,10 @@ $aba       = $_POST['aba']             ?? 'calendario';
 $stmt = $pdo->prepare("DELETE FROM treinos WHERE id = ? AND aluno_id = ? AND treinador_id = ?");
 $stmt->execute([$treino_id, $_SESSION['id'], $_SESSION['id']]);
 
+if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+    echo json_encode(['status' => 'success']);
+    exit();
+}
+
 header("Location: /pages/treinos.php?aba={$aba}&msg=removido");
 exit();

@@ -286,22 +286,24 @@ include '../components/header.php';
 
 <section class="treinos-page">
 
-  <div class="treinos-header">
-    <div>
-      <h1 class="treinos-titulo">Meus Treinos</h1>
-      <p class="treinos-sub" style="margin-bottom:0">Acompanhe e registre seus treinos e eventos.</p>
+  <?php 
+  $header_link_voltar = '/pages/perfil.php';
+  $header_label_voltar = 'Meu perfil';
+  $header_foto = $me['foto'] ?? '';
+  $header_nome = $me['nome'] ?? 'Meus Treinos';
+  $header_cidade = $me['cidade'] ?? 'Sem cidade';
+  $header_acoes_html = '
+    <div class="treinos-btns" style="display:flex;gap:8px; width: 100%;">
+      <button class="btn-primary" onclick="abrirModal(\'modalAdicionar\')" style="font-size:.85rem;padding:10px 20px; flex: 1;">
+        + Treino
+      </button>
+      <button class="btn-secondary" onclick="abrirModal(\'modalEvento\')" style="font-size:.85rem;padding:10px 20px;border-color:#DAA520;color:#DAA520; flex: 1;">
+        🏅 Evento
+      </button>
     </div>
-    <div class="treinos-header-direita">
-      <div class="treinos-btns">
-        <button class="btn-primary" onclick="abrirModal('modalAdicionar')" style="font-size:.85rem;padding:10px 20px">
-          + Treino
-        </button>
-        <button class="btn-secondary" onclick="abrirModal('modalEvento')" style="font-size:.85rem;padding:10px 20px;border-color:#DAA520;color:#DAA520">
-          🏅 Evento
-        </button>
-      </div>
-    </div>
-  </div>
+  ';
+  include '../components/header-perfil-nome.php';
+  ?>
 
   <?php if (isset($_GET['msg'])): ?>
     <div class="msg-sucesso">
@@ -931,18 +933,58 @@ function deletarTreino(treinoId) {
     unlockScroll();
     
     // Enviar para o action de remover
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = '/actions/action-remover-treino.php';
-    
-    const input = document.createElement('input');
-    input.type = 'hidden';
-    input.name = 'treino_id';
-    input.value = treinoId;
-    
-    form.appendChild(input);
-    document.body.appendChild(form);
-    form.submit();
+    const formData = new FormData();
+    formData.append('treino_id', treinoId);
+    // Para as telas do aluno, usamos action-remover-treino.php para remoção (mas se for próprio, pode ser action-remover-treino-proprio.php)
+    // O backend action-remover-treino-proprio.php requer 'aba' etc.
+    form_action = '/actions/action-remover-treino-proprio.php';
+    if(document.querySelector('form[action="/actions/action-remover-treino.php"]')) {
+        form_action = '/actions/action-remover-treino.php';
+    }
+
+    fetch(form_action, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    }).then(res => {
+        // Remover do objeto global
+        for (const date in treinosPorData) {
+            if (Array.isArray(treinosPorData[date])) {
+                treinosPorData[date] = treinosPorData[date].filter(it => parseInt(it.id) !== parseInt(treinoId) || it._tipo_item === 'evento');
+            }
+        }
+        renderCalendario();
+        
+        // Remover fisicamente do DOM se estiver na aba planilha
+        document.querySelectorAll('.planilha-item').forEach(item => {
+            const onclickAttr = item.getAttribute('onclick') || '';
+            const btnRemove = item.querySelector('.btn-remover-treino');
+            let isItemToRemove = false;
+            
+            if (btnRemove && btnRemove.hasAttribute('onclick') && parseInt(btnRemove.getAttribute('onclick').match(/\d+/)?.[0]) === parseInt(treinoId)) {
+                isItemToRemove = true;
+            }
+            if (isItemToRemove) {
+                item.remove();
+            }
+        });
+
+        // Mostrar mensagem
+        let msg = document.querySelector('.msg-sucesso');
+        if (!msg) {
+            msg = document.createElement('div');
+            msg.className = 'msg-sucesso';
+            const abasRow = document.querySelector('.row-abas-treinador');
+            if (abasRow) {
+                abasRow.parentNode.insertBefore(msg, abasRow);
+            }
+        }
+        msg.innerHTML = '🗑️ Treino removido.';
+        msg.style.display = 'block';
+        setTimeout(() => msg.style.display = 'none', 3000);
+    });
 }
 function abrirDetalhesTreino(titulo, descricao, tipo, data, status, temTreinador, distanciaPlanejada, kmRealizado, stravaId, rpe, duracao) {
     const modal = document.getElementById('modal-treino-detalhe');

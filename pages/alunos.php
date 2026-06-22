@@ -33,7 +33,7 @@ $stmt->execute([$treinador_usuario_id]);
 $alunos = $stmt->fetchAll();
 
 // Busca por e-mail para adicionar
-$busca     = null;
+$busca = null;
 $erroBusca = null;
 if (isset($_GET['busca']) && $_GET['busca'] !== '') {
   $emailBusca = trim($_GET['busca']);
@@ -104,7 +104,7 @@ include '../components/header.php';
   .busca-resultado {
     background: var(--card-bg, #fff);
     border-radius: var(--radius, 12px);
-    box-shadow: var(--shadow, 0 2px 8px rgba(0,0,0,.08));
+    box-shadow: var(--shadow, 0 2px 8px rgba(0, 0, 0, .08));
     padding: 16px 20px;
     display: flex;
     align-items: center;
@@ -114,7 +114,8 @@ include '../components/header.php';
   }
 
   .busca-avatar {
-    width: 44px; height: 44px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
     object-fit: cover;
     border: 2px solid var(--green);
@@ -122,24 +123,41 @@ include '../components/header.php';
   }
 
   .busca-avatar-padrao {
-    width: 44px; height: 44px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
     background: var(--bg, #f5f5f5);
     border: 2px solid var(--green);
-    display: flex; align-items: center; justify-content: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     flex-shrink: 0;
   }
 
-  .busca-avatar-padrao svg { width: 24px; height: 24px; fill: var(--text-muted); }
+  .busca-avatar-padrao svg {
+    width: 24px;
+    height: 24px;
+    fill: var(--text-muted);
+  }
 
-  .busca-info { flex: 1; }
-  .busca-nome { font-weight: 700; font-size: 0.95rem; }
-  .busca-email { font-size: 0.82rem; color: var(--text-muted); }
+  .busca-info {
+    flex: 1;
+  }
+
+  .busca-nome {
+    font-weight: 700;
+    font-size: 0.95rem;
+  }
+
+  .busca-email {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+  }
 
   .aluno-card {
     background: var(--card-bg, #fff);
     border-radius: var(--radius, 12px);
-    box-shadow: var(--shadow, 0 2px 8px rgba(0,0,0,.08));
+    box-shadow: var(--shadow, 0 2px 8px rgba(0, 0, 0, .08));
     padding: 18px 22px;
     display: flex;
     align-items: center;
@@ -148,10 +166,13 @@ include '../components/header.php';
     transition: box-shadow 0.2s;
   }
 
-  .aluno-card:hover { box-shadow: 0 4px 16px rgba(0,0,0,.14); }
+  .aluno-card:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, .14);
+  }
 
   .aluno-avatar {
-    width: 48px; height: 48px;
+    width: 48px;
+    height: 48px;
     border-radius: 50%;
     object-fit: cover;
     border: 2px solid var(--green);
@@ -159,21 +180,43 @@ include '../components/header.php';
   }
 
   .aluno-avatar-padrao {
-    width: 48px; height: 48px;
+    width: 48px;
+    height: 48px;
     border-radius: 50%;
     background: var(--bg, #f5f5f5);
     border: 2px solid var(--green);
-    display: flex; align-items: center; justify-content: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     flex-shrink: 0;
   }
 
-  .aluno-avatar-padrao svg { width: 26px; height: 26px; fill: var(--text-muted); }
+  .aluno-avatar-padrao svg {
+    width: 26px;
+    height: 26px;
+    fill: var(--text-muted);
+  }
 
-  .aluno-info { flex: 1; }
-  .aluno-nome  { font-weight: 700; font-size: 0.95rem; color: var(--text-main); }
-  .aluno-detalhe { font-size: 0.82rem; color: var(--text-muted); }
+  .aluno-info {
+    flex: 1;
+  }
 
-  .aluno-acoes { display: flex; gap: 8px; align-items: center; }
+  .aluno-nome {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--text-main);
+  }
+
+  .aluno-detalhe {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+  }
+
+  .aluno-acoes {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
 
   .btn-treinos {
     background: #fff;
@@ -195,10 +238,14 @@ include '../components/header.php';
   .btn-treinos:hover {
     border-color: var(--green);
     color: var(--green);
-    box-shadow: 0 2px 8px rgba(29,185,84,.15);
+    box-shadow: 0 2px 8px rgba(29, 185, 84, .15);
   }
 
-  .btn-treinos svg { width: 15px; height: 15px; fill: currentColor; }
+  .btn-treinos svg {
+    width: 15px;
+    height: 15px;
+    fill: currentColor;
+  }
 
   .btn-ver {
     background: var(--green);
@@ -215,7 +262,9 @@ include '../components/header.php';
     transition: opacity 0.15s;
   }
 
-  .btn-ver:hover { opacity: 0.85; }
+  .btn-ver:hover {
+    opacity: 0.85;
+  }
 
   .btn-remover {
     background: #fff0f0;
@@ -230,7 +279,9 @@ include '../components/header.php';
     transition: background 0.15s;
   }
 
-  .btn-remover:hover { background: #ffe0e0; }
+  .btn-remover:hover {
+    background: #ffe0e0;
+  }
 
   .vazio {
     text-align: center;
@@ -238,7 +289,10 @@ include '../components/header.php';
     color: var(--text-muted);
   }
 
-  .vazio-icone { font-size: 2.5rem; margin-bottom: 12px; }
+  .vazio-icone {
+    font-size: 2.5rem;
+    margin-bottom: 12px;
+  }
 
   .msg-sucesso {
     background: #e8f8ee;
@@ -261,10 +315,24 @@ include '../components/header.php';
   }
 
   @media (max-width: 640px) {
-    .alunos-wrap { padding: 0 14px 100px; }
-    .alunos-titulo { font-size: 1.8rem; }
-    .busca-form { flex-direction: column; }
-    .aluno-card { flex-wrap: wrap; padding: 14px 16px; gap: 10px; }
+    .alunos-wrap {
+      padding: 0 14px 100px;
+    }
+
+    .alunos-titulo {
+      font-size: 1.8rem;
+    }
+
+    .busca-form {
+      flex-direction: column;
+    }
+
+    .aluno-card {
+      flex-wrap: wrap;
+      padding: 14px 16px;
+      gap: 10px;
+    }
+
     .aluno-acoes {
       width: 100%;
       display: grid;
@@ -272,46 +340,62 @@ include '../components/header.php';
       gap: 6px;
       margin-top: 4px;
     }
-    .btn-treinos, .btn-ver, .btn-remover {
+
+    .btn-treinos,
+    .btn-ver,
+    .btn-remover {
       padding: 8px 4px;
       font-size: .78rem;
       justify-content: center;
       text-align: center;
       border-radius: 8px;
     }
-    .btn-treinos svg { display: none; }
-    .btn-remover { width: 100%; }
-    .busca-resultado { flex-wrap: wrap; gap: 10px; }
-    .busca-resultado form { width: 100%; }
-    .busca-resultado form .btn-ver { width: 100%; }
+
+    .btn-treinos svg {
+      display: none;
+    }
+
+    .btn-remover {
+      width: 100%;
+    }
+
+    .busca-resultado {
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .busca-resultado form {
+      width: 100%;
+    }
+
+    .busca-resultado form .btn-ver {
+      width: 100%;
+    }
   }
 </style>
 
 <div class="alunos-wrap">
 
-  <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:4px; flex-wrap:wrap; gap:10px;">
+  <div
+    style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:4px; flex-wrap:wrap; gap:10px;">
     <h1 class="alunos-titulo" style="margin-bottom:0;">Seus Alunos</h1>
-    <a href="/pages/painel-treinador.php" class="btn-ver" style="margin-bottom:5px;background:#111;">Ver Painel Geral →</a>
+    <a href="/pages/painel-treinador.php" class="btn-ver" style="margin-bottom:5px;background:var(--green);">Ver Painel Geral</a>
   </div>
   <p class="alunos-sub">Gerencie os corredores vinculados a você.</p>
 
   <?php if (isset($_GET['msg'])): ?>
     <div class="msg-sucesso">
       <?php
-        $msgs = ['adicionado' => '✅ Aluno adicionado com sucesso!', 'removido' => '✅ Aluno removido.'];
-        echo $msgs[$_GET['msg']] ?? 'Ação realizada.';
+      $msgs = ['adicionado' => '✅ Aluno adicionado com sucesso!', 'removido' => '✅ Aluno removido.'];
+      echo $msgs[$_GET['msg']] ?? 'Ação realizada.';
       ?>
     </div>
   <?php endif; ?>
 
   <!-- BUSCAR ALUNO POR E-MAIL -->
   <form class="busca-form" method="GET">
-    <input
-      type="email"
-      name="busca"
-      placeholder="Buscar corredor por e-mail..."
-      value="<?= htmlspecialchars($_GET['busca'] ?? '') ?>"
-    />
+    <input type="email" name="busca" placeholder="Buscar corredor por e-mail..."
+      value="<?= htmlspecialchars($_GET['busca'] ?? '') ?>" />
     <button type="submit" class="btn-primary">Buscar</button>
   </form>
 
@@ -323,7 +407,10 @@ include '../components/header.php';
         <img src="<?= htmlspecialchars($busca['foto']) ?>" class="busca-avatar" alt="Foto">
       <?php else: ?>
         <div class="busca-avatar-padrao">
-          <svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+          <svg viewBox="0 0 24 24">
+            <path
+              d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z" />
+          </svg>
         </div>
       <?php endif; ?>
       <div class="busca-info">
@@ -334,7 +421,7 @@ include '../components/header.php';
         <?php endif; ?>
       </div>
       <form action="/actions/action-adicionar-aluno.php" method="POST">
-        <input type="hidden" name="aluno_id" value="<?= (int)$busca['id'] ?>">
+        <input type="hidden" name="aluno_id" value="<?= (int) $busca['id'] ?>">
         <button type="submit" class="btn-ver">+ Adicionar</button>
       </form>
     </div>
@@ -351,19 +438,20 @@ include '../components/header.php';
       <div class="aluno-card">
 
         <!-- foto do aluno — envolver em link -->
-        <?php $alunoLink = '/pages/perfil-publico.php?id=' . (int)$aluno['id']; ?>
-        <a href="<?= $alunoLink ?>" 
-           title="Ver perfil de <?= htmlspecialchars($aluno['nome']) ?>"
-           style="flex-shrink:0;display:block;">
+        <?php $alunoLink = '/pages/perfil-publico.php?id=' . (int) $aluno['id']; ?>
+        <a href="<?= $alunoLink ?>" title="Ver perfil de <?= htmlspecialchars($aluno['nome']) ?>"
+          style="flex-shrink:0;display:block;">
           <?php if (!empty($aluno['foto'])): ?>
-            <img src="<?= htmlspecialchars($aluno['foto']) ?>" 
-                 class="aluno-avatar" 
-                 style="cursor:pointer;transition:transform 0.2s,opacity 0.2s;"
-                 onmouseover="this.style.opacity='0.8';this.style.transform='scale(1.05)'"
-                 onmouseout="this.style.opacity='1';this.style.transform='scale(1)'">
+            <img src="<?= htmlspecialchars($aluno['foto']) ?>" class="aluno-avatar"
+              style="cursor:pointer;transition:transform 0.2s,opacity 0.2s;"
+              onmouseover="this.style.opacity='0.8';this.style.transform='scale(1.05)'"
+              onmouseout="this.style.opacity='1';this.style.transform='scale(1)'">
           <?php else: ?>
             <div class="aluno-avatar-padrao" style="cursor:pointer;">
-              <svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+              <svg viewBox="0 0 24 24">
+                <path
+                  d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z" />
+              </svg>
             </div>
           <?php endif; ?>
         </a>
@@ -377,13 +465,16 @@ include '../components/header.php';
         </div>
 
         <div class="aluno-acoes">
-          <a href="/pages/aluno-overview.php?aluno_id=<?= (int)$aluno['id'] ?>" class="btn-treinos">
-            <svg viewBox="0 0 24 24"><path d="M13.49 5.48c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm-3.6 13.9l1-4.4 2.1 2v6h2v-7.5l-2.1-2 .6-3c1.3 1.5 3.3 2.5 5.5 2.5v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1l-5.2 2.2v4.7h2v-3.4l1.8-.7-1.6 8.1-4.9-1-.4 2 7 1.4z"/></svg>
+          <a href="/pages/aluno-overview.php?aluno_id=<?= (int) $aluno['id'] ?>" class="btn-treinos">
+            <svg viewBox="0 0 24 24">
+              <path
+                d="M13.49 5.48c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm-3.6 13.9l1-4.4 2.1 2v6h2v-7.5l-2.1-2 .6-3c1.3 1.5 3.3 2.5 5.5 2.5v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1l-5.2 2.2v4.7h2v-3.4l1.8-.7-1.6 8.1-4.9-1-.4 2 7 1.4z" />
+            </svg>
             Treinos
           </a>
           <form action="/actions/action-remover-aluno.php" method="POST"
-                onsubmit="return confirm('Remover <?= htmlspecialchars(addslashes($aluno['nome'])) ?> da sua lista?')">
-            <input type="hidden" name="aluno_id" value="<?= (int)$aluno['id'] ?>">
+            onsubmit="return confirm('Remover <?= htmlspecialchars(addslashes($aluno['nome'])) ?> da sua lista?')">
+            <input type="hidden" name="aluno_id" value="<?= (int) $aluno['id'] ?>">
             <button type="submit" class="btn-remover">Remover</button>
           </form>
         </div>
@@ -395,4 +486,5 @@ include '../components/header.php';
 </div>
 <?php include_once dirname(__DIR__) . '/components/footer.php'; ?>
 </body>
+
 </html>

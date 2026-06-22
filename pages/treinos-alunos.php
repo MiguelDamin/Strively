@@ -183,39 +183,20 @@ include '../components/header.php';
 <section class="treinos-page">
 
   <!-- CABEÇALHO DO ALUNO -->
-  <div class="aluno-header">
-    <a href="/pages/alunos.php" class="voltar">
-      <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
-      Meus alunos
-    </a>
-
-    <?php
-      $alunoProfileLink = '/pages/perfil-publico.php?id=' . (int)$aluno['id'];
-    ?>
-    <a href="<?= $alunoProfileLink ?>" 
-       style="display:contents;text-decoration:none;"
-       title="Ver perfil de <?= htmlspecialchars($aluno['nome']) ?>">
-      <?php if (!empty($aluno['foto'])): ?>
-        <img src="<?= htmlspecialchars($aluno['foto']) ?>" alt="Foto" class="aluno-foto" 
-             style="cursor:pointer;transition:opacity 0.2s;"
-             onmouseover="this.style.opacity='0.8'"
-             onmouseout="this.style.opacity='1'">
-      <?php else: ?>
-        <div class="aluno-foto-padrao" style="cursor:pointer;">
-          <svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
-        </div>
-      <?php endif; ?>
-    </a>
-
-    <div class="aluno-info">
-      <h1><?= htmlspecialchars($aluno['nome']) ?></h1>
-      <span><?= htmlspecialchars($aluno['cidade'] ?? 'Sem cidade') ?></span>
-    </div>
-
+  <?php 
+  $header_link_voltar = '/pages/alunos.php';
+  $header_label_voltar = 'Meus alunos';
+  $header_foto = $aluno['foto'] ?? '';
+  $header_nome = $aluno['nome'] ?? '';
+  $header_cidade = $aluno['cidade'] ?? 'Sem cidade';
+  $header_foto_link = '/pages/perfil-publico.php?id=' . (int)$aluno['id'];
+  $header_acoes_html = '
     <button class="btn-primary" onclick="abrirModalAdicionar()" style="margin-left:auto;">
       + Adicionar Treino
     </button>
-  </div>
+  ';
+  include '../components/header-perfil-nome.php';
+  ?>
 
   <?php if (isset($_GET['msg'])): ?>
     <div class="msg-sucesso">
@@ -359,7 +340,7 @@ include '../components/header.php';
             </div>
             <div class="planilha-acoes">
               <?php if (!$item['_proprio']): ?>
-              <form action="/actions/action-remover-treino.php" method="POST" onsubmit="return confirm('Remover este treino?')">
+              <form action="/actions/action-remover-treino.php" method="POST" onsubmit="removerTreinoAjax(event, this); return false;">
                 <input type="hidden" name="treino_id" value="<?= (int)$item['id'] ?>">
                 <input type="hidden" name="aluno_id"  value="<?= $aluno_id ?>">
                 <input type="hidden" name="aba"        value="planilha">
@@ -561,7 +542,7 @@ function abrirModalDia(ds, tt) {
 
       // Botão remover
       let acoes = '';
-      if (!proprio) acoes = '<form method="POST" action="/actions/action-remover-treino.php" onsubmit="return confirm(\'Remover este treino?\')" style="display:inline"><input type="hidden" name="treino_id" value="'+it.id+'"><input type="hidden" name="aluno_id" value="'+it.aluno_id+'"><input type="hidden" name="aba" value="calendario"><button type="submit" class="btn-remover-treino">Remover</button></form>';
+      if (!proprio) acoes = '<form method="POST" action="/actions/action-remover-treino.php" onsubmit="removerTreinoAjax(event, this); return false;" style="display:inline"><input type="hidden" name="treino_id" value="'+it.id+'"><input type="hidden" name="aluno_id" value="'+it.aluno_id+'"><input type="hidden" name="aba" value="calendario"><button type="submit" class="btn-remover-treino">Remover</button></form>';
 
       div.className = 'modal-treino-item' + (realizado ? ' realizado' : '');
       div.innerHTML = badgeTipo
@@ -601,6 +582,73 @@ function esc(s) {
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape') { fecharModal('modalDia'); fecharModal('modalAdicionar'); }
 });
+
+window.removerTreinoAjax = function(e, form) {
+    e.preventDefault();
+    if (!confirm('Remover este treino?')) return false;
+
+    const formData = new FormData(form);
+    const treinoId = formData.get('treino_id');
+
+    fetch(form.action, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    }).then(res => {
+        // Remover do objeto global
+        for (const date in treinosPorData) {
+            if (Array.isArray(treinosPorData[date])) {
+                treinosPorData[date] = treinosPorData[date].filter(it => parseInt(it.id) !== parseInt(treinoId) || it._tipo_item === 'evento');
+            }
+        }
+        renderCalendario();
+        
+        // Remover fisicamente do DOM se estiver na aba planilha
+        document.querySelectorAll('.planilha-item').forEach(item => {
+            const btnRemove = item.querySelector('.btn-remover-treino');
+            let isItemToRemove = false;
+            
+            if (btnRemove) {
+                const parentForm = btnRemove.closest('form');
+                if (parentForm && parentForm.querySelector('input[name="treino_id"]') && parentForm.querySelector('input[name="treino_id"]').value == treinoId) {
+                    isItemToRemove = true;
+                }
+            }
+            if (isItemToRemove) {
+                item.remove();
+            }
+        });
+        
+        // Fechar modal do dia se não houver mais treinos lá dentro ou apenas mostrar mensagem
+        const diaModalBody = document.getElementById('modalDia-body');
+        if (document.getElementById('modalDia').classList.contains('aberto') && diaModalBody) {
+             const formInModal = diaModalBody.querySelector('input[name="treino_id"][value="'+treinoId+'"]');
+             if (formInModal) {
+                 formInModal.closest('.modal-treino-item').remove();
+                 if (diaModalBody.children.length === 0) {
+                     fecharModal('modalDia');
+                 }
+             }
+        }
+
+        // Mostrar mensagem
+        let msg = document.querySelector('.msg-sucesso');
+        if (!msg) {
+            msg = document.createElement('div');
+            msg.className = 'msg-sucesso';
+            const abasRow = document.querySelector('.abas');
+            if (abasRow) {
+                abasRow.parentNode.insertBefore(msg, abasRow);
+            }
+        }
+        msg.innerHTML = '🗑️ Treino removido.';
+        msg.style.display = 'block';
+        setTimeout(() => msg.style.display = 'none', 3000);
+    });
+    return false;
+};
 
 function abrirDetalhesTreino(titulo, descricao, tipo, data, status, temTreinador, distanciaPlanejada, kmRealizado, stravaId, rpe, duracao) {
     const modal = document.getElementById('modal-treino-detalhe');

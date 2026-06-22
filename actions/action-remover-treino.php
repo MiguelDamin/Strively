@@ -35,6 +35,11 @@ if (!$stmt->fetch()) {
 $pdo->prepare("DELETE FROM posts WHERE treino_id = ?")->execute([$treino_id]);
 $pdo->prepare("DELETE FROM treinos WHERE id = ?")->execute([$treino_id]);
 
+if (!empty($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest') {
+    echo json_encode(['status' => 'success']);
+    exit();
+}
+
 if ($user_id != $aluno_id) {
     header("Location: /pages/treinos-alunos.php?id={$aluno_id}&msg=removido&aba=" . ($_POST['aba'] ?? 'calendario'));
 } else {
