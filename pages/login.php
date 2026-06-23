@@ -51,6 +51,7 @@ if (isset($_SESSION['id'])) {
         <div class="auth-sucesso">
           <?php
             if ($_GET['msg'] === 'cadastrado') echo 'Conta criada com sucesso! Faça login para continuar.';
+            if ($_GET['msg'] === 'conta_excluida') echo 'Sua conta foi excluída permanentemente. Sentiremos sua falta!';
             if ($_GET['msg'] === 'senha_redefinida') echo 'Sua senha foi redefinida com sucesso! Faça login para continuar.';
           ?>
         </div>
