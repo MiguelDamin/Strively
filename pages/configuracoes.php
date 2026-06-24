@@ -24,11 +24,18 @@ $isAdmin = ($userId == 2);
 // Busca dados do usuário (para Conexões / Zona de Risco)
 $stmtUser = $pdo->prepare("
   SELECT strava_conectado, strava_km_total, strava_km_ano,
-         strava_atividades_total, strava_sincronizado_em, perfil
+         strava_atividades_total, strava_sincronizado_em, perfil, treinador_id, status_vinculo
   FROM usuarios WHERE id = ?
 ");
 $stmtUser->execute([$userId]);
 $userConfig = $stmtUser->fetch();
+
+$treinador = null;
+if (!empty($userConfig['treinador_id']) && $userConfig['status_vinculo'] === 'aceito') {
+  $stmtT = $pdo->prepare("SELECT id, nome, foto, cidade FROM usuarios WHERE id = ?");
+  $stmtT->execute([$userConfig['treinador_id']]);
+  $treinador = $stmtT->fetch();
+}
 
 // Notificações de Sistema
 $notifSistema = [];
@@ -659,7 +666,7 @@ function dataRelativa(string $dtStr): string {
   @media (max-width: 768px) {
     .settings-container {
       flex-direction: column;
-      gap: 16px;
+      gap: 24px;
       margin: 20px auto 40px;
       padding: 0 14px;
     }
@@ -667,6 +674,18 @@ function dataRelativa(string $dtStr): string {
       width: 100%;
       position: static;
       top: auto;
+      padding: 20px;
+      margin-bottom: 8px;
+    }
+    .menu-group {
+      margin-bottom: 24px;
+    }
+    .menu-group a {
+      padding: 14px 10px;
+      font-size: 1rem;
+    }
+    .sidebar-divider {
+      margin: 16px 10px;
     }
     .settings-pane {
       padding: 24px 20px;
@@ -701,6 +720,12 @@ function dataRelativa(string $dtStr): string {
             <a href="/pages/perfil.php">
               <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
               Conta e Perfil
+            </a>
+          </li>
+          <li>
+            <a href="?secao=treinador" class="<?= $secao === 'treinador' ? 'ativo' : '' ?>">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              Meu Treinador
             </a>
           </li>
         </ul>
@@ -764,8 +789,48 @@ function dataRelativa(string $dtStr): string {
     ════════════════════════════════════ -->
     <main class="settings-content">
 
+      <?php /* ── MEU TREINADOR ── */ ?>
+      <?php if ($secao === 'treinador'): ?>
+        <div class="settings-pane">
+          <div class="pane-header">
+            <h2 class="pane-title">Meu Treinador</h2>
+            <p class="pane-subtitle">Gerencie seu vínculo com seu treinador ou assessoria.</p>
+          </div>
+          
+          <?php if (isset($_GET['msg']) && $_GET['msg'] === 'treinador_removido'): ?>
+            <div class="msg-sucesso">✓ Treinador desvinculado com sucesso!</div>
+          <?php endif; ?>
+
+          <?php if ($treinador): ?>
+            <div class="conexao-card" style="align-items:center; border: 1px solid #f0f0f0; border-radius: 12px; padding: 20px;">
+               <div class="conexao-logo" style="width: 56px; height: 56px; border-radius: 50%; overflow: hidden; background: #f5f5f5;">
+                 <?php if (!empty($treinador['foto'])): ?>
+                   <img src="<?= htmlspecialchars(strpos($treinador['foto'], 'http')===0 ? $treinador['foto'] : '/'.$treinador['foto']) ?>" style="width:100%; height:100%; object-fit:cover;" alt="Foto do treinador">
+                 <?php else: ?>
+                   <svg viewBox="0 0 24 24" style="width:30px;height:30px;fill:#ccc;margin-top:13px"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                 <?php endif; ?>
+               </div>
+               <div class="conexao-info" style="flex:1;">
+                 <div class="conexao-nome"><?= htmlspecialchars($treinador['nome']) ?></div>
+                 <div class="conexao-descricao" style="margin-bottom:0;"><?= htmlspecialchars($treinador['cidade'] ?? 'Treinador') ?></div>
+               </div>
+               <div>
+                  <button class="btn-cancelar-treinador" onclick="abrirModalCancelarTreinador()" style="background:#fff0f0;color:#dc2626;border:none;padding:10px 18px;border-radius:10px;font-weight:600;font-size:0.85rem;cursor:pointer;">Desvincular</button>
+               </div>
+            </div>
+          <?php else: ?>
+            <div class="aviso-empty">
+              <svg viewBox="0 0 24 24" style="width:40px;height:40px;stroke:#ddd;fill:none;stroke-width:1.5;margin-bottom:12px;display:block;margin-left:auto;margin-right:auto;"><circle cx="12" cy="12" r="10"/><path d="M8 12h8m-4-4v8"/></svg>
+              Você não possui um treinador vinculado.
+              <div style="margin-top:16px;">
+                <a href="/pages/buscar-treinador.php" class="btn-primary" style="display:inline-block; text-decoration:none; padding:10px 20px; font-size:0.9rem; border-radius:10px;">Buscar Treinador</a>
+              </div>
+            </div>
+          <?php endif; ?>
+        </div>
+      
       <?php /* ── SEGURANÇA ── */ ?>
-      <?php if ($secao === 'seguranca'): ?>
+      <?php elseif ($secao === 'seguranca'): ?>
         <div class="settings-pane">
           <div class="pane-header">
             <h2 class="pane-title">Trocar Senha</h2>
@@ -944,7 +1009,8 @@ function dataRelativa(string $dtStr): string {
           <!-- POLAR -->
           <div class="conexao-card">
             <div class="conexao-logo" style="background:#f0f5ff;border:1px solid #dbeafe;">
-              <svg viewBox="0 0 40 40" style="width:28px;height:28px;fill:#2563eb;"><circle cx="20" cy="20" r="10"/><circle cx="20" cy="20" r="5" fill="#fff"/></svg>
+              <!-- TODO: Obter/Usar logo oficial da Polar quando possível -->
+              <svg viewBox="0 0 24 24" style="width:24px;height:24px;stroke:#4b5563;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
             </div>
             <div class="conexao-info">
               <div class="conexao-nome">Polar <span class="badge-em-breve" style="margin-left:6px;">Em breve</span></div>
@@ -956,7 +1022,8 @@ function dataRelativa(string $dtStr): string {
           <!-- GARMIN -->
           <div class="conexao-card">
             <div class="conexao-logo" style="background:#f0fdf4;border:1px solid #bbf7d0;">
-              <svg viewBox="0 0 40 40" style="width:28px;height:28px;fill:#16a34a;"><rect x="8" y="8" width="24" height="24" rx="6"/><path d="M14 20h12M20 14v12" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>
+              <!-- TODO: Obter/Usar logo oficial da Garmin quando possível -->
+              <svg viewBox="0 0 24 24" style="width:24px;height:24px;stroke:#4b5563;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;"><circle cx="12" cy="12" r="7"></circle><polyline points="12 9 12 12 13.5 13.5"></polyline></svg>
             </div>
             <div class="conexao-info">
               <div class="conexao-nome">Garmin <span class="badge-em-breve" style="margin-left:6px;">Em breve</span></div>
@@ -1066,6 +1133,24 @@ function dataRelativa(string $dtStr): string {
     </div>
   <?php endif; ?>
 
+  <!-- MODAL CANCELAR TREINADOR -->
+  <?php if (!empty($treinador)): ?>
+    <div class="modal-overlay-cfg" id="modalCancelarTreinador">
+      <div class="modal-box-cfg" style="max-width:400px;text-align:center;">
+        <h3 style="color:#dc2626;">Desvincular Treinador</h3>
+        <p style="color:#555;font-size:0.95rem;margin-bottom:24px;">Tem certeza que deseja desvincular de <?= htmlspecialchars($treinador['nome'] ?? '') ?>? Você perderá acesso aos treinos planejados por ele.</p>
+        <form action="/actions/action-remover-treinador.php" method="POST">
+          <input type="hidden" name="treinador_id" value="<?= $treinador['id'] ?? '' ?>">
+          <input type="hidden" name="return_url" value="/pages/configuracoes.php?secao=treinador&msg=treinador_removido">
+          <div class="modal-cfg-footer" style="margin-top:0;">
+            <button type="button" class="btn-modal-cancel" onclick="fecharModalCancelarTreinador()">Cancelar</button>
+            <button type="submit" class="btn-modal-submit" style="background:#dc2626;">Confirmar Desvínculo</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  <?php endif; ?>
+
   <!-- Toast para feedback da sync Strava -->
   <div id="cfg-toast" style="display:none;position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#111;color:#fff;padding:12px 22px;border-radius:12px;font-size:.9rem;font-weight:600;z-index:9999;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,0.25);"></div>
 
@@ -1103,6 +1188,23 @@ function dataRelativa(string $dtStr): string {
 
   document.getElementById('modalAdminAviso')?.addEventListener('click', function(e) {
     if (e.target === this) fecharModalAviso();
+  });
+
+  /* ── Modal Cancelar Treinador ── */
+  function abrirModalCancelarTreinador() {
+    const m = document.getElementById('modalCancelarTreinador');
+    if (m) m.classList.add('aberto');
+    if (typeof lockScroll === 'function') lockScroll();
+  }
+
+  function fecharModalCancelarTreinador() {
+    const m = document.getElementById('modalCancelarTreinador');
+    if (m) m.classList.remove('aberto');
+    if (typeof unlockScroll === 'function') unlockScroll();
+  }
+
+  document.getElementById('modalCancelarTreinador')?.addEventListener('click', function(e) {
+    if (e.target === this) fecharModalCancelarTreinador();
   });
 
   /* ── Strava Sync na página Conexões ── */

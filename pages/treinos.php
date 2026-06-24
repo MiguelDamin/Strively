@@ -361,7 +361,7 @@ include '../components/header.php';
           <?php endif; ?>
           <span class="mt-nome"><?= htmlspecialchars($treinador['nome']) ?></span>
         </div>
-        <button class="btn-cancelar-treinador" onclick="abrirModalCancelarTreinador()">Cancelar</button>
+        <button class="btn-cancelar-treinador" onclick="abrirModal('modalCancelarTreinador')">Cancelar</button>
       </div>
     </div>
     <?php endif; ?>
@@ -1193,6 +1193,25 @@ function selecionarRPE(valor) {
         <!-- Status -->
         <div id="modal-treino-status"></div>
     </div>
+</div>
+
+<!-- MODAL: CANCELAR TREINADOR -->
+<div class="modal-overlay" id="modalCancelarTreinador" onclick="fecharModalSeFora(event,'modalCancelarTreinador')">
+  <div class="modal-box" style="max-width:400px;text-align:center;">
+    <div class="modal-header" style="justify-content:center;border-bottom:none;padding-bottom:0;position:static;">
+      <h3 style="color:#dc2626;">Desvincular Treinador</h3>
+    </div>
+    <div class="modal-body">
+      <p style="color:#555;font-size:0.95rem;margin-bottom:24px;">Tem certeza que deseja desvincular de <?= htmlspecialchars($treinador['nome'] ?? '') ?>? Você perderá acesso aos treinos planejados por ele.</p>
+      <form action="/actions/action-remover-treinador.php" method="POST">
+        <input type="hidden" name="treinador_id" value="<?= $treinador['id'] ?? '' ?>">
+        <div style="display: flex; gap: 10px;">
+          <button type="button" class="btn-secondary" style="flex:1;" onclick="fecharModal('modalCancelarTreinador')">Cancelar</button>
+          <button type="submit" class="btn-primary" style="flex:1;background:#dc2626;border-color:#dc2626;">Confirmar</button>
+        </div>
+      </form>
+    </div>
+  </div>
 </div>
 
 <?php include_once dirname(__DIR__) . '/components/footer.php'; ?>

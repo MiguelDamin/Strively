@@ -43,5 +43,6 @@ $stmt = $pdo->prepare("
 ");
 $stmt->execute([$usuario_id]);
 
-header('Location: /pages/treinos.php?msg=treinador_removido');
+$returnUrl = $_POST['return_url'] ?? '/pages/treinos.php?msg=treinador_removido';
+header('Location: ' . $returnUrl);
 exit();
