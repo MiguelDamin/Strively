@@ -275,7 +275,7 @@ else:
   </section>
 
   <!-- SEC 4: TREINOS -->
-  <section class="lp2-feature lp2-feature--right">
+  <section class="lp2-feature lp2-feature--right" style="background-color: #effff4;">
     <div class="lp2-feature-text">
       <span class="lp2-label">Treinos</span>
       <h2>Treine com sabedoria,<br>treine com STRIVELY.</h2>
@@ -287,7 +287,7 @@ else:
   </section>
 
   <!-- SEC 5: EVENTOS -->
-  <section class="lp2-feature lp2-feature--left">
+  <section class="lp2-feature lp2-feature--left" style="background-color: #ffffff;">
     <div class="lp2-feature-text">
       <span class="lp2-label">Eventos</span>
       <h2>Fique por Dentro<br>de Eventos.</h2>
@@ -299,7 +299,7 @@ else:
   </section>
 
   <!-- SEC 6: COMUNIDADE -->
-  <section class="lp2-feature lp2-feature--right">
+  <section class="lp2-feature lp2-feature--right" style="background-color: #ffffff;">
     <div class="lp2-feature-text">
       <span class="lp2-label">Comunidade</span>
       <h2>Persiga seus amigos e compartilhe seus treinos.</h2>
@@ -498,7 +498,7 @@ else:
 /* MOCKUP DESKTOP SINGLE */
 .mockup-desktop-single {
   width: 100%;
-  max-width: 800px;
+  max-width: 520px;
   height: auto;
   display: block;
   margin: 0 auto;
@@ -576,9 +576,10 @@ else:
 /* PHONE MOCKUP SINGLE */
 .mockup-phone-single {
   width: 100%;
-  max-width: 450px;
+  max-width: 280px;
   height: auto;
   display: block;
+  margin: 0 auto;
   filter: drop-shadow(0 40px 100px rgba(0,0,0,0.15));
 }
 
