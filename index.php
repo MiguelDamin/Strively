@@ -568,12 +568,12 @@ else:
 
 /* FEATURE SECTIONS */
 .lp2-feature {
-  padding: 120px 60px;
-  max-width: 1100px;
+  padding: 160px 60px;
+  max-width: 1200px;
   margin: 0 auto;
   display: flex;
   align-items: center;
-  gap: 100px;
+  gap: 120px;
 }
 .lp2-feature--left {
   flex-direction: row-reverse;
@@ -614,7 +614,7 @@ else:
 
 /* PHONE MOCKUP REAL — frame layered over screenshot */
 .mockup-phone-real {
-  width: 260px;
+  width: 400px;
   position: relative;
   flex-shrink: 0;
 }
@@ -626,23 +626,29 @@ else:
   position: relative;
   z-index: 2;
   pointer-events: none;
+  drop-shadow: 0 32px 80px rgba(0,0,0,0.18);
 }
 /* Screenshot positioned absolutely behind the frame.
-   mobile_moldura.png approx: top notch area ~13.5%, bottom ~7.5%, sides ~5.5% */
+   mobile_moldura.png: notch at very top, content starts ~12% from top,
+   ends ~88% from top, left/right margins ~5.5% each */
 .mockup-phone-screen-img {
   position: absolute;
-  top: 13.5%;
+  top: 12%;
   left: 5.5%;
   width: 89%;
-  height: 79%;
+  height: 76%;
   object-fit: cover;
   object-position: top center;
   display: block;
-  border-radius: 28px;
+  border-radius: 36px;
   z-index: 1;
 }
 
 /* RESPONSIVE */
+@media (max-width: 1100px) {
+  .lp2-feature { padding: 130px 48px; gap: 80px; }
+  .mockup-phone-real { width: 340px; }
+}
 @media (max-width: 900px) {
   .lp2-green-inner {
     flex-direction: column;
@@ -655,13 +661,13 @@ else:
   .lp2-badges { justify-content: center; }
   .lp2-feature, .lp2-feature--left {
     flex-direction: column;
-    gap: 48px;
+    gap: 60px;
     text-align: center;
-    padding: 80px 24px;
+    padding: 100px 32px;
   }
   .lp2-feature-text p { max-width: 100%; }
   .lp2-feature-text h2 { font-size: 38px; }
-  .mockup-phone-real { width: 220px; }
+  .mockup-phone-real { width: 300px; }
 }
 @media (max-width: 640px) {
   .lp2-header { padding: 14px 20px; }
@@ -671,7 +677,8 @@ else:
   .lp2-hero-sub { font-size: 15px; }
   .lp2-green { padding: 52px 20px 48px; }
   .lp2-green-text h2 { font-size: 40px; }
-  .mockup-phone-real { width: 180px; }
+  .mockup-phone-real { width: 240px; }
+  .mockup-phone-screen-img { border-radius: 28px; }
 }
 
 /* Estilo compartilhado do dashboard (usuário logado) */
