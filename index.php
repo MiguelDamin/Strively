@@ -455,8 +455,8 @@ else:
 /* GREEN BLOCK */
 .lp2-green {
   background: #1DB954;
-  padding: 72px 40px 60px;
-  overflow: hidden;
+  padding: 72px 40px 0; /* No bottom padding, let mockup overflow */
+  overflow: visible;
 }
 .lp2-green-inner {
   max-width: 1080px;
@@ -468,6 +468,7 @@ else:
 .lp2-green-text {
   flex: 1;
   min-width: 0;
+  padding-bottom: 72px; /* Pad text content since parent lacks bottom padding */
 }
 .lp2-green-text h2 {
   font-family: 'Bebas Neue', sans-serif;
@@ -513,6 +514,8 @@ else:
   width: 100%;
   position: relative;
   flex-shrink: 0;
+  z-index: 10;
+  margin-bottom: -160px; /* Overflow onto next section */
 }
 .mockup-desktop-real-inner {
   position: relative;
@@ -528,14 +531,14 @@ else:
   z-index: 2;
   pointer-events: none;
 }
-/* Screenshot is positioned absolutely behind the frame, filled to the monitor screen area.
-   moldura_desktop.png: screen area starts ~7% from top, ~7.5% from left, width ~85%, height ~68% of total image */
+/* Screenshot is positioned absolutely behind the frame.
+   Exact values derived from image hole via script. */
 .mockup-screen-img {
   position: absolute;
-  top: 7%;
-  left: 7.5%;
-  width: 85%;
-  height: 68%;
+  top: 5.8%;
+  left: 1.6%;
+  width: 96.6%;
+  height: 66.8%;
   object-fit: cover;
   object-position: top center;
   display: block;
@@ -568,12 +571,12 @@ else:
 
 /* FEATURE SECTIONS */
 .lp2-feature {
-  padding: 160px 60px;
-  max-width: 1200px;
+  padding: 240px 60px;
+  max-width: 1400px;
   margin: 0 auto;
   display: flex;
   align-items: center;
-  gap: 120px;
+  gap: 160px;
 }
 .lp2-feature--left {
   flex-direction: row-reverse;
@@ -614,7 +617,7 @@ else:
 
 /* PHONE MOCKUP REAL — frame layered over screenshot */
 .mockup-phone-real {
-  width: 400px;
+  width: 800px; /* The phone itself only spans 44% of this width */
   position: relative;
   flex-shrink: 0;
 }
@@ -626,17 +629,16 @@ else:
   position: relative;
   z-index: 2;
   pointer-events: none;
-  drop-shadow: 0 32px 80px rgba(0,0,0,0.18);
+  drop-shadow: 0 40px 100px rgba(0,0,0,0.15);
 }
 /* Screenshot positioned absolutely behind the frame.
-   mobile_moldura.png: notch at very top, content starts ~12% from top,
-   ends ~88% from top, left/right margins ~5.5% each */
+   Exact values derived from image hole via script. */
 .mockup-phone-screen-img {
   position: absolute;
-  top: 12%;
-  left: 5.5%;
-  width: 89%;
-  height: 76%;
+  top: 10.1%;
+  left: 26%;
+  width: 44.1%;
+  height: 84%;
   object-fit: cover;
   object-position: top center;
   display: block;
@@ -645,9 +647,14 @@ else:
 }
 
 /* RESPONSIVE */
+@media (max-width: 1300px) {
+  .lp2-feature { padding: 180px 48px; gap: 100px; }
+  .mockup-phone-real { width: 600px; }
+}
 @media (max-width: 1100px) {
-  .lp2-feature { padding: 130px 48px; gap: 80px; }
-  .mockup-phone-real { width: 340px; }
+  .lp2-green-right { width: 90%; }
+  .lp2-feature { padding: 140px 40px; gap: 60px; }
+  .mockup-phone-real { width: 480px; }
 }
 @media (max-width: 900px) {
   .lp2-green-inner {
@@ -656,18 +663,19 @@ else:
     text-align: center;
     align-items: center;
   }
-  .lp2-green-text { order: 1; }
+  .lp2-green-text { order: 1; padding-bottom: 0px; }
   .lp2-green-right { order: 2; width: 100%; max-width: 520px; }
+  .mockup-desktop-real { margin-bottom: -100px; }
   .lp2-badges { justify-content: center; }
   .lp2-feature, .lp2-feature--left {
     flex-direction: column;
     gap: 60px;
     text-align: center;
-    padding: 100px 32px;
+    padding: 140px 32px 80px;
   }
   .lp2-feature-text p { max-width: 100%; }
   .lp2-feature-text h2 { font-size: 38px; }
-  .mockup-phone-real { width: 300px; }
+  .mockup-phone-real { width: 400px; }
 }
 @media (max-width: 640px) {
   .lp2-header { padding: 14px 20px; }
@@ -675,10 +683,11 @@ else:
   .lp2-hero { padding: 80px 20px; min-height: 100svh; }
   .lp2-hero-title { font-size: 42px; }
   .lp2-hero-sub { font-size: 15px; }
-  .lp2-green { padding: 52px 20px 48px; }
+  .lp2-green { padding: 52px 20px 0px; }
   .lp2-green-text h2 { font-size: 40px; }
-  .mockup-phone-real { width: 240px; }
-  .mockup-phone-screen-img { border-radius: 28px; }
+  .mockup-desktop-real { margin-bottom: -60px; }
+  .mockup-phone-real { width: 340px; }
+  .mockup-phone-screen-img { border-radius: 20px; }
 }
 
 /* Estilo compartilhado do dashboard (usuário logado) */
