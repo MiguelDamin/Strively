@@ -455,20 +455,19 @@ else:
 /* GREEN BLOCK */
 .lp2-green {
   background: #1DB954;
-  padding: 72px 40px 0; /* No bottom padding, let mockup overflow */
-  overflow: visible;
+  padding: 120px 5%; /* fully contained */
+  overflow: hidden;
 }
 .lp2-green-inner {
   max-width: 1080px;
   margin: 0 auto;
   display: flex;
   align-items: center;
-  gap: 60px;
+  gap: 5%;
 }
 .lp2-green-text {
-  flex: 1;
+  flex: 0 1 42%;
   min-width: 0;
-  padding-bottom: 72px; /* Pad text content since parent lacks bottom padding */
 }
 .lp2-green-text h2 {
   font-family: 'Bebas Neue', sans-serif;
@@ -502,7 +501,7 @@ else:
   border-color: #fff;
 }
 .lp2-green-right {
-  flex: 1.4;
+  flex: 0 1 53%;
   min-width: 0;
   display: flex;
   flex-direction: column;
@@ -514,8 +513,7 @@ else:
   width: 100%;
   position: relative;
   flex-shrink: 0;
-  z-index: 10;
-  margin-bottom: -160px; /* Overflow onto next section */
+  margin-bottom: 0px; /* Totally contained */
 }
 .mockup-desktop-real-inner {
   position: relative;
@@ -535,10 +533,10 @@ else:
    Exact values derived from image hole via script. */
 .mockup-screen-img {
   position: absolute;
-  top: 5.8%;
-  left: 1.6%;
-  width: 96.6%;
-  height: 66.8%;
+  top: 6.2%;
+  left: 2%;
+  width: 95.6%;
+  height: 65.8%;
   object-fit: cover;
   object-position: top center;
   display: block;
@@ -571,18 +569,19 @@ else:
 
 /* FEATURE SECTIONS */
 .lp2-feature {
-  padding: 240px 60px;
-  max-width: 1400px;
+  padding: 140px 5%;
+  max-width: 1200px;
   margin: 0 auto;
   display: flex;
   align-items: center;
-  gap: 160px;
+  justify-content: space-between;
+  gap: 6%;
 }
 .lp2-feature--left {
   flex-direction: row-reverse;
 }
 .lp2-feature-text {
-  flex: 1;
+  flex: 0 1 45%;
   min-width: 0;
 }
 .lp2-label {
@@ -607,17 +606,17 @@ else:
   color: #666;
   line-height: 1.75;
   font-weight: 300;
-  max-width: 420px;
 }
 .lp2-feature-phone {
-  flex: 0 0 auto;
+  flex: 0 1 45%;
   display: flex;
   justify-content: center;
 }
 
 /* PHONE MOCKUP REAL — frame layered over screenshot */
 .mockup-phone-real {
-  width: 800px; /* The phone itself only spans 44% of this width */
+  width: 100%;
+  max-width: 450px;
   position: relative;
   flex-shrink: 0;
 }
@@ -647,14 +646,9 @@ else:
 }
 
 /* RESPONSIVE */
-@media (max-width: 1300px) {
-  .lp2-feature { padding: 180px 48px; gap: 100px; }
-  .mockup-phone-real { width: 600px; }
-}
 @media (max-width: 1100px) {
-  .lp2-green-right { width: 90%; }
-  .lp2-feature { padding: 140px 40px; gap: 60px; }
-  .mockup-phone-real { width: 480px; }
+  .lp2-green-right { flex: 0 1 50%; }
+  .lp2-feature { padding: 100px 5%; gap: 6%; }
 }
 @media (max-width: 900px) {
   .lp2-green-inner {
@@ -663,19 +657,18 @@ else:
     text-align: center;
     align-items: center;
   }
-  .lp2-green-text { order: 1; padding-bottom: 0px; }
+  .lp2-green-text { order: 1; }
   .lp2-green-right { order: 2; width: 100%; max-width: 520px; }
-  .mockup-desktop-real { margin-bottom: -100px; }
   .lp2-badges { justify-content: center; }
   .lp2-feature, .lp2-feature--left {
     flex-direction: column;
     gap: 60px;
     text-align: center;
-    padding: 140px 32px 80px;
+    padding: 100px 32px 80px;
   }
   .lp2-feature-text p { max-width: 100%; }
   .lp2-feature-text h2 { font-size: 38px; }
-  .mockup-phone-real { width: 400px; }
+  .mockup-phone-real { max-width: 320px; }
 }
 @media (max-width: 640px) {
   .lp2-header { padding: 14px 20px; }
