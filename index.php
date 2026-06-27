@@ -268,13 +268,8 @@ else:
         </div>
       </div>
       <div class="lp2-green-right">
-        <!-- Real desktop frame layered over screenshot -->
-        <div class="mockup-desktop-real">
-          <div class="mockup-desktop-real-inner">
-            <img class="mockup-screen-img" src="/images/imagens-about/desktop_about_image.png" alt="Strively no desktop">
-            <img class="mockup-frame-img" src="/images/imagens-about/moldura_desktop.png" alt="">
-          </div>
-        </div>
+        <!-- Desktop single image -->
+        <img class="mockup-desktop-single" src="/images/imagens-about/moldura_desktop_completo.png" alt="Strively no desktop">
       </div>
     </div>
   </section>
@@ -287,10 +282,7 @@ else:
       <p>Receba planilhas do seu treinador, acompanhe cada sessão no calendário e marque seu progresso — tudo integrado ao Strava.</p>
     </div>
     <div class="lp2-feature-phone">
-      <div class="mockup-phone-real">
-        <img class="mockup-phone-screen-img" src="/images/imagens-about/treinos_about_image.jpg" alt="Treinos">
-        <img class="mockup-phone-frame-img" src="/images/imagens-about/mobile_moldura.png" alt="">
-      </div>
+      <img class="mockup-phone-single" src="/images/imagens-about/treinos_about_image_completo.png" alt="Treinos">
     </div>
   </section>
 
@@ -302,10 +294,7 @@ else:
       <p>Descubra corridas de rua e eventos próximos, adicione-os ao seu calendário e nunca mais perca uma prova.</p>
     </div>
     <div class="lp2-feature-phone">
-      <div class="mockup-phone-real">
-        <img class="mockup-phone-screen-img" src="/images/imagens-about/eventos_about_image.jpg" alt="Eventos">
-        <img class="mockup-phone-frame-img" src="/images/imagens-about/mobile_moldura.png" alt="">
-      </div>
+      <img class="mockup-phone-single" src="/images/imagens-about/eventos_about_image_completo.png" alt="Eventos">
     </div>
   </section>
 
@@ -317,10 +306,7 @@ else:
       <p>Publique conquistas, curta e comente os treinos de outros corredores. A motivação coletiva é o combustível extra que você precisava.</p>
     </div>
     <div class="lp2-feature-phone">
-      <div class="mockup-phone-real">
-        <img class="mockup-phone-screen-img" src="/images/imagens-about/comunidade_about_image.jpg" alt="Comunidade">
-        <img class="mockup-phone-frame-img" src="/images/imagens-about/mobile_moldura.png" alt="">
-      </div>
+      <img class="mockup-phone-single" src="/images/imagens-about/comunidade_about_image_completo.png" alt="Comunidade">
     </div>
   </section>
 
@@ -356,6 +342,7 @@ else:
   background: transparent !important;
   height: auto !important;
   padding: 0 !important;
+  box-shadow: none !important;
 }
 .lp2-brand {
   display: flex;
@@ -508,40 +495,13 @@ else:
   align-items: center;
 }
 
-/* DESKTOP MOCKUP REAL — frame layered over screenshot */
-.mockup-desktop-real {
+/* MOCKUP DESKTOP SINGLE */
+.mockup-desktop-single {
   width: 100%;
-  position: relative;
-  flex-shrink: 0;
-  margin-bottom: 0px; /* Totally contained */
-}
-.mockup-desktop-real-inner {
-  position: relative;
-  width: 100%;
-  display: block;
-}
-/* Frame establishes natural height of the container */
-.mockup-frame-img {
-  width: 100%;
+  max-width: 800px;
   height: auto;
   display: block;
-  position: relative;
-  z-index: 2;
-  pointer-events: none;
-}
-/* Screenshot is positioned absolutely behind the frame.
-   Exact values derived from image hole via script. */
-.mockup-screen-img {
-  position: absolute;
-  top: 6.2%;
-  left: 2%;
-  width: 95.6%;
-  height: 65.8%;
-  object-fit: cover;
-  object-position: top center;
-  display: block;
-  border-radius: 2px;
-  z-index: 1;
+  margin: 0 auto;
 }
 
 /* STORE BADGES */
@@ -608,41 +568,18 @@ else:
   font-weight: 300;
 }
 .lp2-feature-phone {
-  flex: 0 1 45%;
+  flex: 0 1 55%;
   display: flex;
   justify-content: center;
 }
 
-/* PHONE MOCKUP REAL — frame layered over screenshot */
-.mockup-phone-real {
+/* PHONE MOCKUP SINGLE */
+.mockup-phone-single {
   width: 100%;
   max-width: 450px;
-  position: relative;
-  flex-shrink: 0;
-}
-/* Frame image establishes the natural height */
-.mockup-phone-frame-img {
-  width: 100%;
   height: auto;
   display: block;
-  position: relative;
-  z-index: 2;
-  pointer-events: none;
-  drop-shadow: 0 40px 100px rgba(0,0,0,0.15);
-}
-/* Screenshot positioned absolutely behind the frame.
-   Exact values derived from image hole via script. */
-.mockup-phone-screen-img {
-  position: absolute;
-  top: 10.1%;
-  left: 26%;
-  width: 44.1%;
-  height: 84%;
-  object-fit: cover;
-  object-position: top center;
-  display: block;
-  border-radius: 36px;
-  z-index: 1;
+  filter: drop-shadow(0 40px 100px rgba(0,0,0,0.15));
 }
 
 /* RESPONSIVE */
