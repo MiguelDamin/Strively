@@ -229,7 +229,7 @@ else:
   <!-- SEC 1: HEADER ESTÁTICO -->
   <header class="lp2-header">
     <a href="/" class="lp2-brand">
-      <img src="/images/logo_verde.webp" alt="Strively" class="lp2-brand-logo" onerror="this.src='/images/icon-192.png'">
+      <img src="/images/logo.png" alt="Strively" class="lp2-brand-logo">
       <span>STRIVELY</span>
     </a>
     <nav class="lp2-nav">
@@ -243,7 +243,7 @@ else:
   <!-- SEC 2: HERO BRANCO -->
   <section class="lp2-hero">
     <div class="lp2-hero-inner">
-      <h1 class="lp2-hero-title">TREINE MELHOR.<br><span>CORRA MAIS LONGE.</span></h1>
+      <h1 class="lp2-hero-title">TREINE MELHOR.<br>CORRA MAIS LONGE.</h1>
       <p class="lp2-hero-sub">Conecte-se com treinadores, acompanhe sua evolução e descubra eventos de corrida — tudo no Strively.</p>
       <a href="/pages/cadastro.php" class="lp2-btn-cta">Criar conta grátis</a>
     </div>
@@ -256,16 +256,6 @@ else:
         <h2>Treine seus alunos<br>de graça.</h2>
         <p>Monte planilhas, acompanhe a evolução dos seus corredores e centralize toda a comunicação — sem custo algum.</p>
         <a href="/pages/cadastro.php" class="lp2-btn-ghost">Começar agora</a>
-      </div>
-      <div class="lp2-green-right">
-        <div class="mockup-desktop">
-          <div class="mockup-desktop-topbar"><span></span><span></span><span></span></div>
-          <div class="mockup-desktop-screen">
-            <img src="/images/imagens-about/desktop_about_image.png" alt="Strively no desktop">
-          </div>
-          <div class="mockup-desktop-stand"></div>
-          <div class="mockup-desktop-base"></div>
-        </div>
         <div class="lp2-badges">
           <div class="lp2-badge">
             <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
@@ -274,6 +264,15 @@ else:
           <div class="lp2-badge">
             <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M3.18 23.76c.3.17.64.22.99.14l12.82-7.41-2.76-2.76-11.05 10.03zm-1.81-20.1c-.23.3-.37.72-.37 1.26v17.16c0 .54.14.96.38 1.26l.07.07 9.61-9.61v-.23L1.44 3.59l-.07.07zm19.55 8.51l-2.74-1.58-3.06 3.06 3.06 3.06 2.75-1.59c.78-.45.78-1.5-.01-1.95zm-17.74 9.98l11.05-10.03-2.76-2.76-8.29 12.79z"/></svg>
             Google Play
+          </div>
+        </div>
+      </div>
+      <div class="lp2-green-right">
+        <!-- Real desktop frame layered over screenshot -->
+        <div class="mockup-desktop-real">
+          <div class="mockup-desktop-real-inner">
+            <img class="mockup-screen-img" src="/images/imagens-about/desktop_about_image.png" alt="Strively no desktop">
+            <img class="mockup-frame-img" src="/images/imagens-about/moldura_desktop.png" alt="">
           </div>
         </div>
       </div>
@@ -288,11 +287,9 @@ else:
       <p>Receba planilhas do seu treinador, acompanhe cada sessão no calendário e marque seu progresso — tudo integrado ao Strava.</p>
     </div>
     <div class="lp2-feature-phone">
-      <div class="mockup-phone">
-        <div class="mockup-phone-notch"></div>
-        <div class="mockup-phone-screen">
-          <img src="/images/imagens-about/treinos_about_image.jpg" alt="Treinos">
-        </div>
+      <div class="mockup-phone-real">
+        <img class="mockup-phone-screen-img" src="/images/imagens-about/treinos_about_image.jpg" alt="Treinos">
+        <img class="mockup-phone-frame-img" src="/images/imagens-about/mobile_moldura.png" alt="">
       </div>
     </div>
   </section>
@@ -305,11 +302,9 @@ else:
       <p>Descubra corridas de rua e eventos próximos, adicione-os ao seu calendário e nunca mais perca uma prova.</p>
     </div>
     <div class="lp2-feature-phone">
-      <div class="mockup-phone">
-        <div class="mockup-phone-notch"></div>
-        <div class="mockup-phone-screen">
-          <img src="/images/imagens-about/eventos_about_image.jpg" alt="Eventos">
-        </div>
+      <div class="mockup-phone-real">
+        <img class="mockup-phone-screen-img" src="/images/imagens-about/eventos_about_image.jpg" alt="Eventos">
+        <img class="mockup-phone-frame-img" src="/images/imagens-about/mobile_moldura.png" alt="">
       </div>
     </div>
   </section>
@@ -322,11 +317,9 @@ else:
       <p>Publique conquistas, curta e comente os treinos de outros corredores. A motivação coletiva é o combustível extra que você precisava.</p>
     </div>
     <div class="lp2-feature-phone">
-      <div class="mockup-phone">
-        <div class="mockup-phone-notch"></div>
-        <div class="mockup-phone-screen">
-          <img src="/images/imagens-about/comunidade_about_image.jpg" alt="Comunidade">
-        </div>
+      <div class="mockup-phone-real">
+        <img class="mockup-phone-screen-img" src="/images/imagens-about/comunidade_about_image.jpg" alt="Comunidade">
+        <img class="mockup-phone-frame-img" src="/images/imagens-about/mobile_moldura.png" alt="">
       </div>
     </div>
   </section>
@@ -379,7 +372,7 @@ else:
 }
 .lp2-nav {
   display: flex;
-  gap: 4px;
+  gap: 28px;
   align-items: center;
 }
 .lp2-nav-link {
@@ -387,12 +380,9 @@ else:
   text-decoration: none;
   font-size: 14px;
   font-weight: 500;
-  padding: 7px 14px;
-  border-radius: 50px;
-  transition: background 0.18s, color 0.18s;
+  transition: color 0.18s;
 }
 .lp2-nav-link:hover {
-  background: #f5f5f5;
   color: #111;
 }
 .lp2-btn-entrar {
@@ -412,7 +402,11 @@ else:
 /* HERO */
 .lp2-hero {
   background: #fff;
-  padding: 90px 24px 100px;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 24px;
   text-align: center;
 }
 .lp2-hero-inner {
@@ -421,14 +415,11 @@ else:
 }
 .lp2-hero-title {
   font-family: 'Bebas Neue', sans-serif;
-  font-size: 72px;
-  line-height: 1;
+  font-size: 54px;
+  line-height: 1.05;
   letter-spacing: 2px;
   color: #111;
-  margin: 0 0 12px;
-}
-.lp2-hero-title span {
-  color: #1DB954;
+  margin: 0 0 20px;
 }
 .lp2-hero-sub {
   font-size: 18px;
@@ -458,18 +449,20 @@ else:
 /* GREEN BLOCK */
 .lp2-green {
   background: #1DB954;
-  padding: 72px 40px;
+  padding: 72px 40px 0; /* no bottom padding — mockup spills below */
+  overflow: visible;
 }
 .lp2-green-inner {
-  max-width: 1020px;
+  max-width: 1080px;
   margin: 0 auto;
   display: flex;
-  align-items: center;
+  align-items: flex-end; /* align to bottom so overflow is below */
   gap: 60px;
 }
 .lp2-green-text {
   flex: 1;
   min-width: 0;
+  padding-bottom: 72px; /* compensate for zero bottom padding on section */
 }
 .lp2-green-text h2 {
   font-family: 'Bebas Neue', sans-serif;
@@ -496,6 +489,7 @@ else:
   padding: 11px 28px;
   border-radius: 50px;
   transition: background 0.2s, border-color 0.2s;
+  margin-bottom: 32px;
 }
 .lp2-btn-ghost:hover {
   background: rgba(255,255,255,0.15);
@@ -507,65 +501,41 @@ else:
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 24px;
 }
 
-/* DESKTOP MOCKUP */
-.mockup-desktop {
+/* DESKTOP MOCKUP REAL — frame layered over screenshot */
+.mockup-desktop-real {
   width: 100%;
-  max-width: 480px;
-  background: #1a1a1a;
-  border-radius: 12px 12px 4px 4px;
-  padding: 0;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.35);
   position: relative;
-  display: flex;
-  flex-direction: column;
+  /* spill 120px below the green section */
+  margin-bottom: -120px;
 }
-.mockup-desktop-topbar {
-  height: 28px;
-  background: #2a2a2a;
-  border-radius: 12px 12px 0 0;
-  display: flex;
-  align-items: center;
-  padding: 0 12px;
-  gap: 6px;
-  flex-shrink: 0;
-}
-.mockup-desktop-topbar span {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: #555;
-  display: inline-block;
-}
-.mockup-desktop-topbar span:nth-child(1) { background: #ff5f57; }
-.mockup-desktop-topbar span:nth-child(2) { background: #febc2e; }
-.mockup-desktop-topbar span:nth-child(3) { background: #28c840; }
-.mockup-desktop-screen {
+.mockup-desktop-real-inner {
+  position: relative;
   width: 100%;
-  aspect-ratio: 16/9;
-  overflow: hidden;
 }
-.mockup-desktop-screen img {
-  width: 100%;
-  height: 100%;
+/* Screenshot sits at the bottom, behind the frame */
+.mockup-screen-img {
+  /* Positioned to fill the screen area of the monitor frame.
+     The monitor PNG has roughly: 8.5% top bezel, 7% bottom bezel (above stand), 8% side bezels.
+     We position the screenshot absolutely within the frame image. */
+  position: absolute;
+  top: 8.5%;
+  left: 8.2%;
+  width: 83.6%;
+  height: 74.5%;
   object-fit: cover;
   display: block;
+  border-radius: 2px;
 }
-.mockup-desktop-stand {
-  width: 30%;
-  height: 18px;
-  background: #222;
-  margin: 0 auto;
-  clip-path: polygon(10% 0%, 90% 0%, 100% 100%, 0% 100%);
-}
-.mockup-desktop-base {
-  width: 55%;
-  height: 8px;
-  background: #333;
-  border-radius: 4px;
-  margin: 0 auto;
+/* Frame sits on top */
+.mockup-frame-img {
+  width: 100%;
+  height: auto;
+  display: block;
+  position: relative;
+  z-index: 2;
+  pointer-events: none;
 }
 
 /* STORE BADGES */
@@ -573,7 +543,7 @@ else:
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
-  justify-content: center;
+  margin-top: 28px;
 }
 .lp2-badge {
   display: flex;
@@ -637,38 +607,31 @@ else:
   justify-content: center;
 }
 
-/* PHONE MOCKUP */
-.mockup-phone {
-  width: 220px;
-  background: #1a1a1a;
-  border-radius: 36px;
-  padding: 14px 10px 20px;
-  box-shadow: 0 24px 64px rgba(0,0,0,0.22);
+/* PHONE MOCKUP REAL — frame layered over screenshot */
+.mockup-phone-real {
+  width: 240px;
   position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-}
-.mockup-phone-notch {
-  width: 60px;
-  height: 10px;
-  background: #333;
-  border-radius: 6px;
   flex-shrink: 0;
 }
-.mockup-phone-screen {
-  width: 100%;
-  aspect-ratio: 9/18;
-  background: #000;
-  border-radius: 22px;
-  overflow: hidden;
-}
-.mockup-phone-screen img {
-  width: 100%;
-  height: 100%;
+/* Screenshot fills the phone screen area.
+   The mobile_moldura.png has roughly: 12% top bezel (notch area), 10% bottom, 5.5% sides */
+.mockup-phone-screen-img {
+  position: absolute;
+  top: 11.5%;
+  left: 5.5%;
+  width: 89%;
+  height: 77%;
   object-fit: cover;
   display: block;
+  border-radius: 30px;
+}
+.mockup-phone-frame-img {
+  width: 100%;
+  height: auto;
+  display: block;
+  position: relative;
+  z-index: 2;
+  pointer-events: none;
 }
 
 /* RESPONSIVE */
@@ -677,9 +640,12 @@ else:
     flex-direction: column;
     gap: 40px;
     text-align: center;
+    align-items: center;
   }
-  .lp2-green-text { order: 1; }
-  .lp2-green-right { order: 2; width: 100%; }
+  .lp2-green-text { order: 1; padding-bottom: 0; }
+  .lp2-green-right { order: 2; width: 100%; max-width: 520px; }
+  .mockup-desktop-real { margin-bottom: -80px; }
+  .lp2-badges { justify-content: center; }
   .lp2-feature, .lp2-feature--left {
     flex-direction: column;
     gap: 40px;
@@ -688,17 +654,18 @@ else:
   }
   .lp2-feature-text p { max-width: 100%; }
   .lp2-feature-text h2 { font-size: 38px; }
-  .mockup-phone { width: 180px; }
+  .mockup-phone-real { width: 200px; }
 }
 @media (max-width: 640px) {
   .lp2-header { padding: 14px 20px; }
   .lp2-nav { display: none; }
-  .lp2-hero { padding: 56px 20px 64px; }
-  .lp2-hero-title { font-size: 52px; }
+  .lp2-hero { padding: 80px 20px; min-height: 100svh; }
+  .lp2-hero-title { font-size: 42px; }
   .lp2-hero-sub { font-size: 15px; }
-  .lp2-green { padding: 52px 20px; }
+  .lp2-green { padding: 52px 20px 0; }
   .lp2-green-text h2 { font-size: 40px; }
-  .mockup-desktop { max-width: 100%; }
+  .mockup-desktop-real { margin-bottom: -60px; }
+  .mockup-phone-real { width: 180px; }
 }
 
 /* Estilo compartilhado do dashboard (usuário logado) */
