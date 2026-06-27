@@ -351,6 +351,12 @@ else:
   border-bottom: 1px solid #f0f0f0;
   gap: 16px;
 }
+/* Override global 'header nav' green background from style.css */
+.lp2-header nav {
+  background: transparent !important;
+  height: auto !important;
+  padding: 0 !important;
+}
 .lp2-brand {
   display: flex;
   align-items: center;
@@ -449,20 +455,19 @@ else:
 /* GREEN BLOCK */
 .lp2-green {
   background: #1DB954;
-  padding: 72px 40px 0; /* no bottom padding — mockup spills below */
-  overflow: visible;
+  padding: 72px 40px 60px;
+  overflow: hidden;
 }
 .lp2-green-inner {
   max-width: 1080px;
   margin: 0 auto;
   display: flex;
-  align-items: flex-end; /* align to bottom so overflow is below */
+  align-items: center;
   gap: 60px;
 }
 .lp2-green-text {
   flex: 1;
   min-width: 0;
-  padding-bottom: 72px; /* compensate for zero bottom padding on section */
 }
 .lp2-green-text h2 {
   font-family: 'Bebas Neue', sans-serif;
@@ -507,28 +512,14 @@ else:
 .mockup-desktop-real {
   width: 100%;
   position: relative;
-  /* spill 120px below the green section */
-  margin-bottom: -120px;
+  flex-shrink: 0;
 }
 .mockup-desktop-real-inner {
   position: relative;
   width: 100%;
-}
-/* Screenshot sits at the bottom, behind the frame */
-.mockup-screen-img {
-  /* Positioned to fill the screen area of the monitor frame.
-     The monitor PNG has roughly: 8.5% top bezel, 7% bottom bezel (above stand), 8% side bezels.
-     We position the screenshot absolutely within the frame image. */
-  position: absolute;
-  top: 8.5%;
-  left: 8.2%;
-  width: 83.6%;
-  height: 74.5%;
-  object-fit: cover;
   display: block;
-  border-radius: 2px;
 }
-/* Frame sits on top */
+/* Frame establishes natural height of the container */
 .mockup-frame-img {
   width: 100%;
   height: auto;
@@ -536,6 +527,20 @@ else:
   position: relative;
   z-index: 2;
   pointer-events: none;
+}
+/* Screenshot is positioned absolutely behind the frame, filled to the monitor screen area.
+   moldura_desktop.png: screen area starts ~7% from top, ~7.5% from left, width ~85%, height ~68% of total image */
+.mockup-screen-img {
+  position: absolute;
+  top: 7%;
+  left: 7.5%;
+  width: 85%;
+  height: 68%;
+  object-fit: cover;
+  object-position: top center;
+  display: block;
+  border-radius: 2px;
+  z-index: 1;
 }
 
 /* STORE BADGES */
@@ -563,12 +568,12 @@ else:
 
 /* FEATURE SECTIONS */
 .lp2-feature {
-  padding: 88px 40px;
-  max-width: 1020px;
+  padding: 120px 60px;
+  max-width: 1100px;
   margin: 0 auto;
   display: flex;
   align-items: center;
-  gap: 72px;
+  gap: 100px;
 }
 .lp2-feature--left {
   flex-direction: row-reverse;
@@ -609,22 +614,11 @@ else:
 
 /* PHONE MOCKUP REAL — frame layered over screenshot */
 .mockup-phone-real {
-  width: 240px;
+  width: 260px;
   position: relative;
   flex-shrink: 0;
 }
-/* Screenshot fills the phone screen area.
-   The mobile_moldura.png has roughly: 12% top bezel (notch area), 10% bottom, 5.5% sides */
-.mockup-phone-screen-img {
-  position: absolute;
-  top: 11.5%;
-  left: 5.5%;
-  width: 89%;
-  height: 77%;
-  object-fit: cover;
-  display: block;
-  border-radius: 30px;
-}
+/* Frame image establishes the natural height */
 .mockup-phone-frame-img {
   width: 100%;
   height: auto;
@@ -632,6 +626,20 @@ else:
   position: relative;
   z-index: 2;
   pointer-events: none;
+}
+/* Screenshot positioned absolutely behind the frame.
+   mobile_moldura.png approx: top notch area ~13.5%, bottom ~7.5%, sides ~5.5% */
+.mockup-phone-screen-img {
+  position: absolute;
+  top: 13.5%;
+  left: 5.5%;
+  width: 89%;
+  height: 79%;
+  object-fit: cover;
+  object-position: top center;
+  display: block;
+  border-radius: 28px;
+  z-index: 1;
 }
 
 /* RESPONSIVE */
@@ -642,19 +650,18 @@ else:
     text-align: center;
     align-items: center;
   }
-  .lp2-green-text { order: 1; padding-bottom: 0; }
+  .lp2-green-text { order: 1; }
   .lp2-green-right { order: 2; width: 100%; max-width: 520px; }
-  .mockup-desktop-real { margin-bottom: -80px; }
   .lp2-badges { justify-content: center; }
   .lp2-feature, .lp2-feature--left {
     flex-direction: column;
-    gap: 40px;
+    gap: 48px;
     text-align: center;
-    padding: 60px 24px;
+    padding: 80px 24px;
   }
   .lp2-feature-text p { max-width: 100%; }
   .lp2-feature-text h2 { font-size: 38px; }
-  .mockup-phone-real { width: 200px; }
+  .mockup-phone-real { width: 220px; }
 }
 @media (max-width: 640px) {
   .lp2-header { padding: 14px 20px; }
@@ -662,9 +669,8 @@ else:
   .lp2-hero { padding: 80px 20px; min-height: 100svh; }
   .lp2-hero-title { font-size: 42px; }
   .lp2-hero-sub { font-size: 15px; }
-  .lp2-green { padding: 52px 20px 0; }
+  .lp2-green { padding: 52px 20px 48px; }
   .lp2-green-text h2 { font-size: 40px; }
-  .mockup-desktop-real { margin-bottom: -60px; }
   .mockup-phone-real { width: 180px; }
 }
 
