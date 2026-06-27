@@ -217,368 +217,498 @@ if (isset($_SESSION['id'])):
 
 <?php 
 // =====================================================
-// 2. VISITANTE — LANDING PAGE PREMIUM
+// 2. VISITANTE — LANDING PAGE NOVA
 // =====================================================
 else: 
     $tituloPagina = "Corra Mais Longe";
     include 'components/head.php';
-
-    // Stats para LP
-    $totalCorredores = $pdo->query("SELECT COUNT(*) FROM usuarios WHERE perfil = 'corredor'")->fetchColumn();
-    $totalEventos = $pdo->query("SELECT COUNT(*) FROM eventos WHERE status = 'ativo'")->fetchColumn();
-    $totalTreinadores = $pdo->query("SELECT COUNT(*) FROM treinadores WHERE status = 'aprovado'")->fetchColumn();
-
-    // Query para o carrossel de visitantes
-    $stmtEventosCarrossel = $pdo->prepare("
-        SELECT id, nome, cidade, data_evento, banner 
-        FROM eventos 
-        WHERE status = 'ativo' AND data_evento >= CURRENT_DATE 
-        ORDER BY data_evento ASC 
-        LIMIT 10
-    ");
-    $stmtEventosCarrossel->execute();
-    $eventosCarrossel = $stmtEventosCarrossel->fetchAll();
-
-    // Treinadores
-    $stmtTreinadoresLP = $pdo->prepare("SELECT u.nome, u.foto, u.cidade, t.especialidade FROM treinadores t JOIN usuarios u ON u.id = t.usuario_id WHERE t.status = 'aprovado' ORDER BY t.id ASC LIMIT 4");
-    $stmtTreinadoresLP->execute();
-    $treinadoresHome = $stmtTreinadoresLP->fetchAll();
 ?>
 
+<div class="lp2">
 
+  <!-- SEC 1: HEADER ESTÁTICO -->
+  <header class="lp2-header">
+    <a href="/" class="lp2-brand">
+      <img src="/images/logo_verde.webp" alt="Strively" class="lp2-brand-logo" onerror="this.src='/images/icon-192.png'">
+      <span>STRIVELY</span>
+    </a>
+    <nav class="lp2-nav">
+      <a href="/pages/treinos.php" class="lp2-nav-link">Treinos</a>
+      <a href="/pages/eventos.php" class="lp2-nav-link">Eventos</a>
+      <a href="/pages/comunidade.php" class="lp2-nav-link">Comunidade</a>
+    </nav>
+    <a href="/pages/login.php" class="lp2-btn-entrar">Entrar</a>
+  </header>
 
+  <!-- SEC 2: HERO BRANCO -->
+  <section class="lp2-hero">
+    <div class="lp2-hero-inner">
+      <h1 class="lp2-hero-title">TREINE MELHOR.<br><span>CORRA MAIS LONGE.</span></h1>
+      <p class="lp2-hero-sub">Conecte-se com treinadores, acompanhe sua evolução e descubra eventos de corrida — tudo no Strively.</p>
+      <a href="/pages/cadastro.php" class="lp2-btn-cta">Criar conta grátis</a>
+    </div>
+  </section>
 
-<div class="lp">
-    <div class="hero-lp">
-        <nav class="hero-nav-lp">
-          <!-- Logo -->
-          <a href="/" style="display:flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0;">
-            <img class="hero-nav-logo-desktop" src="/images/icon-192.png" style="width:38px;height:38px;border-radius:10px;object-fit:contain;">
-            <img class="hero-nav-logo-mobile" src="/assets/img/icon-192.png" style="width:38px;height:38px;border-radius:10px;object-fit:contain;display:none;">
-            <span class="hero-nav-brand-text" style="font-family:'Bebas Neue',sans-serif;font-size:21px;letter-spacing:3px;">STRIVELY</span>
-          </a>
-          <!-- Links -->
-          <div class="hero-nav-links" style="display:flex;align-items:center;gap:8px;">
-            <a href="/pages/eventos.php" class="hero-nav-link" style="color:#555;text-decoration:none;font-size:14px;font-weight:500;padding:8px 16px;border-radius:50px;transition:background 0.2s;" onmouseover="this.style.background='rgba(0,0,0,0.05)'" onmouseout="this.style.background='transparent'">Eventos</a>
-            <a href="/pages/comunidade.php" class="hero-nav-link" style="color:#555;text-decoration:none;font-size:14px;font-weight:500;padding:8px 16px;border-radius:50px;transition:background 0.2s;" onmouseover="this.style.background='rgba(0,0,0,0.05)'" onmouseout="this.style.background='transparent'">Comunidade</a>
-            <a href="/pages/login.php" class="hero-nav-login" style="background:#1DB954;color:#fff;text-decoration:none;font-size:14px;font-weight:600;padding:8px 20px;border-radius:50px;transition:all 0.25s;" onmouseover="this.style.background='#17a34a'" onmouseout="this.style.background='#1DB954'">Entrar</a>
+  <!-- SEC 3: VERDE — TREINADORES + DESKTOP MOCKUP -->
+  <section class="lp2-green">
+    <div class="lp2-green-inner">
+      <div class="lp2-green-text">
+        <h2>Treine seus alunos<br>de graça.</h2>
+        <p>Monte planilhas, acompanhe a evolução dos seus corredores e centralize toda a comunicação — sem custo algum.</p>
+        <a href="/pages/cadastro.php" class="lp2-btn-ghost">Começar agora</a>
+      </div>
+      <div class="lp2-green-right">
+        <div class="mockup-desktop">
+          <div class="mockup-desktop-topbar"><span></span><span></span><span></span></div>
+          <div class="mockup-desktop-screen">
+            <img src="/images/imagens-about/desktop_about_image.png" alt="Strively no desktop">
           </div>
-        </nav>
-        <div class="hero-lp-content">
-            <div class="hero-chip"><div class="hero-chip-dot"></div><span>Plataforma para corredores</span></div>
-            <h1 class="lp-h1">Corra mais longe<span class="lp-h1-destaque">com quem entende</span></h1>
-            <p class="lp-sub">Conecte-se com treinadores, acompanhe sua evolução, descubra eventos perto de você e faça parte de uma comunidade de corredores.</p>
-            <div class="hero-btns-lp">
-                <a href="/pages/cadastro.php" class="lp-btn-white">Criar conta grátis</a>
-                <a href="/pages/eventos.php" class="lp-btn-outline">Ver eventos</a>
-            </div>
+          <div class="mockup-desktop-stand"></div>
+          <div class="mockup-desktop-base"></div>
         </div>
+        <div class="lp2-badges">
+          <div class="lp2-badge">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+            App Store
+          </div>
+          <div class="lp2-badge">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M3.18 23.76c.3.17.64.22.99.14l12.82-7.41-2.76-2.76-11.05 10.03zm-1.81-20.1c-.23.3-.37.72-.37 1.26v17.16c0 .54.14.96.38 1.26l.07.07 9.61-9.61v-.23L1.44 3.59l-.07.07zm19.55 8.51l-2.74-1.58-3.06 3.06 3.06 3.06 2.75-1.59c.78-.45.78-1.5-.01-1.95zm-17.74 9.98l11.05-10.03-2.76-2.76-8.29 12.79z"/></svg>
+            Google Play
+          </div>
+        </div>
+      </div>
     </div>
+  </section>
 
-    <!-- STATS LP -->
-    <div class="lp-stats">
-        <div class="lp-stat"><div class="lp-stat-num">+<?= $totalCorredores ?></div><div class="lp-stat-label">Corredores</div></div>
-        <div class="lp-stat"><div class="lp-stat-num">+<?= $totalEventos ?></div><div class="lp-stat-label">Eventos</div></div>
-        <div class="lp-stat"><div class="lp-stat-num">+<?= $totalTreinadores ?></div><div class="lp-stat-label">Treinadores</div></div>
+  <!-- SEC 4: TREINOS -->
+  <section class="lp2-feature lp2-feature--right">
+    <div class="lp2-feature-text">
+      <span class="lp2-label">Treinos</span>
+      <h2>Treine com sabedoria,<br>treine com STRIVELY.</h2>
+      <p>Receba planilhas do seu treinador, acompanhe cada sessão no calendário e marque seu progresso — tudo integrado ao Strava.</p>
     </div>
-
-    <!-- FEATURES LP -->
-    <div class="section-lp" style="padding-top: 88px;">
-        <div class="section-lp-header">
-            <span class="lp-section-label">O que é o Strively</span>
-            <h2 class="lp-section-title">Tudo que um corredor precisa</h2>
-            <p class="lp-section-sub">Do treino ao evento, do treinador à comunidade — organize sua vida de corredor.</p>
+    <div class="lp2-feature-phone">
+      <div class="mockup-phone">
+        <div class="mockup-phone-notch"></div>
+        <div class="mockup-phone-screen">
+          <img src="/images/imagens-about/treinos_about_image.jpg" alt="Treinos">
         </div>
-        <div class="lp-features">
-            <div class="lp-feat">
-                <div class="lp-feat-icon"><svg viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5C3.9 3 3 3.9 3 5v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg></div>
-                <div class="lp-feat-title">Calendário de treinos</div>
-                <div class="lp-feat-desc">Receba treinos do seu treinador e acompanhe sua evolução semana a semana.</div>
-            </div>
-            <div class="lp-feat">
-                <div class="lp-feat-icon"><svg viewBox="0 0 24 24"><path d="M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.63 4.39 4.94A5.01 5.01 0 0 0 11 14.9V17H9v2h6v-2h-2v-2.1a5.01 5.01 0 0 0 3.61-2.96C19.08 11.63 21 9.55 21 7V7c0-1.1-.9-2-2-2z"/></svg></div>
-                <div class="lp-feat-title">Eventos de corrida</div>
-                <div class="lp-feat-desc">Descubra provas perto de você e adicione ao seu calendário com um clique.</div>
-            </div>
-            <div class="lp-feat">
-                <div class="lp-feat-icon"><svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg></div>
-                <div class="lp-feat-title">Treinadores</div>
-                <div class="lp-feat-desc">Encontre o treinador ideal e receba planilhas personalizadas para você.</div>
-            </div>
-            <div class="lp-feat">
-                <div class="lp-feat-icon"><svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg></div>
-                <div class="lp-feat-title">Comunidade</div>
-                <div class="lp-feat-desc">Compartilhe seus treinos, conquistas e se inspire com outros corredores.</div>
-            </div>
-        </div>
+      </div>
     </div>
+  </section>
 
-    <!-- EVENTOS LP (CARROSSEL PREMIUM) -->
-    <div class="section-lp-alt" style="background: #fff;">
-        <div class="section-lp-header">
-            <span class="lp-section-label">Próximas corridas</span>
-            <h2 class="lp-section-title">Eventos em destaque</h2>
-        </div>
-        
-        <?php if (!empty($eventosCarrossel)): ?>
-        <div class="netflix-section">
-            <div class="nc-container">
-                <?php if (count($eventosCarrossel) > 1): ?>
-                    <button class="nc-nav nc-prev" onclick="ncMover(-1)">
-                        <svg viewBox="0 0 24 24"><path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/></svg>
-                    </button>
-                <?php endif; ?>
-                <div class="nc-track" id="ncTrack">
-                    <?php foreach ($eventosCarrossel as $i => $ev): ?>
-                        <?php 
-                            if (empty($ev['banner'])) {
-                              $capa = '';
-                            } elseif (strpos($ev['banner'], 'http') === 0 || strpos($ev['banner'], '/') === 0) {
-                              $capa = $ev['banner'];
-                            } else {
-                              $capa = '/' . $ev['banner'];
-                            }
-                            $dt = new DateTime($ev['data_evento']);
-                        ?>
-                        <div class="nc-card" data-index="<?= $i ?>" onclick="ncIrPara(<?= $i ?>)">
-                            <div class="nc-top" <?= $capa ? "style=\"background-image:url('$capa')\"" : "" ?>>
-                            </div>
-                            <div class="nc-base">
-                                <h4><?= htmlspecialchars($ev['nome']) ?></h4>
-                                <p class="nc-loc">📍 <?= htmlspecialchars($ev['cidade']) ?></p>
-                                <p class="nc-dat">📅 <?= $dt->format('d/m/Y') ?></p>
-                            </div>
-                        </div>
-                    <?php endforeach; ?>
-                </div>
-                <?php if (count($eventosCarrossel) > 1): ?>
-                    <button class="nc-nav nc-next" onclick="ncMover(1)">
-                        <svg viewBox="0 0 24 24"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg>
-                    </button>
-                <?php endif; ?>
-            </div>
-        </div>
-        <?php endif; ?>
-
-        <div style="
-          text-align: center;
-          margin-top: 36px;
-          margin-bottom: 8px;
-          padding: 0 24px 16px;
-          width: 100%;
-          box-sizing: border-box;
-        ">
-          <a href="/pages/eventos.php"
-             onmouseover="this.style.background='#1DB954';this.style.color='#fff'"
-             onmouseout="this.style.background='transparent';this.style.color='#1DB954'"
-             style="
-               display: inline-flex;
-               align-items: center;
-               gap: 8px;
-               background: transparent;
-               color: #1DB954;
-               border: 2px solid #1DB954;
-               border-radius: 50px;
-               padding: 12px 32px;
-               font-family: 'Outfit', sans-serif;
-               font-size: 0.9rem;
-               font-weight: 700;
-               text-decoration: none;
-               transition: all 0.25s;
-               letter-spacing: 0.3px;
-               white-space: nowrap;
-             ">
-            Ver todos os eventos →
-          </a>
-        </div>
+  <!-- SEC 5: EVENTOS -->
+  <section class="lp2-feature lp2-feature--left">
+    <div class="lp2-feature-text">
+      <span class="lp2-label">Eventos</span>
+      <h2>Fique por Dentro<br>de Eventos.</h2>
+      <p>Descubra corridas de rua e eventos próximos, adicione-os ao seu calendário e nunca mais perca uma prova.</p>
     </div>
-
-    <!-- TREINADORES LP -->
-    <div class="section-lp">
-        <div class="section-lp-header">
-            <span class="lp-section-label">Treinadores</span>
-            <h2 class="lp-section-title">Encontre seu treinador ideal</h2>
+    <div class="lp2-feature-phone">
+      <div class="mockup-phone">
+        <div class="mockup-phone-notch"></div>
+        <div class="mockup-phone-screen">
+          <img src="/images/imagens-about/eventos_about_image.jpg" alt="Eventos">
         </div>
-        <div class="lp-treinadores-grid">
-            <?php foreach ($treinadoresHome as $tr): ?>
-            <div class="lp-treinador-card">
-                <div class="treinador-avatar">
-                   <?php if (!empty($tr['foto'])): ?>
-                        <img src="<?= strpos($tr['foto'], 'http') === 0 ? htmlspecialchars($tr['foto']) : '/' . htmlspecialchars($tr['foto']) ?>" alt="<?= htmlspecialchars($tr['nome']) ?>">
-                    <?php else: ?>
-                        <svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
-                    <?php endif; ?>
-                </div>
-                <div class="treinador-nome"><?= htmlspecialchars(explode(' ', $tr['nome'])[0] . ' ' . (explode(' ', $tr['nome'])[1] ?? '')) ?></div>
-                <div class="treinador-esp"><?= htmlspecialchars($tr['especialidade'] ?? '') ?></div>
-                <span class="lp-treinador-badge">✓ Verificado</span>
-            </div>
-            <?php endforeach; ?>
-        </div>
-        <div style="text-align:center;margin-top:32px;">
-            <a href="/pages/cadastro.php" style="
-                display:inline-flex;align-items:center;gap:8px;
-                background:transparent;color:#1DB954;
-                border:2px solid #1DB954;border-radius:50px;
-                padding:12px 28px;font-family:'Outfit',sans-serif;
-                font-size:0.9rem;font-weight:700;text-decoration:none;
-                transition:all 0.25s;letter-spacing:0.3px;
-            " onmouseover="this.style.background='#1DB954';this.style.color='#fff'" 
-               onmouseout="this.style.background='transparent';this.style.color='#1DB954'">
-                Ver todos os treinadores →
-            </a>
-        </div>
+      </div>
     </div>
+  </section>
 
-    <!-- CTA LP -->
-    <div class="lp-cta">
-        <h2 class="lp-cta-title">Pronto para correr mais longe?</h2>
-        <p class="lp-cta-sub">Crie sua conta grátis e comece hoje mesmo.</p>
-        <a href="/pages/cadastro.php" class="lp-btn-green">Criar conta grátis</a>
+  <!-- SEC 6: COMUNIDADE -->
+  <section class="lp2-feature lp2-feature--right">
+    <div class="lp2-feature-text">
+      <span class="lp2-label">Comunidade</span>
+      <h2>Persiga seus amigos e compartilhe seus treinos.</h2>
+      <p>Publique conquistas, curta e comente os treinos de outros corredores. A motivação coletiva é o combustível extra que você precisava.</p>
     </div>
-
-    <!-- FOOTER LP -->
-    <div class="lp-footer">
-        <span class="lp-footer-brand">Strively</span>
-        <div class="footer-links">
-            <a href="/pages/eventos.php" class="lp-footer-link">Eventos</a>
-            <a href="/pages/buscar-treinador.php" class="lp-footer-link">Treinadores</a>
-            <a href="/pages/login.php" class="lp-footer-link">Login</a>
+    <div class="lp2-feature-phone">
+      <div class="mockup-phone">
+        <div class="mockup-phone-notch"></div>
+        <div class="mockup-phone-screen">
+          <img src="/images/imagens-about/comunidade_about_image.jpg" alt="Comunidade">
         </div>
+      </div>
     </div>
+  </section>
+
+  <?php include_once __DIR__ . '/components/footer.php'; ?>
 </div>
 
 <?php endif; // Fim do if/else principal ?>
 
+
 <style>
-/* ========== LANDING PAGE PREMIUM CSS ========== */
-.lp {
+/* =============================================
+   LPv2 — STRIVELY LANDING PAGE
+   ============================================= */
+.lp2 {
   font-family: 'Outfit', sans-serif;
-  background: #fafafa;
-  width: 100%;
-  overflow-x: hidden;
   color: #1a1a1a;
+  background: #fff;
+  overflow-x: hidden;
 }
 
-/* Cards do carrossel não podem criar overflow */
-.nc-card {
+/* HEADER */
+.lp2-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 40px;
+  background: #fff;
+  border-bottom: 1px solid #f0f0f0;
+  gap: 16px;
+}
+.lp2-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
   flex-shrink: 0;
-  max-width: 100%;
 }
-.netflix-section {
+.lp2-brand-logo {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  border-radius: 9px;
+}
+.lp2-brand span {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 20px;
+  letter-spacing: 3px;
+  color: #111;
+}
+.lp2-nav {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+.lp2-nav-link {
+  color: #555;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 7px 14px;
+  border-radius: 50px;
+  transition: background 0.18s, color 0.18s;
+}
+.lp2-nav-link:hover {
+  background: #f5f5f5;
+  color: #111;
+}
+.lp2-btn-entrar {
+  background: #1DB954;
+  color: #fff;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 9px 22px;
+  border-radius: 50px;
+  transition: background 0.2s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.lp2-btn-entrar:hover { background: #17a34a; }
+
+/* HERO */
+.lp2-hero {
+  background: #fff;
+  padding: 90px 24px 100px;
+  text-align: center;
+}
+.lp2-hero-inner {
+  max-width: 600px;
+  margin: 0 auto;
+}
+.lp2-hero-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 72px;
+  line-height: 1;
+  letter-spacing: 2px;
+  color: #111;
+  margin: 0 0 12px;
+}
+.lp2-hero-title span {
+  color: #1DB954;
+}
+.lp2-hero-sub {
+  font-size: 18px;
+  color: #666;
+  line-height: 1.7;
+  max-width: 480px;
+  margin: 0 auto 36px;
+  font-weight: 300;
+}
+.lp2-btn-cta {
+  display: inline-block;
+  background: #1DB954;
+  color: #fff;
+  text-decoration: none;
+  font-size: 16px;
+  font-weight: 700;
+  padding: 16px 40px;
+  border-radius: 50px;
+  transition: background 0.2s, transform 0.2s;
+  box-shadow: 0 6px 24px rgba(29,185,84,0.28);
+}
+.lp2-btn-cta:hover {
+  background: #17a34a;
+  transform: translateY(-2px);
+}
+
+/* GREEN BLOCK */
+.lp2-green {
+  background: #1DB954;
+  padding: 72px 40px;
+}
+.lp2-green-inner {
+  max-width: 1020px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 60px;
+}
+.lp2-green-text {
+  flex: 1;
+  min-width: 0;
+}
+.lp2-green-text h2 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 52px;
+  color: #fff;
+  letter-spacing: 1.5px;
+  line-height: 1.05;
+  margin: 0 0 16px;
+}
+.lp2-green-text p {
+  color: rgba(255,255,255,0.85);
+  font-size: 16px;
+  line-height: 1.7;
+  margin: 0 0 28px;
+  font-weight: 300;
+}
+.lp2-btn-ghost {
+  display: inline-block;
+  border: 2px solid rgba(255,255,255,0.7);
+  color: #fff;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 11px 28px;
+  border-radius: 50px;
+  transition: background 0.2s, border-color 0.2s;
+}
+.lp2-btn-ghost:hover {
+  background: rgba(255,255,255,0.15);
+  border-color: #fff;
+}
+.lp2-green-right {
+  flex: 1.4;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+/* DESKTOP MOCKUP */
+.mockup-desktop {
   width: 100%;
+  max-width: 480px;
+  background: #1a1a1a;
+  border-radius: 12px 12px 4px 4px;
+  padding: 0;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.35);
   position: relative;
-  padding: 0 0 40px 0;
-  /* SEM overflow de nenhum tipo */
+  display: flex;
+  flex-direction: column;
 }
-.hero-lp { background: linear-gradient(160deg, #1DB954 0%, #17a34a 40%, #0f8a3e 100%); padding: 100px 32px 84px; text-align: center; position: relative; overflow: hidden; }
-.hero-lp::before { content: ''; position: absolute; top: -120px; right: -80px; width: 380px; height: 380px; background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%); border-radius: 50%; pointer-events: none; }
-.hero-nav-lp { display: flex; align-items: center; justify-content: space-between; max-width: 700px; margin: 0 auto; position: fixed; top: 16px; left: 50%; transform: translateX(-50%); z-index: 1000; background: #fff; border: 1px solid rgba(0,0,0,0.08); padding: 10px 24px; box-sizing: border-box; border-radius: 50px; width: 92%; transition: all 0.3s ease; box-shadow: 0 4px 20px rgba(0,0,0,0.06); }
-.hero-nav-brand-text { color: #111; }
-.hero-nav-logo-desktop { display: block; }
-.hero-nav-logo-mobile { display: none; }
-.hero-nav-lp.hero-nav-scrolled { background: #fff; border-color: rgba(0,0,0,0.08); box-shadow: 0 4px 24px rgba(0,0,0,0.1); }
-.hero-nav-lp.hero-nav-scrolled a span { color: #111 !important; }
-.hero-nav-lp.hero-nav-scrolled .hero-nav-link { color: #555 !important; }
-.hero-nav-lp.hero-nav-scrolled .hero-nav-login { background: #1DB954 !important; color: #fff !important; border-color: #1DB954 !important; }
-.hero-nav-brand img { width: 40px; height: 40px; object-fit: contain; border-radius: 10px; }
-.hero-nav-brand span { color: #fff; font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 3px; }
-.hero-nav-links { display: flex; gap: 8px; align-items: center; }
-.hero-nav-link { color: rgba(255,255,255,0.85); text-decoration: none; font-size: 14px; font-weight: 500; padding: 8px 16px; border-radius: 50px; transition: all 0.2s; }
-.hero-nav-link:hover { background: rgba(255,255,255,0.12); color: #fff; }
-.hero-nav-login { background: rgba(255,255,255,0.15); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); border: 1px solid rgba(255,255,255,0.25); color: #fff; text-decoration: none; font-size: 14px; font-weight: 600; padding: 8px 20px; border-radius: 50px; transition: all 0.25s; }
-.hero-nav-login:hover { background: #fff; color: #1DB954; border-color: #fff; }
-.hero-lp-content { position: relative; z-index: 2; max-width: 560px; margin: 0 auto; }
-.hero-chip { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.13); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.2); border-radius: 50px; padding: 6px 16px; margin-bottom: 28px; }
-.hero-chip-dot { width: 7px; height: 7px; border-radius: 50%; background: #fff; animation: chipPulse 2s ease-in-out infinite; }
-@keyframes chipPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
-.hero-chip span { color: rgba(255,255,255,0.9); font-size: 12px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; }
-.lp-h1 { color: #fff; font-family: 'Bebas Neue', sans-serif; font-size: 62px; line-height: 1.02; margin-bottom: 6px; letter-spacing: 1.5px; }
-.lp-h1-destaque { color: #0d0d0d; font-family: 'Bebas Neue', sans-serif; font-size: 62px; line-height: 1.02; letter-spacing: 1.5px; display: block; }
-.lp-sub { color: rgba(255,255,255,0.85); font-size: 17px; line-height: 1.75; max-width: 480px; margin: 20px auto 40px; font-weight: 300; }
-.hero-btns-lp { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
-.lp-btn-white { background: #fff; color: #1DB954; border: none; border-radius: 50px; padding: 15px 32px; font-size: 15px; font-weight: 700; cursor: pointer; font-family: 'Outfit', sans-serif; text-decoration: none; display: inline-block; transition: all 0.25s; box-shadow: 0 4px 16px rgba(0,0,0,0.1); }
-.lp-btn-outline { background: transparent; color: #fff; border: 1.5px solid rgba(255,255,255,0.45); border-radius: 50px; padding: 15px 32px; font-size: 15px; font-weight: 600; cursor: pointer; text-decoration: none; display: inline-block; transition: all 0.25s; }
-.lp-btn-white:hover, .lp-btn-outline:hover { transform: translateY(-2px); }
-
-.lp-stats { display: grid; grid-template-columns: repeat(3, 1fr); max-width: 680px; margin: -32px auto 0; position: relative; z-index: 3; background: #fff; border-radius: 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.08); overflow: hidden; }
-.lp-stat { padding: 28px 16px; text-align: center; position: relative; }
-.lp-stat:not(:last-child)::after { content: ''; position: absolute; right: 0; top: 20%; height: 60%; width: 1px; background: #eee; }
-.lp-stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 38px; color: #1DB954; line-height: 1; }
-.lp-stat-label { font-size: 13px; color: #999; margin-top: 4px; font-weight: 500; }
-
-.section-lp { padding: 72px 28px; background: #fff; }
-.section-lp-alt {
-  padding: 72px 28px;
-  background: #f5f6f5;
+.mockup-desktop-topbar {
+  height: 28px;
+  background: #2a2a2a;
+  border-radius: 12px 12px 0 0;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.mockup-desktop-topbar span {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #555;
+  display: inline-block;
+}
+.mockup-desktop-topbar span:nth-child(1) { background: #ff5f57; }
+.mockup-desktop-topbar span:nth-child(2) { background: #febc2e; }
+.mockup-desktop-topbar span:nth-child(3) { background: #28c840; }
+.mockup-desktop-screen {
   width: 100%;
-  box-sizing: border-box;
+  aspect-ratio: 16/9;
+  overflow: hidden;
 }
-.section-lp-header { text-align: center; max-width: 540px; margin: 0 auto 36px; }
-.lp-section-label { font-size: 12px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase; color: #1DB954; margin-bottom: 10px; display: block; }
-.lp-section-title { font-family: 'Bebas Neue', sans-serif; font-size: 38px; color: #0d0d0d; margin-bottom: 12px; letter-spacing: 1px; line-height: 1.1; }
-.lp-section-sub { font-size: 16px; color: #666; line-height: 1.7; font-weight: 300; }
+.mockup-desktop-screen img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.mockup-desktop-stand {
+  width: 30%;
+  height: 18px;
+  background: #222;
+  margin: 0 auto;
+  clip-path: polygon(10% 0%, 90% 0%, 100% 100%, 0% 100%);
+}
+.mockup-desktop-base {
+  width: 55%;
+  height: 8px;
+  background: #333;
+  border-radius: 4px;
+  margin: 0 auto;
+}
 
-.lp-features { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; max-width: 640px; margin: 0 auto; }
-.lp-feat { background: #f9faf9; border-radius: 18px; padding: 28px 22px; border: 1px solid #eee; transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.28s ease, border-color 0.28s ease; cursor: default; will-change: transform; }
-.lp-feat:hover { transform: translateY(-8px) scale(1.02); box-shadow: 0 16px 40px rgba(29,185,84,0.15); border-color: rgba(29,185,84,0.35); }
-.lp-feat:hover .lp-feat-icon { background: #1DB954; transition: background 0.25s ease; }
-.lp-feat:hover .lp-feat-icon svg { fill: #fff; transition: fill 0.25s ease; }
-.lp-feat:hover .lp-feat-title { color: #1DB954; transition: color 0.2s ease; }
-.lp-feat-touched { transform: translateY(-5px) scale(1.02) !important; box-shadow: 0 12px 30px rgba(29,185,84,0.15) !important; border-color: rgba(29,185,84,0.35) !important; }
-.lp-feat-touched .lp-feat-icon { background: #1DB954 !important; }
-.lp-feat-touched .lp-feat-icon svg { fill: #fff !important; }
-.lp-feat-touched .lp-feat-title { color: #1DB954 !important; }
+/* STORE BADGES */
+.lp2-badges {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.lp2-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.3);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 9px 18px;
+  border-radius: 10px;
+  cursor: default;
+  transition: background 0.2s;
+}
+.lp2-badge:hover { background: rgba(255,255,255,0.22); }
 
-.lp-feat-icon { width: 48px; height: 48px; border-radius: 12px; background: rgba(29,185,84,0.1); display: flex; align-items: center; justify-content: center; margin-bottom: 16px; }
-.lp-feat-icon svg { width: 24px; height: 24px; fill: #1DB954; }
-.lp-feat-title { font-size: 16px; font-weight: 700; color: #0d0d0d; margin-bottom: 6px; }
-.lp-feat-desc { font-size: 14px; color: #777; line-height: 1.6; }
+/* FEATURE SECTIONS */
+.lp2-feature {
+  padding: 88px 40px;
+  max-width: 1020px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 72px;
+}
+.lp2-feature--left {
+  flex-direction: row-reverse;
+}
+.lp2-feature-text {
+  flex: 1;
+  min-width: 0;
+}
+.lp2-label {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: #1DB954;
+  margin-bottom: 14px;
+}
+.lp2-feature-text h2 {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 48px;
+  color: #111;
+  line-height: 1.05;
+  letter-spacing: 1.5px;
+  margin: 0 0 18px;
+}
+.lp2-feature-text p {
+  font-size: 16px;
+  color: #666;
+  line-height: 1.75;
+  font-weight: 300;
+  max-width: 420px;
+}
+.lp2-feature-phone {
+  flex: 0 0 auto;
+  display: flex;
+  justify-content: center;
+}
 
-.lp-treinadores-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; max-width: 540px; margin: 0 auto; }
-.lp-treinador-card { background: #f9faf9; border-radius: 18px; border: 1px solid #eee; padding: 28px 18px; text-align: center; transition: transform 0.28s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.28s ease, border-color 0.28s ease; will-change: transform; }
-.lp-treinador-card:hover { transform: translateY(-6px) scale(1.02); box-shadow: 0 14px 36px rgba(29,185,84,0.14); border-color: rgba(29,185,84,0.3); }
-.lp-treinador-touched { transform: translateY(-5px) scale(1.02) !important; box-shadow: 0 12px 30px rgba(29,185,84,0.15) !important; border-color: rgba(29,185,84,0.35) !important; }
-.lp-treinador-touched .treinador-nome { color: #1DB954; }
-.lp-treinador-badge { display: inline-block; margin-top: 10px; font-size: 11px; background: rgba(29,185,84,0.08); color: #15923e; border-radius: 20px; padding: 4px 12px; font-weight: 600; }
+/* PHONE MOCKUP */
+.mockup-phone {
+  width: 220px;
+  background: #1a1a1a;
+  border-radius: 36px;
+  padding: 14px 10px 20px;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.22);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+.mockup-phone-notch {
+  width: 60px;
+  height: 10px;
+  background: #333;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+.mockup-phone-screen {
+  width: 100%;
+  aspect-ratio: 9/18;
+  background: #000;
+  border-radius: 22px;
+  overflow: hidden;
+}
+.mockup-phone-screen img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
 
-.lp-cta { background: linear-gradient(160deg, #111 0%, #0a0a0a 100%); padding: 72px 28px; text-align: center; position: relative; overflow: hidden; }
-.lp-cta-title { font-family: 'Bebas Neue', sans-serif; font-size: 42px; color: #fff; margin-bottom: 12px; letter-spacing: 1px; position: relative; z-index: 1; }
-.lp-cta-sub { font-size: 16px; color: rgba(255,255,255,0.5); margin-bottom: 32px; font-weight: 300; position: relative; z-index: 1; }
-.lp-btn-green { background: #1DB954; color: #fff; border: none; border-radius: 50px; padding: 16px 38px; font-size: 15px; font-weight: 700; cursor: pointer; text-decoration: none; display: inline-block; transition: all 0.25s; box-shadow: 0 4px 20px rgba(29,185,84,0.3); position: relative; z-index: 1; }
+/* RESPONSIVE */
+@media (max-width: 900px) {
+  .lp2-green-inner {
+    flex-direction: column;
+    gap: 40px;
+    text-align: center;
+  }
+  .lp2-green-text { order: 1; }
+  .lp2-green-right { order: 2; width: 100%; }
+  .lp2-feature, .lp2-feature--left {
+    flex-direction: column;
+    gap: 40px;
+    text-align: center;
+    padding: 60px 24px;
+  }
+  .lp2-feature-text p { max-width: 100%; }
+  .lp2-feature-text h2 { font-size: 38px; }
+  .mockup-phone { width: 180px; }
+}
+@media (max-width: 640px) {
+  .lp2-header { padding: 14px 20px; }
+  .lp2-nav { display: none; }
+  .lp2-hero { padding: 56px 20px 64px; }
+  .lp2-hero-title { font-size: 52px; }
+  .lp2-hero-sub { font-size: 15px; }
+  .lp2-green { padding: 52px 20px; }
+  .lp2-green-text h2 { font-size: 40px; }
+  .mockup-desktop { max-width: 100%; }
+}
 
-.lp-footer { padding: 28px 28px; border-top: 1px solid #eee; display: flex; align-items: center; justify-content: space-between; background: #fff; flex-wrap: wrap; gap: 12px; }
-.lp-footer-brand { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 2.5px; color: #1a1a1a; }
-.lp-footer-link { font-size: 14px; color: #999; text-decoration: none; transition: color 0.2s; }
-.lp-footer-link:hover { color: #1DB954; }
-
-/* SHARED STYLES (DASHBOARD & CARROSSEL) */
+/* Estilo compartilhado do dashboard (usuário logado) */
 .home-logado { padding-bottom: 80px; background: #fff; }
 .section-spacer { height: 80px; }
 .nc-header { text-align: center; margin-bottom: 40px; padding: 0 20px; }
 .nc-header h2 { font-family: 'Bebas Neue', sans-serif; font-size: 3rem; letter-spacing: 1.5px; color: #111; margin: 0; }
 .nc-header p { color: #888; font-size: 1rem; font-weight: 300; margin-top: 4px; }
-.nc-container {
-  position: relative;
-  width: 100%;
-  max-width: 1000px;
-  margin: 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 520px;
-  /* SEM overflow */
-}
-.nc-track {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  perspective: 1200px;
-  /* SEM overflow */
-}
+.nc-container { position: relative; width: 100%; max-width: 1000px; margin: 0 auto; display: flex; align-items: center; justify-content: center; height: 520px; }
+.nc-track { position: relative; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; perspective: 1200px; }
 .nc-nav { position: absolute; top: 50%; transform: translateY(-50%); width: 50px; height: 50px; border-radius: 50%; border: none; background: #fff; box-shadow: 0 8px 20px rgba(0,0,0,0.1); display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 30; transition: all 0.3s; }
 .nc-nav:hover { background: #1DB954; transform: translateY(-50%) scale(1.1); }
 .nc-nav:hover svg { fill: #fff; }
@@ -590,57 +720,16 @@ else:
 .nc-left  { transform: translateX(-220px) scale(0.85); opacity: 0.6; filter: blur(3px); z-index: 10; pointer-events: auto; }
 .nc-right { transform: translateX(220px)  scale(0.85); opacity: 0.6; filter: blur(3px); z-index: 10; pointer-events: auto; }
 .nc-hidden { transform: translateX(0) scale(0.6); opacity: 0; filter: blur(8px); z-index: 1; pointer-events: none; }
-.nc-top img { width: 100%; height: 100%; object-fit: cover; }
-.nc-top { flex: 0 0 65%; background-color: #eee; background-size: cover; background-position: center; position: relative; display: flex; align-items: center; justify-content: center; }
+.nc-top { flex: 0 0 65%; background-color: #eee; background-size: cover; background-position: center; }
 .nc-top::after { content: ''; position: absolute; inset: 0; background: linear-gradient(transparent, rgba(0,0,0,0.2)); }
-.nc-base {
-  flex: 0 0 auto;
-  background: #fff;
-  padding: 14px 14px 12px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: 2px;
-  min-height: 0;
-  overflow: hidden;
-}
-/* Título do evento no card */
-.nc-base h4 {
-  font-family: 'Outfit', sans-serif;
-  font-size: 0.92rem;
-  font-weight: 700;
-  color: #111;
-  margin: 0 0 4px 0;
-  line-height: 1.3;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  word-break: break-word;
-  max-width: 100%;
-}
-
-/* Card central mostra título completo (up to 3 lines) */
-.nc-center .nc-base h4 {
-  font-size: 0.95rem;
-  -webkit-line-clamp: 3;
-}
-
-/* Cards laterais truncar a 1 linha pois ficam desfocados */
-.nc-left .nc-base h4,
-.nc-right .nc-base h4 {
-  -webkit-line-clamp: 1;
-}
+.nc-base { flex: 0 0 auto; background: #fff; padding: 14px 14px 12px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 2px; min-height: 0; overflow: hidden; }
+.nc-base h4 { font-family: 'Outfit', sans-serif; font-size: 0.92rem; font-weight: 700; color: #111; margin: 0 0 4px; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.nc-center .nc-base h4 { font-size: 0.95rem; -webkit-line-clamp: 3; }
+.nc-left .nc-base h4, .nc-right .nc-base h4 { -webkit-line-clamp: 1; }
 .nc-base .nc-loc { font-size: 0.82rem; color: #777; margin-bottom: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 100%; }
 .nc-base .nc-dat { font-size: 0.82rem; color: #1DB954; font-weight: 600; margin-bottom: 0; white-space: nowrap; }
-
-/* WIDGETS */
-
-/* WIDGETS */
 .home-widgets { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; max-width: 1000px; margin: 0 auto; padding: 40px 24px 0; }
-.home-widget { background: #fff; border-radius: 16px; padding: 24px; border: 1px solid #eee; box-shadow: 0 2px 12px rgba(0,0,0,0.04); display: flex; flex-direction: column; gap: 8px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); text-decoration: none; color: inherit; }
+.home-widget { background: #fff; border-radius: 16px; padding: 24px; border: 1px solid #eee; box-shadow: 0 2px 12px rgba(0,0,0,0.04); display: flex; flex-direction: column; gap: 8px; transition: all 0.3s; text-decoration: none; color: inherit; }
 .home-widget:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0,0,0,0.08); }
 .home-widget-icon { display: block; margin-bottom: 4px; }
 .home-widget-label { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #999; }
@@ -651,209 +740,59 @@ else:
 .home-widget-cta .home-widget-label { color: rgba(255,255,255,0.7); }
 .home-widget-cta .home-widget-valor { color: #fff; }
 .home-widget-cta .home-widget-sub { color: rgba(255,255,255,0.8); }
+.netflix-section { width: 100%; position: relative; padding: 0 0 40px 0; }
+.nc-card { flex-shrink: 0; max-width: 100%; }
 
-@media (max-width: 900px) {
-  .nc-container { height: 480px; }
-  .nc-card      { width: 260px; height: 400px; }
-  .nc-left      { transform: translateX(-160px) scale(0.83); }
-  .nc-right     { transform: translateX(160px)  scale(0.83); }
-}
-
-@media (max-width: 768px) {
-  .home-widgets { grid-template-columns: 1fr; padding: 24px 20px 0; }
-  .home-widget { padding: 20px; }
-}
-
-@media (max-width: 640px) {
-    .hero-lp { padding-top: 40px; }
-    .hero-nav-lp { 
-      position: relative !important; 
-      top: 0 !important; 
-      left: 0 !important; 
-      transform: none !important; 
-      max-width: 100% !important; 
-      width: 100% !important; 
-      margin: 0 0 32px 0 !important; 
-      justify-content: space-between !important; 
-      padding: 0 4px !important;
-      background: transparent !important;
-      backdrop-filter: none !important;
-      border: none !important;
-      box-shadow: none !important;
-    }
-    .hero-nav-brand-text { color: #fff !important; }
-    .hero-nav-logo-desktop { display: none !important; }
-    .hero-nav-logo-mobile { display: block !important; }
-    .hero-nav-links .hero-nav-link { display: none !important; }
-    .hero-nav-brand span { font-size: 16px; letter-spacing: 2px; }
-    .hero-nav-link { padding: 6px 10px; font-size: 12px; }
-    .hero-nav-login { padding: 6px 14px; font-size: 12px; }
-    .lp-h1, .lp-h1-destaque { font-size: 38px; }
-    .lp-stats { grid-template-columns: repeat(3, 1fr); margin-top: -24px; max-width: 90%; }
-    .lp-stat { padding: 16px 8px; }
-    .lp-stat-num { font-size: 24px; }
-    .lp-stat-label { font-size: 10px; }
-    .lp-stat:not(:last-child)::after { height: 40%; }
-}
-
-@media (max-width: 600px) {
-  .nc-container { height: 480px; }
-  .nc-card      { width: 260px; height: 400px; }
-  .nc-left      { transform: translateX(-130px) scale(0.80); }
-  .nc-right     { transform: translateX(130px)  scale(0.80); }
-  .nc-nav       { display: none !important; }
-  .nc-base h4   { font-size: 0.88rem; -webkit-line-clamp: 2; }
-  .nc-base .nc-loc { font-size: 0.78rem; }
-  .nc-base .nc-dat { font-size: 0.78rem; }
-}
-
-@media (max-width: 380px) {
-  .nc-container { height: 440px; }
-  .nc-card      { width: 240px; height: 370px; }
-  .nc-left      { transform: translateX(-110px) scale(0.78); }
-  .nc-right     { transform: translateX(110px)  scale(0.78); }
-}
-
-@media (min-width: 601px) {
-  .nc-card {
-    width: 300px;
-    height: 460px;
-  }
-}
+@media (max-width: 900px) { .nc-container { height: 480px; } .nc-card { width: 260px; height: 400px; } .nc-left { transform: translateX(-160px) scale(0.83); } .nc-right { transform: translateX(160px) scale(0.83); } }
+@media (max-width: 768px) { .home-widgets { grid-template-columns: 1fr; padding: 24px 20px 0; } .home-widget { padding: 20px; } }
+@media (max-width: 600px) { .nc-container { height: 480px; } .nc-card { width: 260px; height: 400px; } .nc-left { transform: translateX(-130px) scale(0.80); } .nc-right { transform: translateX(130px) scale(0.80); } .nc-nav { display: none !important; } }
+@media (max-width: 380px) { .nc-container { height: 440px; } .nc-card { width: 240px; height: 370px; } .nc-left { transform: translateX(-110px) scale(0.78); } .nc-right { transform: translateX(110px) scale(0.78); } }
+@media (min-width: 601px) { .nc-card { width: 300px; height: 460px; } }
 </style>
 
 <script>
-// Lógica do Carrossel Netflix Premium
+// Carrossel do dashboard (usuário logado)
 let ncIndex = 0;
 const ncCards = document.querySelectorAll('.nc-card');
 const ncTotal = ncCards.length;
-
 function renderNcCarousel() {
   if (ncTotal === 0) return;
   ncCards.forEach((card, i) => {
-    card.className = 'nc-card'; 
-    if (i === ncIndex) {
-      card.classList.add('nc-center');
-    } else if (ncTotal >= 3) {
+    card.className = 'nc-card';
+    if (i === ncIndex) card.classList.add('nc-center');
+    else if (ncTotal >= 3) {
       if (i === (ncIndex - 1 + ncTotal) % ncTotal) card.classList.add('nc-left');
       else if (i === (ncIndex + 1) % ncTotal) card.classList.add('nc-right');
       else card.classList.add('nc-hidden');
     } else if (ncTotal === 2) {
-      if (i !== ncIndex) card.classList.add('nc-right');
-      else card.classList.add('nc-center');
+      card.classList.add(i !== ncIndex ? 'nc-right' : 'nc-center');
     }
   });
 }
-
-let autoPlayTimer;
-let pauseTimer;
-
-function startAutoPlay() {
-  if (ncTotal > 1) {
-    autoPlayTimer = setInterval(() => ncMover(1), 4000);
-  }
-}
-function pauseAutoPlay() {
-  clearInterval(autoPlayTimer);
-  clearTimeout(pauseTimer);
-  pauseTimer = setTimeout(startAutoPlay, 6000);
-}
-
-function ncMover(dir) {
-  if (ncTotal > 1) {
-    ncIndex = (ncIndex + dir + ncTotal) % ncTotal;
-    renderNcCarousel();
-  }
-}
-
+let autoPlayTimer, pauseTimer;
+function startAutoPlay() { if (ncTotal > 1) autoPlayTimer = setInterval(() => ncMover(1), 4000); }
+function pauseAutoPlay() { clearInterval(autoPlayTimer); clearTimeout(pauseTimer); pauseTimer = setTimeout(startAutoPlay, 6000); }
+function ncMover(dir) { if (ncTotal > 1) { ncIndex = (ncIndex + dir + ncTotal) % ncTotal; renderNcCarousel(); } }
 function ncIrPara(i) {
   if (i === ncIndex) {
-    // Redirecionamento dinâmico dependendo da sessão
     <?php if (!isset($_SESSION['id'])): ?>
       window.location.href = '/pages/login.php?msg=cadastre';
     <?php else: ?>
       window.location.href = '/pages/eventos.php';
     <?php endif; ?>
-  } else {
-    ncIndex = i;
-    renderNcCarousel();
-  }
+  } else { ncIndex = i; renderNcCarousel(); }
 }
-
 document.addEventListener('DOMContentLoaded', () => {
   if (ncTotal > 0) {
-    renderNcCarousel();
-    startAutoPlay();
-    
-    // Swipe logic improved
-    const tracks = document.querySelectorAll('[id="ncTrack"]');
-    tracks.forEach(track => {
-      let touchStartX = 0, touchStartY = 0;
-      track.addEventListener('touchstart', e => {
-        touchStartX = e.changedTouches[0].screenX;
-        touchStartY = e.changedTouches[0].screenY;
-        pauseAutoPlay();
-      }, { passive: true });
-
-      track.addEventListener('touchmove', e => {
-        const touch = e.touches[0];
-        const dx = Math.abs(touch.screenX - touchStartX);
-        const dy = Math.abs(touch.screenY - touchStartY);
-        if (dx > dy && dx > 10) {
-          e.preventDefault(); // evita que o swipe horizontal role a página
-        }
-      }, { passive: false });
-      
-      track.addEventListener('touchend', e => {
-        const dx = e.changedTouches[0].screenX - touchStartX;
-        const dy = Math.abs(e.changedTouches[0].screenY - touchStartY);
-        if (dy < 60) {
-          if (dx < -40) ncMover(1);
-          else if (dx > 40) ncMover(-1);
-        }
-      }, { passive: true });
-    });
-
-    // Touch animations for feature cards
-    document.querySelectorAll('.lp-feat').forEach(card => {
-      card.addEventListener('touchstart', () => {
-        card.classList.add('lp-feat-touched');
-      }, { passive: true });
-      card.addEventListener('touchend', () => {
-        setTimeout(() => card.classList.remove('lp-feat-touched'), 400);
-      }, { passive: true });
-    });
-
-    // Touch animations for trainer cards
-    document.querySelectorAll('.lp-treinador-card').forEach(card => {
-      card.addEventListener('touchstart', () => {
-        card.classList.add('lp-treinador-touched');
-      }, { passive: true });
-      card.addEventListener('touchend', () => {
-        setTimeout(() => card.classList.remove('lp-treinador-touched'), 400);
-      }, { passive: true });
+    renderNcCarousel(); startAutoPlay();
+    document.querySelectorAll('[id="ncTrack"]').forEach(track => {
+      let startX = 0, startY = 0;
+      track.addEventListener('touchstart', e => { startX = e.changedTouches[0].screenX; startY = e.changedTouches[0].screenY; pauseAutoPlay(); }, { passive: true });
+      track.addEventListener('touchmove', e => { const dx = Math.abs(e.touches[0].screenX - startX); const dy = Math.abs(e.touches[0].screenY - startY); if (dx > dy && dx > 10) e.preventDefault(); }, { passive: false });
+      track.addEventListener('touchend', e => { const dx = e.changedTouches[0].screenX - startX; const dy = Math.abs(e.changedTouches[0].screenY - startY); if (dy < 60) { if (dx < -40) ncMover(1); else if (dx > 40) ncMover(-1); } }, { passive: true });
     });
   }
 });
-// Scroll-aware header for LP
-const heroLp = document.querySelector('.hero-lp');
-const navLp = document.querySelector('.hero-nav-lp');
-if (heroLp && navLp) {
-  function checkNavScroll() {
-    // Only apply scroll shadow logic on desktop
-    if (window.innerWidth > 640) {
-      const heroBottom = heroLp.getBoundingClientRect().bottom;
-      if (heroBottom <= 60) {
-        navLp.style.boxShadow = '0 4px 24px rgba(0,0,0,0.12)';
-      } else {
-        navLp.style.boxShadow = '0 4px 20px rgba(0,0,0,0.06)';
-      }
-    }
-  }
-  window.addEventListener('scroll', checkNavScroll, { passive: true });
-  window.addEventListener('resize', checkNavScroll, { passive: true });
-  checkNavScroll();
-}
 </script>
 <?php include_once __DIR__ . '/components/footer.php'; ?>
 </body>
