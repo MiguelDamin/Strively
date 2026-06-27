@@ -18,6 +18,7 @@ require_once '../config/conexao.php';
 
 $secao = $_GET['secao'] ?? 'seguranca';
 $etapa = $_GET['etapa'] ?? 'inicio';
+$showMenuOnlyMobile = empty($_GET['secao']);
 $userId = $_SESSION['id'];
 $isAdmin = ($userId == 2);
 
@@ -700,11 +701,61 @@ function dataRelativa(string $dtStr): string {
       flex-direction: column;
     }
   }
+
+  /* ---------- MOBILE DRILL-DOWN ---------- */
+  .btn-voltar-cfg-mobile {
+    display: none;
+  }
+  .menu-arrow-mobile {
+    display: none;
+  }
+  @media (max-width: 768px) {
+    .settings-container.mobile-show-menu .settings-content {
+      display: none !important;
+    }
+    .settings-container.mobile-show-content .settings-sidebar {
+      display: none !important;
+    }
+    .settings-content {
+      animation: fadeRightCfg 0.25s ease forwards;
+    }
+    @keyframes fadeRightCfg {
+      from { opacity: 0; transform: translateX(24px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+    .btn-voltar-cfg-mobile {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: #777;
+      font-weight: 600;
+      font-size: 0.95rem;
+      text-decoration: none;
+      margin-bottom: 20px;
+      transition: color 0.15s;
+    }
+    .btn-voltar-cfg-mobile:hover {
+      color: var(--green);
+    }
+    .btn-voltar-cfg-mobile svg {
+      width: 18px;
+      height: 18px;
+      fill: currentColor;
+    }
+    .menu-arrow-mobile {
+      display: inline-block;
+      margin-left: auto;
+      font-size: 1.4rem;
+      color: #ccc;
+      font-weight: 300;
+      line-height: 1;
+    }
+  }
 </style>
 
 <body>
 
-  <section class="settings-container">
+  <section class="settings-container <?= $showMenuOnlyMobile ? 'mobile-show-menu' : 'mobile-show-content' ?>">
 
     <!-- ═══════════════════════════════════
          MENU LATERAL
@@ -719,13 +770,13 @@ function dataRelativa(string $dtStr): string {
           <li>
             <a href="/pages/perfil.php">
               <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
-              Conta e Perfil
+              Conta e Perfil <span class="menu-arrow-mobile">›</span>
             </a>
           </li>
           <li>
             <a href="?secao=treinador" class="<?= $secao === 'treinador' ? 'ativo' : '' ?>">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-              Meu Treinador
+              Meu Treinador <span class="menu-arrow-mobile">›</span>
             </a>
           </li>
         </ul>
@@ -740,7 +791,7 @@ function dataRelativa(string $dtStr): string {
           <li>
             <a href="?secao=seguranca" class="<?= $secao === 'seguranca' ? 'ativo' : '' ?>">
               <svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg>
-              Trocar Senha
+              Trocar Senha <span class="menu-arrow-mobile">›</span>
             </a>
           </li>
         </ul>
@@ -755,13 +806,13 @@ function dataRelativa(string $dtStr): string {
           <li>
             <a href="?secao=notificacoes_sistema" class="<?= $secao === 'notificacoes_sistema' ? 'ativo' : '' ?>">
               <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
-              Avisos do Strively
+              Avisos do Strively <span class="menu-arrow-mobile">›</span>
             </a>
           </li>
           <li>
             <a href="?secao=conexoes" class="<?= $secao === 'conexoes' ? 'ativo' : '' ?>">
               <svg viewBox="0 0 24 24"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
-              Conexões
+              Conexões <span class="menu-arrow-mobile">›</span>
             </a>
           </li>
         </ul>
@@ -776,7 +827,7 @@ function dataRelativa(string $dtStr): string {
           <li>
             <a href="?secao=zona-de-risco" class="menu-link-danger <?= $secao === 'zona-de-risco' ? 'ativo' : '' ?>">
               <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
-              Excluir Conta
+              Excluir Conta <span class="menu-arrow-mobile">›</span>
             </a>
           </li>
         </ul>
@@ -788,6 +839,9 @@ function dataRelativa(string $dtStr): string {
          CONTEÚDO CENTRAL
     ════════════════════════════════════ -->
     <main class="settings-content">
+      <a href="/pages/configuracoes.php" class="btn-voltar-cfg-mobile">
+        <svg viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg> Configurações
+      </a>
 
       <?php /* ── MEU TREINADOR ── */ ?>
       <?php if ($secao === 'treinador'): ?>
@@ -945,8 +999,8 @@ function dataRelativa(string $dtStr): string {
 
           <!-- STRAVA -->
           <div class="conexao-card">
-            <div class="conexao-logo" style="background:#fff8f5;border:1px solid #fde8dc;">
-              <img src="/assets/img/strava-logo.svg" alt="Strava" style="height:24px;">
+            <div class="conexao-logo" style="background:rgba(252, 76, 2, 0.08);border:1px solid rgba(252, 76, 2, 0.2);">
+              <svg viewBox="0 0 24 24" style="width:24px;height:24px;stroke:#FC4C02;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" /></svg>
             </div>
             <div class="conexao-info">
               <div class="conexao-nome">Strava</div>
@@ -1008,9 +1062,8 @@ function dataRelativa(string $dtStr): string {
 
           <!-- POLAR -->
           <div class="conexao-card">
-            <div class="conexao-logo" style="background:#f0f5ff;border:1px solid #dbeafe;">
-              <!-- TODO: Obter/Usar logo oficial da Polar quando possível -->
-              <svg viewBox="0 0 24 24" style="width:24px;height:24px;stroke:#4b5563;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+            <div class="conexao-logo" style="background:rgba(0, 114, 206, 0.08);border:1px solid rgba(0, 114, 206, 0.2);">
+              <svg viewBox="0 0 24 24" style="width:24px;height:24px;stroke:#0072ce;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
             </div>
             <div class="conexao-info">
               <div class="conexao-nome">Polar <span class="badge-em-breve" style="margin-left:6px;">Em breve</span></div>
@@ -1021,9 +1074,8 @@ function dataRelativa(string $dtStr): string {
 
           <!-- GARMIN -->
           <div class="conexao-card">
-            <div class="conexao-logo" style="background:#f0fdf4;border:1px solid #bbf7d0;">
-              <!-- TODO: Obter/Usar logo oficial da Garmin quando possível -->
-              <svg viewBox="0 0 24 24" style="width:24px;height:24px;stroke:#4b5563;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;"><circle cx="12" cy="12" r="7"></circle><polyline points="12 9 12 12 13.5 13.5"></polyline></svg>
+            <div class="conexao-logo" style="background:rgba(0, 168, 89, 0.08);border:1px solid rgba(0, 168, 89, 0.2);">
+              <svg viewBox="0 0 24 24" style="width:24px;height:24px;stroke:#00A859;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><circle cx="12" cy="12" r="7"></circle><polyline points="12 9 12 12 13.5 13.5"></polyline></svg>
             </div>
             <div class="conexao-info">
               <div class="conexao-nome">Garmin <span class="badge-em-breve" style="margin-left:6px;">Em breve</span></div>
@@ -1034,8 +1086,8 @@ function dataRelativa(string $dtStr): string {
 
           <!-- COROS -->
           <div class="conexao-card">
-            <div class="conexao-logo" style="background:#fafafa;border:1px solid #e5e7eb;">
-              <svg viewBox="0 0 40 40" style="width:28px;height:28px;"><circle cx="20" cy="20" r="12" fill="#111"/><text x="20" y="24.5" text-anchor="middle" font-size="10" fill="#fff" font-family="Arial" font-weight="bold">C</text></svg>
+            <div class="conexao-logo" style="background:rgba(75, 85, 99, 0.08);border:1px solid rgba(75, 85, 99, 0.2);">
+              <svg viewBox="0 0 24 24" style="width:24px;height:24px;stroke:#4b5563;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;"><circle cx="12" cy="12" r="9"></circle><path d="M12 3v18M3 12h18" /></svg>
             </div>
             <div class="conexao-info">
               <div class="conexao-nome">Coros <span class="badge-em-breve" style="margin-left:6px;">Em breve</span></div>

@@ -289,9 +289,9 @@ include '../components/header.php';
   <?php 
   $header_link_voltar = '/pages/perfil.php';
   $header_label_voltar = 'Meu perfil';
-  $header_foto = $me['foto'] ?? '';
-  $header_nome = $me['nome'] ?? 'Meus Treinos';
-  $header_cidade = $me['cidade'] ?? 'Sem cidade';
+  $header_foto = $_SESSION['foto'] ?? '';
+  $header_nome = $_SESSION['nome'] ?? 'Meus Treinos';
+  $header_cidade = false; // Remover cidade da visão do próprio usuário
   $header_acoes_html = '
     <div class="treinos-btns" style="display:flex;gap:8px; width: 100%;">
       <button class="btn-primary" onclick="abrirModal(\'modalAdicionar\')" style="font-size:.85rem;padding:10px 20px; flex: 1;">

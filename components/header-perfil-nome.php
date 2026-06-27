@@ -130,7 +130,9 @@
 
         <div class="p-header-info">
             <h1><?= htmlspecialchars($header_nome) ?></h1>
-            <span><?= htmlspecialchars($header_cidade ?? 'Não informada') ?></span>
+            <?php if (isset($header_cidade) && $header_cidade !== false && $header_cidade !== ''): ?>
+            <span><?= htmlspecialchars($header_cidade) ?></span>
+            <?php endif; ?>
         </div>
 
         <?php if (!empty($header_acoes_html)): ?>
