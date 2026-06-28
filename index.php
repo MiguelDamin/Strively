@@ -282,7 +282,7 @@ else:
       <p>Receba planilhas do seu treinador, acompanhe cada sessão no calendário e marque seu progresso — tudo integrado ao Strava.</p>
     </div>
     <div class="lp2-feature-phone">
-      <img class="mockup-phone-single" src="/images/imagens-about/treinos_about_image_completo.png" alt="Treinos">
+      <img class="mockup-phone-single" src="/images/imagens-about/treinos_about_image_completo2.png" alt="Treinos">
     </div>
   </section>
 
@@ -498,7 +498,7 @@ else:
 /* MOCKUP DESKTOP SINGLE */
 .mockup-desktop-single {
   width: 100%;
-  max-width: 520px;
+  max-width: 650px;
   height: auto;
   display: block;
   margin: 0 auto;
@@ -576,7 +576,7 @@ else:
 /* PHONE MOCKUP SINGLE */
 .mockup-phone-single {
   width: 100%;
-  max-width: 280px;
+  max-width: 400px;
   height: auto;
   display: block;
   margin: 0 auto;
@@ -596,7 +596,7 @@ else:
     align-items: center;
   }
   .lp2-green-text { order: 1; }
-  .lp2-green-right { order: 2; width: 100%; max-width: 520px; }
+  .lp2-green-right { order: 2; width: 100%; max-width: 650px; }
   .lp2-badges { justify-content: center; }
   .lp2-feature, .lp2-feature--left {
     flex-direction: column;
@@ -606,7 +606,7 @@ else:
   }
   .lp2-feature-text p { max-width: 100%; }
   .lp2-feature-text h2 { font-size: 38px; }
-  .mockup-phone-real { max-width: 320px; }
+  .mockup-phone-single { max-width: 360px; }
 }
 @media (max-width: 640px) {
   .lp2-header { padding: 14px 20px; }
@@ -616,9 +616,8 @@ else:
   .lp2-hero-sub { font-size: 15px; }
   .lp2-green { padding: 52px 20px 0px; }
   .lp2-green-text h2 { font-size: 40px; }
-  .mockup-desktop-real { margin-bottom: -60px; }
-  .mockup-phone-real { width: 340px; }
-  .mockup-phone-screen-img { border-radius: 20px; }
+  .mockup-desktop-single { margin-bottom: -40px; }
+  .mockup-phone-single { max-width: 340px; }
 }
 
 /* Estilo compartilhado do dashboard (usuário logado) */
