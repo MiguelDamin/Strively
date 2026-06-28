@@ -275,7 +275,7 @@ else:
   </section>
 
   <!-- SEC 4: TREINOS -->
-  <section class="lp2-feature lp2-feature--right" style="background-color: #effff4;">
+  <section class="lp2-feature lp2-feature--right" style="background-color: #ffffff;">
     <div class="lp2-feature-text">
       <span class="lp2-label">Treinos</span>
       <h2>Treine com sabedoria,<br>treine com STRIVELY.</h2>
@@ -294,7 +294,7 @@ else:
       <p>Descubra corridas de rua e eventos próximos, adicione-os ao seu calendário e nunca mais perca uma prova.</p>
     </div>
     <div class="lp2-feature-phone">
-      <img class="mockup-phone-single" src="/images/imagens-about/eventos_about_image_completo.png" alt="Eventos">
+      <img class="mockup-phone-single" src="/images/imagens-about/eventos_about_image_completo2.png" alt="Eventos">
     </div>
   </section>
 
@@ -306,7 +306,7 @@ else:
       <p>Publique conquistas, curta e comente os treinos de outros corredores. A motivação coletiva é o combustível extra que você precisava.</p>
     </div>
     <div class="lp2-feature-phone">
-      <img class="mockup-phone-single" src="/images/imagens-about/comunidade_about_image_completo.png" alt="Comunidade">
+      <img class="mockup-phone-single" src="/images/imagens-about/comunidade_about_image_completo2.png" alt="Comunidade">
     </div>
   </section>
 
