@@ -269,53 +269,55 @@ else:
       </div>
       <div class="lp2-green-right">
         <!-- Monitor Desktop em SVG -->
-        <svg viewBox="0 0 640 460" xmlns="http://www.w3.org/2000/svg" class="mockup-desktop-svg" style="width: 100%; max-width: 560px; height: auto; display: block; margin: 0 auto;">
+        <svg viewBox="0 0 800 500" xmlns="http://www.w3.org/2000/svg" class="mockup-desktop-svg" style="width: 100%; max-width: 580px; height: auto; display: block; margin: 0 auto;">
           <defs>
-            <!-- Drop Shadow -->
             <filter id="monitorShadow" x="-10%" y="-10%" width="120%" height="130%">
-              <feDropShadow dx="0" dy="25" stdDeviation="15" flood-color="#000" flood-opacity="0.35"/>
+              <feDropShadow dx="0" dy="8" stdDeviation="15" flood-color="#000" flood-opacity="0.35"/>
             </filter>
             
-            <!-- Gradients -->
             <linearGradient id="monitorGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stop-color="#2a2a2a" />
-              <stop offset="100%" stop-color="#141414" />
+              <stop offset="0%" stop-color="#1a1a1a" />
+              <stop offset="100%" stop-color="#111111" />
             </linearGradient>
 
             <linearGradient id="baseGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stop-color="#333333" />
+              <stop offset="0%" stop-color="#2a2a2a" />
               <stop offset="100%" stop-color="#111111" />
             </linearGradient>
 
             <clipPath id="screenClip">
-              <rect x="16" y="16" width="608" height="342" rx="3" ry="3" />
+              <!-- Proporção 1901x867 calculada perfeitamente: 768x350.25 -->
+              <rect x="16" y="16" width="768" height="350.25" rx="2" ry="2" />
             </clipPath>
           </defs>
 
           <g filter="url(#monitorShadow)">
-            <!-- Base -->
-            <ellipse cx="320" cy="445" rx="80" ry="5" fill="url(#baseGrad)" />
-            <!-- Neck -->
-            <polygon points="305,398 335,398 340,442 300,442" fill="#181818" />
+            <!-- Haste/pescoço elegante -->
+            <polygon points="360,390 440,390 445,450 355,450" fill="#222222" />
             
-            <!-- Monitor Body -->
-            <rect x="0" y="0" width="640" height="400" rx="10" ry="10" fill="url(#monitorGrad)" stroke="#2e2e2e" stroke-width="1.5" />
+            <!-- Base fina (trapézio achatado) -->
+            <path d="M 280,450 H 520 L 560,465 Q 565,470 550,470 H 250 Q 235,470 240,465 Z" fill="url(#baseGrad)" />
             
-            <!-- Camera -->
-            <circle cx="320" cy="8" r="2.5" fill="#3a3a3a" />
+            <!-- Corpo do Monitor (Bezels finos) -->
+            <rect x="0" y="0" width="800" height="390" rx="6" ry="6" fill="url(#monitorGrad)" stroke="#2e2e2e" stroke-width="1.5" />
+            
+            <!-- Câmera sutil superior -->
+            <circle cx="400" cy="8" r="3" fill="#2a2a2a" />
+            <circle cx="400" cy="8.5" r="1.2" fill="#444" />
 
-            <!-- Screen Content -->
+            <!-- Área da tela -->
             <g clip-path="url(#screenClip)">
-              <!-- Preenchimento de fundo da área da tela -->
-              <rect x="16" y="16" width="608" height="342" fill="#000" />
-              <!-- svgdoscria inserido via path absoluto para a raiz do site -->
-              <image href="/images/imagens-about/svgdoscria.svg" x="16" y="16" width="608" height="342" preserveAspectRatio="xMidYMid slice" />
-              <!-- Reflexo sutil de tela -->
-              <polygon points="16,16 260,16 16,300" fill="#ffffff" opacity="0.05" />
+              <!-- Fundo escuro (LCD desligado) -->
+              <rect x="16" y="16" width="768" height="350.25" fill="#000" />
+              <!-- Gráfico do site interno, não cortado (xMidYMid meet) -->
+              <image href="/images/imagens-about/svgdoscria.svg" x="16" y="16" width="768" height="350.25" preserveAspectRatio="xMidYMid meet" />
+              
+              <!-- Reflexo de luz na tela realista -->
+              <polygon points="16,16 350,16 16,366.25" fill="#ffffff" opacity="0.04" />
             </g>
 
-            <!-- Logo Bezel Inferior -->
-            <text x="320" y="383" font-family="'Outfit', sans-serif" font-size="11" font-weight="600" fill="#444" text-anchor="middle" letter-spacing="3">STRIVELY</text>
+            <!-- Logo inferior leve -->
+            <text x="400" y="381" font-family="'Outfit', sans-serif" font-size="9" font-weight="600" fill="#555" text-anchor="middle" letter-spacing="3">STRIVELY</text>
           </g>
         </svg>
       </div>
