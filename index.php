@@ -268,8 +268,56 @@ else:
         </div>
       </div>
       <div class="lp2-green-right">
-        <!-- Desktop single image -->
-        <img class="mockup-desktop-single" src="/images/imagens-about/moldura_desktop_completo.png" alt="Strively no desktop">
+        <!-- Monitor Desktop em SVG -->
+        <svg viewBox="0 0 640 460" xmlns="http://www.w3.org/2000/svg" class="mockup-desktop-svg" style="width: 100%; max-width: 560px; height: auto; display: block; margin: 0 auto;">
+          <defs>
+            <!-- Drop Shadow -->
+            <filter id="monitorShadow" x="-10%" y="-10%" width="120%" height="130%">
+              <feDropShadow dx="0" dy="25" stdDeviation="15" flood-color="#000" flood-opacity="0.35"/>
+            </filter>
+            
+            <!-- Gradients -->
+            <linearGradient id="monitorGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#2a2a2a" />
+              <stop offset="100%" stop-color="#141414" />
+            </linearGradient>
+
+            <linearGradient id="baseGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#333333" />
+              <stop offset="100%" stop-color="#111111" />
+            </linearGradient>
+
+            <clipPath id="screenClip">
+              <rect x="16" y="16" width="608" height="342" rx="3" ry="3" />
+            </clipPath>
+          </defs>
+
+          <g filter="url(#monitorShadow)">
+            <!-- Base -->
+            <ellipse cx="320" cy="445" rx="80" ry="5" fill="url(#baseGrad)" />
+            <!-- Neck -->
+            <polygon points="305,398 335,398 340,442 300,442" fill="#181818" />
+            
+            <!-- Monitor Body -->
+            <rect x="0" y="0" width="640" height="400" rx="10" ry="10" fill="url(#monitorGrad)" stroke="#2e2e2e" stroke-width="1.5" />
+            
+            <!-- Camera -->
+            <circle cx="320" cy="8" r="2.5" fill="#3a3a3a" />
+
+            <!-- Screen Content -->
+            <g clip-path="url(#screenClip)">
+              <!-- Preenchimento de fundo da área da tela -->
+              <rect x="16" y="16" width="608" height="342" fill="#000" />
+              <!-- svgdoscria inserido via path absoluto para a raiz do site -->
+              <image href="/images/imagens-about/svgdoscria.svg" x="16" y="16" width="608" height="342" preserveAspectRatio="xMidYMid slice" />
+              <!-- Reflexo sutil de tela -->
+              <polygon points="16,16 260,16 16,300" fill="#ffffff" opacity="0.05" />
+            </g>
+
+            <!-- Logo Bezel Inferior -->
+            <text x="320" y="383" font-family="'Outfit', sans-serif" font-size="11" font-weight="600" fill="#444" text-anchor="middle" letter-spacing="3">STRIVELY</text>
+          </g>
+        </svg>
       </div>
     </div>
   </section>
