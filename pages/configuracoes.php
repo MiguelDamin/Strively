@@ -343,7 +343,7 @@ function dataRelativa(string $dtStr): string {
     gap: 8px;
     font-size: .85rem;
     font-weight: 600;
-    color: #FC4C02;
+    color: var(--green, #1DB954);
     margin-bottom: 14px;
   }
 
@@ -668,8 +668,10 @@ function dataRelativa(string $dtStr): string {
     .settings-container {
       flex-direction: column;
       gap: 24px;
-      margin: 0 auto 40px;
+      margin: 0;
       padding: 0;
+      width: 100%;
+      max-width: none;
     }
     .settings-content {
       padding: 0 14px;
@@ -695,7 +697,7 @@ function dataRelativa(string $dtStr): string {
     }
     .menu-group-label {
       font-size: 11px;
-      padding: 0 20px 6px;
+      padding: 16px 20px 6px;
     }
     .menu-group li {
       margin-bottom: 0;
@@ -717,7 +719,12 @@ function dataRelativa(string $dtStr): string {
       padding: 24px 20px;
     }
     .strava-stats-cfg {
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: 1fr 1fr;
+    }
+    .strava-stats-cfg .stat-item-cfg:nth-child(3) {
+      grid-column: 1 / -1;
+      width: 50%;
+      margin: 0 auto;
     }
   }
 
@@ -1034,7 +1041,6 @@ function dataRelativa(string $dtStr): string {
               <div class="strava-card-cfg">
                 <?php if ($userConfig['strava_conectado']): ?>
                   <div class="strava-conectado-cfg">
-                    <img src="/assets/img/strava-logo.svg" alt="Strava" style="height:18px;">
                     <span>Conectado ao Strava</span>
                   </div>
 
@@ -1055,11 +1061,11 @@ function dataRelativa(string $dtStr): string {
 
                   <div class="strava-btns-cfg">
                     <button type="button" class="btn-secondary" id="btnSyncStravaConfig" onclick="sincronizarStravaConfig('rotina')">
-                      🔄 Atualizar
+                      Atualizar
                     </button>
                     <a href="/actions/action-strava-disconnect.php"
                        onclick="return confirm('Desconectar o Strava? Seus dados de km serão zerados.')"
-                       style="color:#cc0000;border:1.5px solid #cc0000;">
+                       style="color:#cc0000;border:1.5px solid #cc0000;display:flex;align-items:center;justify-content:center;">
                       Desconectar
                     </a>
                   </div>
