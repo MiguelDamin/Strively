@@ -776,8 +776,7 @@ include '../components/header.php';
         gap: 8px;
         font-size: .85rem;
         font-weight: 600;
-        color: #FC4C02;
-        /* laranja Strava */
+        color: var(--green, #1DB954);
         margin-bottom: 16px;
     }
 
@@ -831,6 +830,17 @@ include '../components/header.php';
     .btn-strava:hover {
         background: #e04400;
         transform: translateY(-1px);
+    }
+
+    @media (max-width: 768px) {
+        .strava-stats {
+            grid-template-columns: 1fr 1fr;
+        }
+        .strava-stats .stat-item:nth-child(3) {
+            grid-column: 1 / -1;
+            width: 50%;
+            margin: 0 auto;
+        }
     }
 
     @media (max-width: 480px) {
@@ -942,11 +952,11 @@ include '../components/header.php';
         <?php endif; ?>
 
         <!-- BLOCO STRAVA -->
+        <!-- TODO: extrair para components/strava-widget.php -->
         <div class="strava-card">
             <?php if ($usuario['strava_conectado']): ?>
                 <!-- CONECTADO -->
                 <div class="strava-conectado">
-                    <img src="/assets/img/strava-logo.svg" alt="Strava" style="height:20px;">
                     <span>Conectado ao Strava</span>
                 </div>
 
@@ -968,12 +978,12 @@ include '../components/header.php';
 
                 <!-- AÇÕES E CONFIRMAÇÕES -->
                 <div class="strava-btns">
-                    <button type="button" class="btn-secondary" id="btnSyncStrava" onclick="sincronizarStrava('rotina')">
-                        🔄Atualizar
+                    <button type="button" class="btn-secondary" id="btnSyncStrava" onclick="sincronizarStrava('rotina')" style="border: 1.5px solid var(--green, #1DB954); color: var(--green, #1DB954); background: transparent;">
+                        Atualizar
                     </button>
                     <a href="/actions/action-strava-disconnect.php"
                         onclick="return confirm('Desconectar o Strava? Seus dados de km serão zerados.')"
-                        style="color:#cc0000; border:1.5px solid #cc0000;">
+                        style="color:#cc0000; border:1.5px solid #cc0000; display:flex; align-items:center; justify-content:center; text-decoration:none;">
                         Desconectar
                     </a>
                 </div>
