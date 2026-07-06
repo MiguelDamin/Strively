@@ -19,17 +19,16 @@ if (strlen($q) < 1) {
 
 try {
     // Search for users matching the query
-    // LIKE %query% to match any part of the name
+    // LIKE query% to match only start of the name
     $stmt = $pdo->prepare("
         SELECT id, nome, foto, perfil 
         FROM usuarios 
-        WHERE nome ILIKE ? OR nome ILIKE ? 
+        WHERE nome ILIKE ? 
         ORDER BY nome ASC 
         LIMIT 10
     ");
     $stmt->execute([
-        $q . '%', 
-        '% ' . $q . '%'
+        $q . '%'
     ]);
     $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
