@@ -668,25 +668,50 @@ function dataRelativa(string $dtStr): string {
     .settings-container {
       flex-direction: column;
       gap: 24px;
-      margin: 20px auto 40px;
+      margin: 0 auto 40px;
+      padding: 0;
+    }
+    .settings-content {
       padding: 0 14px;
     }
     .settings-sidebar {
       width: 100%;
       position: static;
       top: auto;
-      padding: 20px;
+      padding: 0;
       margin-bottom: 8px;
+      background: transparent;
+      box-shadow: none;
+      border-radius: 0;
+      border: none;
+    }
+    .settings-sidebar-title {
+      padding: 0 20px;
+      margin-top: 20px;
     }
     .menu-group {
-      margin-bottom: 24px;
+      margin-top: 24px;
+      margin-bottom: 0;
+    }
+    .menu-group-label {
+      font-size: 11px;
+      padding: 0 20px 6px;
+    }
+    .menu-group li {
+      margin-bottom: 0;
     }
     .menu-group a {
-      padding: 14px 10px;
+      width: 100%;
+      box-sizing: border-box;
+      padding: 14px 20px;
       font-size: 1rem;
+      background: #ffffff;
+      border-radius: 0;
+      border-bottom: 1px solid #f0f0f0;
+      justify-content: space-between;
     }
     .sidebar-divider {
-      margin: 16px 10px;
+      display: none;
     }
     .settings-pane {
       padding: 24px 20px;
