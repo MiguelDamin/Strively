@@ -18,6 +18,12 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 $email = trim($_POST['email'] ?? '');
 $senha = $_POST['senha'] ?? '';
 
+// Verifica formato do e-mail
+if ($email && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+  header('Location: ../pages/login.php?erro=email_invalido');
+  exit();
+}
+
 // Busca o usuário pelo email
 $stmt = $pdo->prepare("SELECT * FROM usuarios WHERE email = ?");
 $stmt->execute([$email]);

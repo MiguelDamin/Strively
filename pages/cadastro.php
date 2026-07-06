@@ -37,12 +37,14 @@ if (isset($_SESSION['id'])) {
         <div class="auth-erro">
           <?php
             $erros = [
-              'email_existente'  => 'Este e-mail já está cadastrado.',
-              'senha_curta'      => 'A senha deve ter pelo menos 8 caracteres.',
-              'senha_sem_numero' => 'A senha deve conter pelo menos um número.',
-              'senha_diferente'  => 'As senhas não coincidem.',
-              'campos_vazios'    => 'Preencha todos os campos obrigatórios.',
+              'email_existente'    => 'Este e-mail já está cadastrado.',
+              'senha_curta'        => 'A senha deve ter pelo menos 8 caracteres.',
+              'senha_sem_numero'   => 'A senha deve conter pelo menos um número.',
+              'senha_diferente'    => 'As senhas não coincidem.',
+              'campos_vazios'      => 'Preencha todos os campos obrigatórios.',
               'termos_nao_aceitos' => 'Você precisa aceitar os Termos de Uso para criar uma conta.',
+              'nome_invalido'      => 'Nome não pode conter números ou símbolos.',
+              'email_invalido'     => 'Digite um e-mail válido (ex: nome@dominio.com).'
             ];
             echo $erros[$_GET['erro']] ?? 'Ocorreu um erro. Tente novamente.';
           ?>
@@ -61,7 +63,9 @@ if (isset($_SESSION['id'])) {
             placeholder="Seu nome"
             required
             autocomplete="name"
+            oninput="validarNome(this)"
           />
+          <span id="nome-erro" style="display:none; color: #e74c3c; font-size: 0.8rem; margin-top: 5px;">Nome não pode conter números ou símbolos.</span>
         </div>
 
         <div class="form-grupo">
@@ -73,7 +77,9 @@ if (isset($_SESSION['id'])) {
             placeholder="seu@email.com"
             required
             autocomplete="email"
+            onblur="validarEmail(this)"
           />
+          <span id="email-erro" style="display:none; color: #e74c3c; font-size: 0.8rem; margin-top: 5px;">Digite um e-mail válido (ex: nome@dominio.com).</span>
         </div>
 
         <div class="form-grupo">
@@ -88,15 +94,22 @@ if (isset($_SESSION['id'])) {
 
         <div class="form-grupo">
           <label for="senha">Senha</label>
-          <input
-            type="password"
-            id="senha"
-            name="senha"
-            placeholder="mínimo 8 caracteres e 1 número"
-            required
-            autocomplete="new-password"
-            oninput="validarSenha()"
-          />
+          <div style="position: relative;">
+            <input
+              type="password"
+              id="senha"
+              name="senha"
+              placeholder="mínimo 8 caracteres e 1 número"
+              required
+              autocomplete="new-password"
+              oninput="validarSenha()"
+              style="padding-right: 44px; width: 100%; box-sizing: border-box;"
+            />
+            <span class="toggle-password" onclick="togglePassword('senha', this)" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); cursor: pointer; display: flex;">
+              <svg class="eye-open" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              <svg class="eye-closed" style="display: none;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8 a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8 a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+            </span>
+          </div>
           <!-- Indicador de força -->
           <div id="senha-feedback" class="senha-feedback" style="display:none;">
             <div class="senha-barra-wrap">
@@ -111,15 +124,22 @@ if (isset($_SESSION['id'])) {
 
         <div class="form-grupo">
           <label for="senha_confirma">Confirmar senha</label>
-          <input
-            type="password"
-            id="senha_confirma"
-            name="senha_confirma"
-            placeholder="repita a senha"
-            required
-            autocomplete="new-password"
-            oninput="validarConfirma()"
-          />
+          <div style="position: relative;">
+            <input
+              type="password"
+              id="senha_confirma"
+              name="senha_confirma"
+              placeholder="repita a senha"
+              required
+              autocomplete="new-password"
+              oninput="validarConfirma()"
+              style="padding-right: 44px; width: 100%; box-sizing: border-box;"
+            />
+            <span class="toggle-password" onclick="togglePassword('senha_confirma', this)" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); cursor: pointer; display: flex;">
+              <svg class="eye-open" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              <svg class="eye-closed" style="display: none;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#999" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8 a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8 a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+            </span>
+          </div>
           <span id="confirma-msg" class="confirma-msg" style="display:none;"></span>
         </div>
 
@@ -257,6 +277,44 @@ if (isset($_SESSION['id'])) {
 </style>
 
 <script>
+function togglePassword(inputId, iconSpan) {
+  const input = document.getElementById(inputId);
+  const openIcon = iconSpan.querySelector('.eye-open');
+  const closedIcon = iconSpan.querySelector('.eye-closed');
+  
+  if (input.type === 'password') {
+    input.type = 'text';
+    openIcon.style.display = 'none';
+    closedIcon.style.display = 'block';
+  } else {
+    input.type = 'password';
+    openIcon.style.display = 'block';
+    closedIcon.style.display = 'none';
+  }
+}
+
+function validarEmail(campo) {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+  const erroSpan = document.getElementById(campo.id + '-erro');
+  if (campo.value && !emailRegex.test(campo.value)) {
+    erroSpan.style.display = 'block';
+  } else {
+    erroSpan.style.display = 'none';
+  }
+}
+
+function validarNome(campo) {
+  const regexInvalidos = /[^a-zA-ZàáâãäéêëíîïóôõöúûüçÀÁÂÃÄÉÊËÍÎÏÓÔÕÖÚÛÜÇ '\-]/g;
+  const erroSpan = document.getElementById(campo.id + '-erro');
+  
+  if (regexInvalidos.test(campo.value)) {
+    campo.value = campo.value.replace(regexInvalidos, '');
+    erroSpan.style.display = 'block';
+    clearTimeout(campo.timeoutMsg);
+    campo.timeoutMsg = setTimeout(() => { erroSpan.style.display = 'none'; }, 3000);
+  }
+}
+
 function validarSenha() {
   const campo = document.getElementById('senha');
   const val = campo.value;

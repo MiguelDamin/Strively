@@ -28,6 +28,18 @@ if (empty($nome) || empty($email) || empty($senha)) {
   exit();
 }
 
+// Verifica se tem número no nome
+if (preg_match('/\d/', $nome)) {
+  header('Location: ../pages/cadastro.php?erro=nome_invalido');
+  exit();
+}
+
+// Verifica formato do e-mail
+if ($email && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+  header('Location: ../pages/cadastro.php?erro=email_invalido');
+  exit();
+}
+
 // Valida aceite dos Termos de Uso
 if ($aceitar_termos !== '1') {
   header('Location: ../pages/cadastro.php?erro=termos_nao_aceitos');
