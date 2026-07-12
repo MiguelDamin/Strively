@@ -54,7 +54,8 @@ include '../components/header.php';
         </p>
       </div>
 
-    <?php elseif ($solicitacao && $solicitacao['status'] === 'reprovado'): ?>
+    <?php else: ?>
+      <?php if ($solicitacao && $solicitacao['status'] === 'reprovado'): ?>
       <!-- ── REPROVADO — pode reenviar ── -->
       <div style="background: #fff0f0; border: 1px solid #ffcccc; border-radius: 12px; padding: 20px; margin-bottom: 20px;">
         <div style="font-size: 1.5rem; margin-bottom: 6px;">❌</div>
@@ -66,10 +67,7 @@ include '../components/header.php';
         <?php endif; ?>
         <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 8px;">Você pode enviar uma nova solicitação com as correções necessárias.</p>
       </div>
-      <!-- cai no formulário abaixo -->
-      <?php include __DIR__ . '/../components/_form_treinador.php'; ?>
-
-    <?php else: ?>
+      <?php endif; ?>
       <!-- ── FORMULÁRIO NORMAL ── -->
 
       <?php if (isset($_GET['erro'])): ?>
