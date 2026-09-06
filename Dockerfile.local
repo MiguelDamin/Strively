@@ -1,0 +1,25 @@
+FROM php:8.2-apache
+
+WORKDIR /var/www/html
+
+RUN apt-get update && apt-get install -y \
+    libpq-dev \
+    libzip-dev \
+    zip \
+    unzip \
+    && docker-php-ext-install pdo pdo_pgsql zip
+
+# Habilita mod_rewrite para URLs limpas
+RUN a2enmod rewrite
+
+# Permite .htaccess sobrescrever configurações
+RUN sed -i 's/AllowOverride None/AllowOverride All/g' /etc/apache2/apache2.conf
+
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+COPY . .
+
+RUN composer install --no-dev --optimize-autoloader --no-interaction
+
+# Apache já expõe na porta 80 internamente
+EXPOSE 80

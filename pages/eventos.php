@@ -224,7 +224,7 @@ function confirmarRedirecionamento(url) {
                       ? '/pages/perfil.php'
                       : '/pages/perfil-publico.php?id=' . $autorEventoId;
                   ?>
-                  <a href="<?= $linkAutorEvento ?>" 
+                  <a href="<?= htmlspecialchars($linkAutorEvento, ENT_QUOTES, 'UTF-8') ?>" 
                      class="card-autor" 
                      style="text-decoration:none;color:inherit;transition:opacity 0.2s;" 
                      onclick="event.stopPropagation()"
@@ -242,7 +242,7 @@ function confirmarRedirecionamento(url) {
 
                 <div style="display:flex; justify-content:center; gap:8px; width:100%;">
                   <?php if (isset($_SESSION['id']) && ($_SESSION['id'] == $evento['usuario_id'] || $_SESSION['perfil'] === 'admin')): ?>
-                    <a href="/pages/editar-evento.php?id=<?= $evento['id'] ?>" class="btn-secondary" style="flex:1; padding:8px 10px; font-size:0.85rem; background:#f5f5f5; border-color:#ccc; color:#333; text-align:center; max-width:140px; display:inline-block" onclick="event.stopPropagation()">Editar</a>
+                    <a href="/pages/editar-evento.php?id=<?= htmlspecialchars($evento['id'], ENT_QUOTES, 'UTF-8') ?>" class="btn-secondary" style="flex:1; padding:8px 10px; font-size:0.85rem; background:#f5f5f5; border-color:#ccc; color:#333; text-align:center; max-width:140px; display:inline-block" onclick="event.stopPropagation()">Editar</a>
                   <?php endif; ?>
                   <a href="javascript:void(0)" 
                      onclick="event.stopPropagation(); confirmarRedirecionamento('<?= htmlspecialchars(addslashes($evento['link_oficial'])) ?>')" 

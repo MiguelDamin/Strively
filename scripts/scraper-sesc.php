@@ -59,99 +59,145 @@ $xpath = new DOMXPath($dom);
 
 /**
  * Tenta extrair a cidade do nome do evento.
- * Estratégia: keyword mapping → regex no título → busca no PDF URL → dicionário de cidades RS.
+ * Estratégia: 
+ *   1. Keyword mapping explícito
+ *   2. Regex fim-de-título (– Cidade) validado contra JSON → ALTA confiança
+ *   3. Busca substring de cidades no título
+ *   4. Minera cidade no PDF URL (filename)
+ *   5. Regex genérico de padrões
+ *   6. Fallback: RS genérico
  */
 function extrairCidade(string $nome, string $pdfUrl = ''): string {
-    $nomeLower   = mb_strtolower($nome, 'UTF-8');
-    $pdfUrlLower = mb_strtolower($pdfUrl, 'UTF-8');
+    static $cidadesDb = null;
+    if ($cidadesDb === null) {
+        $jsonPath = __DIR__ . '/../config/cidades.json';
+        if (file_exists($jsonPath)) {
+            $cidadesDb = json_decode(file_get_contents($jsonPath), true);
+        }
+        if (!is_array($cidadesDb)) {
+            $cidadesDb = ['RS' => [], 'SC' => []];
+        }
+    }
 
-    // 1. Mapeamento direto por palavra-chave no nome
+    $nomeLower = mb_strtolower($nome, 'UTF-8');
+
+    // 1. Mapeamento direto por palavra-chave no nome (ordem importa: mais específico primeiro)
     $mapping = [
-        'caravaggio'         => 'Farroupilha/RS',
-        'festiqueijo'        => 'Carlos Barbosa/RS',
-        'nevasca'            => 'Caxias do Sul/RS',
-        'chuvisca'           => 'Chuvisca/RS',
-        'choque'             => 'Passo Fundo/RS',
-        'fogo'               => 'Porto Alegre/RS',
-        'guaíba'             => 'Guaíba/RS',
-        'orla do guaíba'     => 'Porto Alegre/RS',
-        'riograndino'        => 'Rio Grande/RS',
-        'caita'              => 'Bento Gonçalves/RS',
-        'caitá'              => 'Bento Gonçalves/RS',
-        'serafinense'        => 'Serafina Corrêa/RS',
-        'tribus run'         => 'Rio Grande/RS',
-        'contra o frio'      => 'Porto Alegre/RS',
-        'desafio farroupilha'=> 'Farroupilha/RS',
-        'trilha noturna'     => 'Farroupilha/RS',
-        'são léo mooving'    => 'São Leopoldo/RS',
-        'sao leo mooving'    => 'São Leopoldo/RS',
+        'orla do guaíba'        => 'Porto Alegre/RS',
+        'orla do guaiba'        => 'Porto Alegre/RS',
         'palmeiras das missões' => 'Palmeiras das Missões/RS',
-        'taquaruçu'          => 'Taquaruçu do Sul/RS',
-        'capão do cipó'      => 'Capão do Cipó/RS',
-        'bom princípio'      => 'Bom Princípio/RS',
-        'vicente dutra'      => 'Vicente Dutra/RS',
-        'ibiaçá'             => 'Ibiaçá/RS',
-        'augusto pestana'    => 'Augusto Pestana/RS',
-        'adoção'             => 'Porto Alegre/RS',
-        'meio ambiente'      => 'Caxias do Sul/RS',
-        'polícia civil'      => 'Porto Alegre/RS',
-        'policia civil'      => 'Porto Alegre/RS',
-        'bombeiros'          => 'Pelotas/RS',
+        'palmeiras das missoes' => 'Palmeiras das Missões/RS',
+        'taquaruçu do sul'      => 'Taquaruçu do Sul/RS',
+        'taquarucu do sul'      => 'Taquaruçu do Sul/RS',
+        'capão do cipó'         => 'Capão do Cipó/RS',
+        'capao do cipo'         => 'Capão do Cipó/RS',
+        'bom princípio'         => 'Bom Princípio/RS',
+        'bom principio'         => 'Bom Princípio/RS',
+        'vicente dutra'         => 'Vicente Dutra/RS',
+        'são léo mooving'       => 'São Leopoldo/RS',
+        'sao leo mooving'       => 'São Leopoldo/RS',
+        'desafio farroupilha'   => 'Farroupilha/RS',
+        'frederico westphalen'  => 'Frederico Westphalen/RS',
+        'westphalen'            => 'Frederico Westphalen/RS',
+        'augusto pestana'       => 'Augusto Pestana/RS',
+        'serafinense'           => 'Serafina Corrêa/RS',
+        'tribus run'            => 'Rio Grande/RS',
+        'riograndino'           => 'Rio Grande/RS',
+        'contra o frio'         => 'Porto Alegre/RS',
+        'policia civil'         => 'Porto Alegre/RS',
+        'polícia civil'         => 'Porto Alegre/RS',
+        'caravaggio'            => 'Farroupilha/RS',
+        'festiqueijo'           => 'Carlos Barbosa/RS',
+        'nevasca'               => 'Caxias do Sul/RS',
+        'chuvisca'              => 'Chuvisca/RS',
+        'choque'                => 'Passo Fundo/RS',
+        'trilha noturna'        => 'Farroupilha/RS',
+        'caita'                 => 'Bento Gonçalves/RS',
+        'caitá'                 => 'Bento Gonçalves/RS',
+        'ibiaçá'                => 'Ibiaçá/RS',
+        'ibiaca'                => 'Ibiaçá/RS',
+        'taquaruçu'             => 'Taquaruçu do Sul/RS',
+        'fogo'                  => 'Porto Alegre/RS',
+        'guaíba'                => 'Guaíba/RS',
+        'guaiba'                => 'Guaíba/RS',
+        'adoção'                => 'Porto Alegre/RS',
+        'bombeiros'             => 'Pelotas/RS',
+        'meio ambiente'         => 'Caxias do Sul/RS',
+        'são francisco'         => 'São Francisco de Assis/RS',
+        'sao francisco'         => 'São Francisco de Assis/RS',
     ];
 
     foreach ($mapping as $key => $city) {
         if (mb_stripos($nomeLower, $key, 0, 'UTF-8') !== false) return $city;
     }
 
-    // 2. Extrai cidade de padrões no nome do evento (– CIDADE, EM CIDADE, / CIDADE)
-    $patterns = [
-        '/[\-–]\s+([A-ZÀ-Ÿ]{3,}(?:\s+[A-ZÀ-Ÿ]{2,}(?:\s+[A-ZÀ-Ÿ]{2,})?)?)\s*$/u', // final: "– PORTO ALEGRE"
-        '/\bEM\s+([A-ZÀ-Ÿ]{3,}(?:\s+[A-ZÀ-Ÿ]{2,})?)/u',                            // "EM BENTO"
-        '/SESC\s+([A-ZÀ-Ÿ][A-ZÀ-Ÿa-zà-ÿ]+(?:\s+[A-ZÀ-Ÿ][A-ZÀ-Ÿa-zà-ÿ]+)?)/u',      // "SESC CANOAS"
-        '/\b([A-ZÀ-Ÿ]{4,}(?:\s+[A-ZÀ-Ÿ]{2,}){0,3})\s*(?:2026|\d{4})$/u',           // "SANTANA DO LIVRAMENTO 2026"
-    ];
+    // Helper: busca cidade no JSON dado um texto curto (candidato à cidade)
+    // O JSON já está ordenado por comprimento decrescente → mais específico primeiro
+    $buscaCidadeNoJson = function(string $candidato) use ($cidadesDb): ?string {
+        $candLower = mb_strtolower($candidato, 'UTF-8');
+        $candSimple = mb_strtolower(iconv('UTF-8', 'ASCII//TRANSLIT', $candidato), 'UTF-8');
+        foreach (['RS', 'SC'] as $uf) {
+            foreach ($cidadesDb[$uf] as $cidade) {
+                $cidLower  = mb_strtolower($cidade, 'UTF-8');
+                $cidSimple = mb_strtolower(iconv('UTF-8', 'ASCII//TRANSLIT', $cidade), 'UTF-8');
+                // Busca exata OU substring completa da cidade no candidato
+                if ($cidLower === $candLower || $cidSimple === $candSimple ||
+                    mb_stripos($candLower, $cidLower, 0, 'UTF-8') !== false ||
+                    mb_stripos($candSimple, $cidSimple, 0, 'UTF-8') !== false) {
+                    return $cidade . '/' . $uf;
+                }
+            }
+        }
+        return null;
+    };
 
-    $skipWords = ['SESC', 'RS', 'DATA', 'KM', 'DDD', 'ETAPA', 'CIRCUITO', 'CORRIDA', 'CAMINHADA', 'TRILHA', 'RÚSTICA', 'TREINÃO', 'TREINO', 'POLÍCIA', 'CIVIL', 'BOMBEIROS', 'BRIGADA', 'MILITAR', 'BPM'];
+    // 2. Regex de ALTA CONFIANÇA: cidade no final do título após traço/hífen
+    //    Ex: "2ª Corrida das Nascentes – Jóia" → "Jóia/RS"
+    //    Tem prioridade sobre busca substring para evitar falsos positivos como "Nascentes"
+    if (preg_match('/[\-–]\s*(.{3,40}?)\s*$/u', $nome, $m)) {
+        $candidato = trim($m[1]);
+        $res = $buscaCidadeNoJson($candidato);
+        if ($res) return $res;
+    }
 
-    foreach ($patterns as $p) {
-        if (preg_match($p, $nome, $m)) {
-            $c = trim(preg_replace('/^(Etapa|Circuito|Corrida|Sesc)\s+/iu', '', $m[1]));
-            $cUpper = mb_strtoupper($c, 'UTF-8');
-            if (!in_array($cUpper, $skipWords) && strlen($c) >= 3 && strlen($c) < 40) {
-                return ucwords(mb_strtolower($c, 'UTF-8'), " \t\r\n\f\v-") . '/RS';
+    // 3. Busca de cidades do JSON como substring no título completo
+    //    JSON ordenado por comprimento → "Frederico Westphalen" encontrado antes de "Frederico"
+    foreach (['RS', 'SC'] as $uf) {
+        foreach ($cidadesDb[$uf] as $cidade) {
+            $cidLower  = mb_strtolower($cidade, 'UTF-8');
+            $cidSimple = mb_strtolower(iconv('UTF-8', 'ASCII//TRANSLIT', $cidade), 'UTF-8');
+            if (mb_stripos($nomeLower, $cidLower, 0, 'UTF-8') !== false) {
+                return $cidade . '/' . $uf;
+            }
+            $nomeLowerSimple = mb_strtolower(iconv('UTF-8', 'ASCII//TRANSLIT', $nome), 'UTF-8');
+            if (mb_stripos($nomeLowerSimple, $cidSimple, 0, 'UTF-8') !== false) {
+                return $cidade . '/' . $uf;
             }
         }
     }
 
-    // 3. Minera cidade a partir do nome do arquivo PDF do regulamento
-    //    Ex: "Regulamento-Corrida-Noturna-DDD-2026-Rio-Grande-1.pdf" → "Rio Grande"
+    // 4. Minera cidade a partir do nome do arquivo PDF do regulamento
     if ($pdfUrl) {
         $filename = pathinfo(parse_url($pdfUrl, PHP_URL_PATH), PATHINFO_FILENAME);
         $filename = str_replace(['-', '_'], ' ', $filename);
-        // Remove palavras comuns de regulamento
-        $filename = preg_replace('/\b(Regulamento|Regul|General|Geral|Percurso|Corrida|Rustica|Rústica|Caminhada|Noturna|DDD|Run|Treinao|Treinão|Meia|Maratona|DDD|2026|20\d\d|Sesc|RS|1|2|3|4|5|6|7|8|9|10|compressed)\b/i', '', $filename);
-        $filename = trim(preg_replace('/\s+/', ' ', $filename));
 
-        // Verifica se o que sobrou é uma cidade conhecida
-        $cidades = [
-            'Porto Alegre', 'Caxias do Sul', 'Pelotas', 'Santa Maria', 'Passo Fundo', 'Rio Grande',
-            'Bento Gonçalves', 'Erechim', 'Cruz Alta', 'Canoas', 'Lajeado', 'Santa Cruz do Sul',
-            'Uruguaiana', 'Ijuí', 'Bagé', 'Santana do Livramento', 'Carazinho', 'Alegrete',
-            'Farroupilha', 'Novo Hamburgo', 'Gravataí', 'Viamão', 'Guaíba', 'Tapejara', 'Paraí',
-            'Serafina Corrêa', 'Carlos Barbosa', 'Garibaldi', 'Canela', 'Gramado', 'Torres',
-            'Capão da Canoa', 'Tramandaí', 'Nonoai', 'Charrua', 'Caravaggio', 'São Leopoldo',
-            'Rio Pardo', 'Cachoeirinha', 'Alvorada', 'Eldorado do Sul', 'Osório', 'Camaquã',
-        ];
-
-        foreach ($cidades as $cidade) {
-            if (mb_stripos($filename, $cidade, 0, 'UTF-8') !== false) return "$cidade/RS";
-            // Tenta com a versão sem acentos do PDF
-            $cidadeSimple = iconv('UTF-8', 'ASCII//TRANSLIT', $cidade);
-            if (mb_stripos($filename, $cidadeSimple, 0, 'UTF-8') !== false) return "$cidade/RS";
+        foreach (['RS', 'SC'] as $uf) {
+            foreach ($cidadesDb[$uf] as $cidade) {
+                $cidLower  = mb_strtolower($cidade, 'UTF-8');
+                $cidSimple = mb_strtolower(iconv('UTF-8', 'ASCII//TRANSLIT', $cidade), 'UTF-8');
+                $fnLower   = mb_strtolower($filename, 'UTF-8');
+                $fnSimple  = mb_strtolower(iconv('UTF-8', 'ASCII//TRANSLIT', $filename), 'UTF-8');
+                if (mb_stripos($fnLower, $cidLower, 0, 'UTF-8') !== false ||
+                    mb_stripos($fnSimple, $cidSimple, 0, 'UTF-8') !== false) {
+                    return $cidade . '/' . $uf;
+                }
+            }
         }
 
-        // Se o restante do filename tem pelo menos 4 chars, pode ser uma cidade menor
-        $parts = array_filter(explode(' ', $filename), fn($p) => mb_strlen($p, 'UTF-8') >= 4);
+        // Candidato desconhecido: tenta extrair cidade do filename limpando palavras comuns
+        $filenameClean = preg_replace('/\b(Regulamento|Regul|General|Geral|Percurso|Corrida|Rustica|Rústica|Caminhada|Noturna|DDD|Run|Treinao|Treinão|Meia|Maratona|2026|20\d\d|Sesc|RS|1|2|3|4|5|6|7|8|9|10|compressed)\b/i', '', $filename);
+        $filenameClean = trim(preg_replace('/\s+/', ' ', $filenameClean));
+        $parts = array_filter(explode(' ', $filenameClean), fn($p) => mb_strlen($p, 'UTF-8') >= 4);
         if (count($parts) >= 1 && count($parts) <= 3) {
             $candidate = ucwords(mb_strtolower(implode(' ', $parts), 'UTF-8'));
             if (mb_strlen($candidate, 'UTF-8') >= 4 && mb_strlen($candidate, 'UTF-8') < 35) {
@@ -160,18 +206,29 @@ function extrairCidade(string $nome, string $pdfUrl = ''): string {
         }
     }
 
-    // 4. Dicionário de cidades no próprio nome do evento (fallback)
-    $cidades = [
-        'Porto Alegre', 'Caxias do Sul', 'Pelotas', 'Santa Maria', 'Passo Fundo', 'Rio Grande',
-        'Bento Gonçalves', 'Erechim', 'Cruz Alta', 'Canoas', 'Lajeado', 'Santa Cruz do Sul',
-        'Uruguaiana', 'Ijuí', 'Bagé', 'Santana do Livramento', 'Carazinho', 'Alegrete',
-        'Farroupilha', 'Novo Hamburgo', 'Gravataí', 'Viamão', 'Guaíba', 'Tapejara', 'Paraí',
-        'Serafina Corrêa', 'Carlos Barbosa', 'Garibaldi', 'Canela', 'Gramado', 'Torres',
-        'Capão da Canoa', 'Tramandaí', 'Nonoai',
+    // 5. Regex genérico como último recurso
+    $patterns = [
+        '/\bEM\s+([A-ZÀ-Ÿ]{3,}(?:\s+[A-ZÀ-Ÿ]{2,})?)/u',
+        '/SESC\s+([A-ZÀ-Ÿ][A-ZÀ-Ÿa-zà-ÿ]+(?:\s+[A-ZÀ-Ÿ][A-ZÀ-Ÿa-zà-ÿ]+)?)/u',
+        '/\b([A-ZÀ-Ÿ]{4,}(?:\s+[A-ZÀ-Ÿ]{2,}){0,3})\s*(?:2026|\d{4})$/u',
     ];
+    $skipWords = ['SESC', 'RS', 'DATA', 'KM', 'DDD', 'ETAPA', 'CIRCUITO', 'CORRIDA', 'CAMINHADA', 'TRILHA', 'RÚSTICA', 'TREINÃO', 'TREINO', 'POLÍCIA', 'CIVIL', 'BOMBEIROS', 'BRIGADA', 'MILITAR', 'BPM', 'CONESUL', 'LARANJA', 'CRESOL'];
 
-    foreach ($cidades as $c) {
-        if (mb_stripos($nomeLower, mb_strtolower($c, 'UTF-8'), 0, 'UTF-8') !== false) return "$c/RS";
+    foreach ($patterns as $p) {
+        if (preg_match($p, $nome, $m)) {
+            $c = trim(preg_replace('/^(Etapa|Circuito|Corrida|Sesc)\s+/iu', '', $m[1]));
+            $cUpper = mb_strtoupper($c, 'UTF-8');
+            if (!in_array($cUpper, $skipWords) && strlen($c) >= 3 && strlen($c) < 40) {
+                foreach (['RS', 'SC'] as $uf) {
+                    foreach ($cidadesDb[$uf] as $cidade) {
+                        if (mb_strtolower($c, 'UTF-8') === mb_strtolower($cidade, 'UTF-8')) {
+                            return $cidade . '/' . $uf;
+                        }
+                    }
+                }
+                return ucwords(mb_strtolower($c, 'UTF-8'), " \t\r\n\f\v-") . '/RS';
+            }
+        }
     }
 
     return 'Rio Grande do Sul/RS';

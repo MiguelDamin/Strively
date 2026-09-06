@@ -42,7 +42,19 @@ if (empty($nome) || empty($data_evento) || empty($cidade) || empty($descricao) |
   exit();
 }
 
-$todasDistancias = array_merge($distancias_pre, $dist_livre !== '' ? explode(',', $dist_livre) : []);
+$distias_livres_limpas = [];
+if ($dist_livre !== '') {
+  $partes = explode(',', $dist_livre);
+  foreach ($partes as $p) {
+    $numeric = preg_replace('/[^0-9\.,]/', '', $p);
+    $numeric = trim($numeric);
+    if ($numeric !== '') {
+      $distias_livres_limpas[] = $numeric . 'km';
+    }
+  }
+}
+
+$todasDistancias = array_merge($distancias_pre, $distias_livres_limpas);
 $todasDistancias = array_unique(array_map('trim', $todasDistancias));
 $distanciasStr   = implode(', ', array_filter($todasDistancias));
 
@@ -54,13 +66,17 @@ if (empty($distanciasStr)) {
 $bannerUrl = $evento['banner']; // mantem o atual por padrão
 
 if ($banner_file && $banner_file['tmp_name']) {
+  $ext             = strtolower(pathinfo($banner_file['name'], PATHINFO_EXTENSION));
+  $valid_exts      = ['jpg', 'jpeg', 'png', 'webp'];
+  if(!in_array($ext, $valid_exts)) {
+    header("Location: ../pages/editar-evento.php?id={$evento_id}&erro=formato_imagem");
+    exit();
+  }
+
   $supabaseUrl      = $_ENV['SUPABASE_URL'];
   $supabaseKey      = $_ENV['SUPABASE_SERVICE_ROLE_KEY'];
   $bucketName       = "banners-eventos";
-
-  $ext             = pathinfo($banner_file['name'], PATHINFO_EXTENSION);
-  $valid_exts      = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
-  if(in_array(strtolower($ext), $valid_exts)) {
+  if(true) {
     $nomeUnico       = "evento-" . uniqid() . "." . $ext;
     $fileBinary      = file_get_contents($banner_file['tmp_name']);
 

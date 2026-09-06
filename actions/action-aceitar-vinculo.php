@@ -157,9 +157,9 @@ if ($corredorId <= 0 || empty($token) || !in_array($acao, ['aceitar', 'recusar']
 </head>
 <body>
   <div class="result-card">
-    <div class="result-icon"><?= $icone ?></div>
+    <div class="result-icon"><?= htmlspecialchars($icone, ENT_QUOTES, 'UTF-8') ?></div>
     <h1 class="result-title"><?= htmlspecialchars($titulo) ?></h1>
-    <p class="result-msg"><?= $mensagem ?></p>
+    <p class="result-msg"><?= htmlspecialchars($mensagem, ENT_QUOTES, 'UTF-8') ?></p>
     <a href="/index.php" class="result-link">Ir para o Strively</a>
     <div class="brand">STRIVELY</div>
   </div>

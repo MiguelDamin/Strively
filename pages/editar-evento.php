@@ -44,7 +44,8 @@ foreach ($distanciasCadastradas as $d) {
   if (in_array($d, $opcoesPre)) {
     $preMarcadas[] = $d;
   } elseif (!empty($d)) {
-    $livres[] = $d;
+    $num = preg_replace('/km/i', '', $d);
+    $livres[] = trim($num);
   }
 }
 $distanciaLivreStr = implode(', ', $livres);
@@ -119,7 +120,7 @@ include '../components/header.php';
               'upload_falhou'   => 'Ocorreu um erro no envio da imagem. Tente novamente.',
               'db_falhou'       => 'Ocorreu um erro ao atualizar no banco de dados.',
             ];
-            echo $erros[$_GET['erro']] ?? 'Ocorreu um erro ao processar o formulário.';
+            echo htmlspecialchars($erros[$_GET['erro']] ?? 'Ocorreu um erro ao processar o formulário.', ENT_QUOTES, 'UTF-8');
           ?>
         </div>
       <?php endif; ?>
@@ -151,11 +152,11 @@ include '../components/header.php';
           <div class="distancias-grid">
             <?php foreach ($opcoesPre as $opcao): ?>
             <label class="distancia-item">
-              <input type="checkbox" name="distancias_pre[]" value="<?= $opcao ?>" <?= in_array($opcao, $preMarcadas) ? 'checked' : '' ?>> <?= $opcao ?>
+              <input type="checkbox" name="distancias_pre[]" value="<?= htmlspecialchars($opcao, ENT_QUOTES, 'UTF-8') ?>" <?= in_array($opcao, $preMarcadas) ? 'checked' : '' ?>> <?= htmlspecialchars($opcao, ENT_QUOTES, 'UTF-8') ?>
             </label>
             <?php endforeach; ?>
           </div>
-          <input type="text" name="distancia_livre" value="<?= htmlspecialchars($distanciaLivreStr) ?>" placeholder="Outra distância (ex: 8km, 15km)">
+          <input type="text" name="distancia_livre" value="<?= htmlspecialchars($distanciaLivreStr) ?>" placeholder="Outras distâncias (ex: 8, 15) — digite apenas números">
         </div>
 
         <!-- LINK OFICIAL -->
@@ -196,6 +197,10 @@ include '../components/header.php';
       if (val && !val.match(/^https?:\/\//i)) {
           this.value = 'https://' + val;
       }
+  });
+
+  document.querySelector('input[name="distancia_livre"]')?.addEventListener('input', function() {
+      this.value = this.value.replace(/[^0-9., ]/g, '');
   });
   </script>
 

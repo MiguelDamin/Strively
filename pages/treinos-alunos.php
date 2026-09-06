@@ -209,11 +209,11 @@ include '../components/header.php';
 
   <!-- ABAS -->
   <div class="abas">
-    <a href="?aba=calendario&aluno_id=<?= $aluno_id ?>" class="aba-btn <?= $aba === 'calendario' ? 'ativa' : '' ?>">
+    <a href="?aba=calendario&aluno_id=<?= htmlspecialchars($aluno_id, ENT_QUOTES, 'UTF-8') ?>" class="aba-btn <?= $aba === 'calendario' ? 'ativa' : '' ?>">
       <svg viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5C3.9 3 3 3.9 3 5v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
       Calendário
     </a>
-    <a href="?aba=planilha&aluno_id=<?= $aluno_id ?>" class="aba-btn <?= $aba === 'planilha' ? 'ativa' : '' ?>">
+    <a href="?aba=planilha&aluno_id=<?= htmlspecialchars($aluno_id, ENT_QUOTES, 'UTF-8') ?>" class="aba-btn <?= $aba === 'planilha' ? 'ativa' : '' ?>">
       <svg viewBox="0 0 24 24"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg>
       Planilha
     </a>
@@ -233,7 +233,7 @@ include '../components/header.php';
     </div>
     <div class="cal-grid">
       <?php foreach(['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'] as $dn): ?>
-        <div class="cal-dia-nome"><?= $dn ?></div>
+        <div class="cal-dia-nome"><?= htmlspecialchars($dn, ENT_QUOTES, 'UTF-8') ?></div>
       <?php endforeach; ?>
     </div>
     <div class="cal-grid" id="cal-dias"></div>
@@ -267,7 +267,7 @@ include '../components/header.php';
           <div class="planilha-item evento-item">
             <div class="planilha-data">
               <div class="dia"><?= $dt->format('d') ?></div>
-              <div class="mes"><?= $meses[(int)$dt->format('m') - 1] ?></div>
+              <div class="mes"><?= htmlspecialchars($meses[(int)$dt->format('m') - 1], ENT_QUOTES, 'UTF-8') ?></div>
             </div>
             <div class="planilha-info">
               <div class="planilha-tipo-badge evento-badge">🏅 Evento</div>
@@ -294,7 +294,7 @@ include '../components/header.php';
                    '<?= htmlspecialchars($item['descricao'] ?? '', ENT_QUOTES) ?>',
                    '<?= htmlspecialchars($item['tipo'] ?? '') ?>',
                    '<?= date('d/m/Y', strtotime($item['data_treino'])) ?>',
-                   '<?= $item['status'] ?>',
+                   '<?= htmlspecialchars($item['status'], ENT_QUOTES, 'UTF-8') ?>',
                    <?= !empty($item['treinador_id']) ? 'true' : 'false' ?>,
                    '<?= !empty($item['distancia_planejada_km']) ? (float)$item['distancia_planejada_km'] : '' ?>',
                    '<?= !empty($item['km_realizado_strava']) ? (float)$item['km_realizado_strava'] : '' ?>',
@@ -305,7 +305,7 @@ include '../components/header.php';
                style="cursor: pointer;">
             <div class="planilha-data">
               <div class="dia"><?= $dt->format('d') ?></div>
-              <div class="mes"><?= $meses[(int)$dt->format('m') - 1] ?></div>
+              <div class="mes"><?= htmlspecialchars($meses[(int)$dt->format('m') - 1], ENT_QUOTES, 'UTF-8') ?></div>
             </div>
             <div class="planilha-info">
               <?php if (isset($item['tipo']) && $item['tipo'] === 'strava'): ?>
@@ -331,7 +331,7 @@ include '../components/header.php';
               <?php endif; ?>
 
               <?php if ($temStravaLink): ?>
-              <a href="https://www.strava.com/activities/<?= $item['strava_activity_id'] ?>" target="_blank"
+              <a href="https://www.strava.com/activities/<?= htmlspecialchars($item['strava_activity_id'], ENT_QUOTES, 'UTF-8') ?>" target="_blank"
                  style="display:inline-flex;align-items:center;gap:6px;background:#FC4C02;color:#fff;border-radius:20px;padding:6px 13px;font-size:0.76rem;font-weight:700;text-decoration:none;font-family:'Outfit',sans-serif;margin-top:8px;">
                 <svg viewBox="0 0 24 24" style="width:13px;height:13px;fill:#fff;"><path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.598h4.172L10.463 0l-7 13.828h4.169"/></svg>
                 Ver no Strava
@@ -342,7 +342,7 @@ include '../components/header.php';
               <?php if (!$item['_proprio']): ?>
               <form action="/actions/action-remover-treino.php" method="POST" onsubmit="removerTreinoAjax(event, this); return false;">
                 <input type="hidden" name="treino_id" value="<?= (int)$item['id'] ?>">
-                <input type="hidden" name="aluno_id"  value="<?= $aluno_id ?>">
+                <input type="hidden" name="aluno_id"  value="<?= htmlspecialchars($aluno_id, ENT_QUOTES, 'UTF-8') ?>">
                 <input type="hidden" name="aba"        value="planilha">
                 <button type="submit" class="btn-remover-treino">Remover</button>
               </form>
@@ -381,7 +381,7 @@ include '../components/header.php';
     </div>
     <div class="modal-body">
       <form action="/actions/action-adicionar-treino.php" method="POST" class="modal-form">
-        <input type="hidden" name="aluno_id" value="<?= $aluno_id ?>">
+        <input type="hidden" name="aluno_id" value="<?= htmlspecialchars($aluno_id, ENT_QUOTES, 'UTF-8') ?>">
         <input type="hidden" name="aba"      value="<?= htmlspecialchars($aba) ?>">
 
         <div class="modal-form-grid">
@@ -434,7 +434,7 @@ include '../components/header.php';
 </div>
 
 <script>
-const treinosPorData = <?= $treinos_json ?>;
+const treinosPorData = <?= json_encode($treinos_por_data, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) ?>;
 let anoAtual = new Date().getFullYear(), mesAtual = new Date().getMonth();
 const mesesNomes = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
 

@@ -73,7 +73,7 @@ try {
                     
                     <?php if (strpos(strtolower($n['texto']), 'perseguir') !== false && empty($n['am_i_following'])): ?>
                         <div style="margin-top:8px;">
-                            <button onclick="event.preventDefault(); followBackFast(<?= $n['remetente_id'] ?>, this)" style="background:var(--green);color:#fff;border:none;padding:6px 14px;border-radius:100px;font-size:0.8rem;font-weight:700;cursor:pointer;transition:transform 0.2s;">Persiga de volta</button>
+                            <button onclick="event.preventDefault(); followBackFast(<?= htmlspecialchars($n['remetente_id'], ENT_QUOTES, 'UTF-8') ?>, this)" style="background:var(--green);color:#fff;border:none;padding:6px 14px;border-radius:100px;font-size:0.8rem;font-weight:700;cursor:pointer;transition:transform 0.2s;">Persiga de volta</button>
                         </div>
                     <?php endif; ?>
 
@@ -82,7 +82,7 @@ try {
                             $dt = new DateTime($n['data_criacao']);
                             $tempo = $dt->format('d/m/Y H:i');
                         ?>
-                        <div class="notif-time"><?= $tempo ?></div>
+                        <div class="notif-time"><?= htmlspecialchars($tempo, ENT_QUOTES, 'UTF-8') ?></div>
                     <?php else: ?>
                         <div class="notif-time">Agora mesmo</div>
                     <?php endif; ?>

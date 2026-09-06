@@ -879,7 +879,7 @@ include '../components/header.php';
                         'strava_sincronizado' => '🔄 Dados do Strava atualizados!',
                         'strava_desconectado' => 'Strava desconectado.',
                     ];
-                    echo $mensagens[$_GET['msg']] ?? 'Ação realizada com sucesso!';
+                    echo htmlspecialchars($mensagens[$_GET['msg']] ?? 'Ação realizada com sucesso!', ENT_QUOTES, 'UTF-8');
                 }
                 ?>
             </div>
@@ -897,7 +897,7 @@ include '../components/header.php';
                     'strava_sync' => 'Erro ao sincronizar dados. Tente novamente mais tarde.',
                     'strava_state' => 'Erro de segurança. Tente novamente.'
                 ];
-                echo $erros[$_GET['erro']] ?? 'Ocorreu um erro.';
+                echo htmlspecialchars($erros[$_GET['erro']] ?? 'Ocorreu um erro.', ENT_QUOTES, 'UTF-8');
                 ?>
             </div>
         <?php endif; ?>
@@ -935,7 +935,7 @@ include '../components/header.php';
 
         <?php if ($treinador): ?>
             <div class="card-treinador"
-                onclick="window.location.href='/pages/perfil-publico.php?id=<?= $treinador['id'] ?>'">
+                onclick="window.location.href='/pages/perfil-publico.php?id=<?= htmlspecialchars($treinador['id'], ENT_QUOTES, 'UTF-8') ?>'">
                 <div class="card-treinador-title">🏋️ Seu Treinador</div>
                 <div class="card-treinador-info">
                     <?php if (!empty($treinador['foto'])): ?>
@@ -971,7 +971,7 @@ include '../components/header.php';
                         <span class="stat-label">km em <?= date('Y') ?></span>
                     </div>
                     <div class="stat-item">
-                        <span class="stat-numero"><?= $usuario['strava_atividades_total'] ?></span>
+                        <span class="stat-numero"><?= htmlspecialchars($usuario['strava_atividades_total'], ENT_QUOTES, 'UTF-8') ?></span>
                         <span class="stat-label">atividades</span>
                     </div>
                 </div>

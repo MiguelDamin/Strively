@@ -933,7 +933,7 @@ function dataRelativa(string $dtStr): string {
                     'email_falhou'      => 'Falha ao enviar e-mail. Tente novamente.',
                     'codigo_invalido'   => 'Código incorreto ou expirado. Tente novamente.'
                   ];
-                  echo $erros[$_GET['erro']] ?? 'Ocorreu um erro.';
+                  echo htmlspecialchars($erros[$_GET['erro']] ?? 'Ocorreu um erro.', ENT_QUOTES, 'UTF-8');
                 ?>
               </div>
             <?php endif; ?>
@@ -966,7 +966,7 @@ function dataRelativa(string $dtStr): string {
                     'codigo_invalido' => 'O código inserido está incorreto.',
                     'codigo_expirado' => 'O código expirou após 10 minutos. Solicite novamente.',
                   ];
-                  echo $erros[$_GET['erro']] ?? 'Ocorreu um erro.';
+                  echo htmlspecialchars($erros[$_GET['erro']] ?? 'Ocorreu um erro.', ENT_QUOTES, 'UTF-8');
                 ?>
               </div>
             <?php endif; ?>
@@ -1054,7 +1054,7 @@ function dataRelativa(string $dtStr): string {
                       <span class="stat-lbl-cfg">km em <?= date('Y') ?></span>
                     </div>
                     <div class="stat-item-cfg">
-                      <span class="stat-num-cfg"><?= $userConfig['strava_atividades_total'] ?></span>
+                      <span class="stat-num-cfg"><?= htmlspecialchars($userConfig['strava_atividades_total'], ENT_QUOTES, 'UTF-8') ?></span>
                       <span class="stat-lbl-cfg">atividades</span>
                     </div>
                   </div>
@@ -1145,7 +1145,7 @@ function dataRelativa(string $dtStr): string {
                   'confirmacao_invalida' => 'Você deve digitar a palavra EXCLUIR exatamente.',
                   'falha_exclusao'   => 'Erro interno. Nenhum dado foi apagado. Tente novamente.',
                 ];
-                echo $errosMsgs[$_GET['erro']] ?? 'Ocorreu um erro.';
+                echo htmlspecialchars($errosMsgs[$_GET['erro']] ?? 'Ocorreu um erro.', ENT_QUOTES, 'UTF-8');
               ?>
             </div>
           <?php endif; ?>
@@ -1223,7 +1223,7 @@ function dataRelativa(string $dtStr): string {
         <h3 style="color:#dc2626;">Desvincular Treinador</h3>
         <p style="color:#555;font-size:0.95rem;margin-bottom:24px;">Tem certeza que deseja desvincular de <?= htmlspecialchars($treinador['nome'] ?? '') ?>? Você perderá acesso aos treinos planejados por ele.</p>
         <form action="/actions/action-remover-treinador.php" method="POST">
-          <input type="hidden" name="treinador_id" value="<?= $treinador['id'] ?? '' ?>">
+          <input type="hidden" name="treinador_id" value="<?= htmlspecialchars($treinador['id'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
           <input type="hidden" name="return_url" value="/pages/configuracoes.php?secao=treinador&msg=treinador_removido">
           <div class="modal-cfg-footer" style="margin-top:0;">
             <button type="button" class="btn-modal-cancel" onclick="fecharModalCancelarTreinador()">Cancelar</button>

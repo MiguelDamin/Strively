@@ -35,7 +35,19 @@ if (empty($nome) || empty($data_evento) || empty($cidade) || empty($descricao) |
 }
 
 // Junta as distâncias
-$todasDistancias = array_merge($distancias_pre, $dist_livre !== '' ? explode(',', $dist_livre) : []);
+$distancias_livres_limpas = [];
+if ($dist_livre !== '') {
+  $partes = explode(',', $dist_livre);
+  foreach ($partes as $p) {
+    $numeric = preg_replace('/[^0-9\.,]/', '', $p);
+    $numeric = trim($numeric);
+    if ($numeric !== '') {
+      $distancias_livres_limpas[] = $numeric . 'km';
+    }
+  }
+}
+
+$todasDistancias = array_merge($distancias_pre, $distancias_livres_limpas);
 $todasDistancias = array_unique(array_map('trim', $todasDistancias));
 $distanciasStr   = implode(', ', array_filter($todasDistancias));
 
@@ -49,8 +61,13 @@ $supabaseUrl      = $_ENV['SUPABASE_URL'];
 $supabaseKey      = $_ENV['SUPABASE_SERVICE_ROLE_KEY'];
 $bucketName       = "banners-eventos";
 
-// Gera nome único
-$ext             = pathinfo($banner_file['name'], PATHINFO_EXTENSION);
+// Gera nome único e valida formato
+$ext             = strtolower(pathinfo($banner_file['name'], PATHINFO_EXTENSION));
+$permitidos      = ['jpg', 'jpeg', 'png', 'webp'];
+if (!in_array($ext, $permitidos)) {
+  header('Location: ../pages/divulgar-evento.php?erro=formato_imagem');
+  exit();
+}
 $nomeUnico       = "evento-" . uniqid() . "." . $ext;
 $fileBinary      = file_get_contents($banner_file['tmp_name']);
 

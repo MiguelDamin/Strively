@@ -25,38 +25,44 @@ if (!empty($_FILES['foto']['tmp_name'])) {
   $extensao = strtolower(pathinfo($arquivo['name'], PATHINFO_EXTENSION));
   $permitidos = ['jpg', 'jpeg', 'png', 'webp'];
   
-  if (in_array($extensao, $permitidos)) {
-    $nomeArquivo = 'post-' . $id . '-' . time() . '-' . uniqid() . '.' . $extensao;
-    $bucket = 'posts-feed';
-    $supabaseUrl = $_ENV['SUPABASE_URL'];
-    $serviceKey = $_ENV['SUPABASE_SERVICE_ROLE_KEY'];
-    $conteudo = file_get_contents($arquivo['tmp_name']);
-    $endpoint = $supabaseUrl . '/storage/v1/object/' . $bucket . '/' . $nomeArquivo;
-    
-    $opcoes = [
-      'http' => [
-        'method'  => 'POST',
-        'header'  => "Authorization: Bearer " . $serviceKey . "\r\n" .
-                     "Content-Type: image/" . ($extensao === 'jpg' ? 'jpeg' : $extensao) . "\r\n" .
-                     "x-upsert: true\r\n",
-        'content' => $conteudo,
-        'ignore_errors' => true
-      ]
-    ];
-    $contexto = stream_context_create($opcoes);
-    $resposta = file_get_contents($endpoint, false, $contexto);
-    
-    $httpCode = 500;
-    if (!empty($http_response_header)) {
-      preg_match('#HTTP/\d+\.\d+ (\d+)#', $http_response_header[0], $matches);
-      if (isset($matches[1])) {
-          $httpCode = (int)$matches[1];
-      }
+  if (!in_array($extensao, $permitidos)) {
+    header('Location: /pages/comunidade.php?erro=foto_invalida');
+    exit();
+  }
+
+  $nomeArquivo = 'post-' . $id . '-' . time() . '-' . uniqid() . '.' . $extensao;
+  $bucket = 'posts-feed';
+  $supabaseUrl = $_ENV['SUPABASE_URL'];
+  $serviceKey = $_ENV['SUPABASE_SERVICE_ROLE_KEY'];
+  $conteudo = file_get_contents($arquivo['tmp_name']);
+  $endpoint = $supabaseUrl . '/storage/v1/object/' . $bucket . '/' . $nomeArquivo;
+  
+  $opcoes = [
+    'http' => [
+      'method'  => 'POST',
+      'header'  => "Authorization: Bearer " . $serviceKey . "\r\n" .
+                   "Content-Type: image/" . ($extensao === 'jpg' ? 'jpeg' : $extensao) . "\r\n" .
+                   "x-upsert: true\r\n",
+      'content' => $conteudo,
+      'ignore_errors' => true
+    ]
+  ];
+  $contexto = stream_context_create($opcoes);
+  $resposta = file_get_contents($endpoint, false, $contexto);
+  
+  $httpCode = 500;
+  if (!empty($http_response_header)) {
+    preg_match('#HTTP/\d+\.\d+ (\d+)#', $http_response_header[0], $matches);
+    if (isset($matches[1])) {
+        $httpCode = (int)$matches[1];
     }
-    
-    if ($httpCode === 200 || $httpCode === 201) {
-      $fotoUrl = $supabaseUrl . '/storage/v1/object/public/' . $bucket . '/' . $nomeArquivo;
-    }
+  }
+  
+  if ($httpCode === 200 || $httpCode === 201) {
+    $fotoUrl = $supabaseUrl . '/storage/v1/object/public/' . $bucket . '/' . $nomeArquivo;
+  } else {
+    header('Location: /pages/comunidade.php?erro=upload_falhou');
+    exit();
   }
 }
 

@@ -49,9 +49,9 @@ function renderPostCard($p, $runnerIcon) {
     ? '/pages/perfil.php'
     : '/pages/perfil-publico.php?id=' . $autorId;
 ?>
-  <div class="post-card" id="post-<?= $p['id'] ?>" style="width: 100% !important; min-width: 100% !important; box-sizing: border-box !important;">
+  <div class="post-card" id="post-<?= htmlspecialchars($p['id'], ENT_QUOTES, 'UTF-8') ?>" style="width: 100% !important; min-width: 100% !important; box-sizing: border-box !important;">
     <div class="post-header">
-      <a href="<?= $linkAutor ?>" style="display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit;flex:1;">
+      <a href="<?= htmlspecialchars($linkAutor, ENT_QUOTES, 'UTF-8') ?>" style="display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit;flex:1;">
         <?php if (!empty($p['autor_foto'])): ?>
           <img src="<?= htmlspecialchars(strpos($p['autor_foto'], 'http') === 0 ? $p['autor_foto'] : '/'.$p['autor_foto']) ?>" 
                class="post-avatar" 
@@ -69,7 +69,7 @@ function renderPostCard($p, $runnerIcon) {
           <span style="font-weight:700;color:var(--text-primary,#111);">
             <?= htmlspecialchars($p['autor_nome']) ?>
           </span>
-          <span class="post-date"><?= $tempoFormatado ?></span>
+          <span class="post-date"><?= htmlspecialchars($tempoFormatado, ENT_QUOTES, 'UTF-8') ?></span>
         </div>
       </a>
     </div>
@@ -106,15 +106,15 @@ function renderPostCard($p, $runnerIcon) {
     <?php endif; ?>
 
     <div class="post-footer">
-      <button class="like-btn <?= $p['curtiu'] ? 'liked' : '' ?>" onclick="toggleLike(<?= $p['id'] ?>, this)">
-        💪 <span class="like-count"><?= $p['curtidas'] ?></span>
+      <button class="like-btn <?= $p['curtiu'] ? 'liked' : '' ?>" onclick="toggleLike(<?= htmlspecialchars($p['id'], ENT_QUOTES, 'UTF-8') ?>, this)">
+        💪 <span class="like-count"><?= htmlspecialchars($p['curtidas'], ENT_QUOTES, 'UTF-8') ?></span>
       </button>
 
       <?php if ($p['usuario_id'] === $_SESSION['id']): ?>
         <div class="post-actions">
-          <button type="button" title="Editar" onclick="abrirModalEditar(<?= $p['id'] ?>)">✏️</button>
+          <button type="button" title="Editar" onclick="abrirModalEditar(<?= htmlspecialchars($p['id'], ENT_QUOTES, 'UTF-8') ?>)">✏️</button>
           <form action="/actions/action-excluir-post.php" method="POST" onsubmit="return confirm('Apagar este post?');">
-            <input type="hidden" name="post_id" value="<?= $p['id'] ?>">
+            <input type="hidden" name="post_id" value="<?= htmlspecialchars($p['id'], ENT_QUOTES, 'UTF-8') ?>">
             <button type="submit" title="Excluir">🗑️</button>
           </form>
         </div>
@@ -127,6 +127,20 @@ function renderPostCard($p, $runnerIcon) {
 
 
 <div class="comunidade-wrapper" id="comunidade-wrapper-id" style="width: 100% !important; max-width: 650px !important; margin: 0 auto !important; align-self: stretch !important; flex: 1 1 auto !important; display: flex !important; flex-direction: column !important;">
+
+  <?php if (isset($_GET['erro'])): ?>
+    <div class="auth-erro" style="background:#fee2e2; color:#b91c1c; padding:12px; border-radius:10px; border:1px solid #fecaca; margin-bottom: 16px; font-size:0.9rem; font-weight:600; text-align:center;">
+      <?php
+        $erros = [
+          'foto_invalida' => 'Formato de imagem inválido! Escolha JPG, PNG ou WebP.',
+          'titulo_vazio' => 'Por favor, insira um título para a publicação.',
+          'sem_permissao' => 'Você não tem permissão para realizar esta ação.',
+          'upload_falhou' => 'Ocorreu um erro no envio da imagem. Tente novamente.'
+        ];
+        echo htmlspecialchars($erros[$_GET['erro']] ?? 'Ocorreu um erro ao processar a publicação.', ENT_QUOTES, 'UTF-8');
+      ?>
+    </div>
+  <?php endif; ?>
 
   <div class="c-tabs">
     <div class="c-tab active" onclick="switchTab('feed')">Feed</div>
@@ -171,7 +185,7 @@ function renderPostCard($p, $runnerIcon) {
         <input type="text" name="titulo" placeholder="Ex: Cupom de desconto" required>
         
         <label>Foto (opcional)</label>
-        <input type="file" name="foto" accept="image/*">
+        <input type="file" name="foto" accept="image/png, image/jpeg, image/webp">
         
         <label>Descrição (opcional)</label>
         <textarea name="descricao" placeholder="Adicione detalhes..."></textarea>
@@ -190,16 +204,16 @@ function renderPostCard($p, $runnerIcon) {
 <!-- Modais de edição -->
 <?php foreach ($posts as $post): ?>
   <?php if ($post['usuario_id'] === $_SESSION['id']): ?>
-    <div id="modal-editar-<?= $post['id'] ?>" class="modal-overlay">
+    <div id="modal-editar-<?= htmlspecialchars($post['id'], ENT_QUOTES, 'UTF-8') ?>" class="modal-overlay">
       <div class="modal-box">
-        <div class="m-close" onclick="fecharModal(<?= $post['id'] ?>)">&times;</div>
+        <div class="m-close" onclick="fecharModal(<?= htmlspecialchars($post['id'], ENT_QUOTES, 'UTF-8') ?>)">&times;</div>
         <h3>Editar publicação</h3>
         <form action="/actions/action-editar-post.php" method="POST" enctype="multipart/form-data">
-          <input type="hidden" name="post_id" value="<?= $post['id'] ?>">
+          <input type="hidden" name="post_id" value="<?= htmlspecialchars($post['id'], ENT_QUOTES, 'UTF-8') ?>">
           <input type="text" name="titulo" value="<?= htmlspecialchars($post['titulo'] ?? '') ?>" placeholder="Título" required>
           <textarea name="descricao" placeholder="Descrição (opcional)"><?= htmlspecialchars($post['descricao'] ?? '') ?></textarea>
           <label style="display:block;margin-bottom:8px;font-size:0.9rem;font-weight:600;color:var(--text-secondary);">Nova foto (opcional):</label>
-          <input type="file" name="foto" accept="image/*">
+          <input type="file" name="foto" accept="image/png, image/jpeg, image/webp">
           <?php if (!empty($post['foto'])): ?>
             <img src="<?= htmlspecialchars(strpos($post['foto'], 'http') === 0 ? $post['foto'] : '/'.$post['foto']) ?>" style="width:100px;height:100px;object-fit:cover;border-radius:10px;margin-bottom:12px;border:1px solid #ddd;">
           <?php endif; ?>
@@ -283,6 +297,21 @@ document.querySelectorAll('.modal-overlay').forEach(el => {
         if (e.target === this) {
             this.classList.remove('open');
             unlockScroll();
+        }
+    });
+});
+
+document.querySelectorAll('input[type="file"][name="foto"]').forEach(input => {
+    input.addEventListener('change', function() {
+        const file = this.files[0];
+        if (file) {
+            const mimeTypes = ['image/jpeg', 'image/png', 'image/webp'];
+            const extensions = ['jpg', 'jpeg', 'png', 'webp'];
+            const ext = file.name.split('.').pop().toLowerCase();
+            if (!mimeTypes.includes(file.type) && !extensions.includes(ext)) {
+                alert('Formato de imagem inválido! Escolha JPG, PNG ou WebP.');
+                this.value = ''; // clears the input
+            }
         }
     });
 });

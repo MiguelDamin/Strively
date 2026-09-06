@@ -39,7 +39,7 @@ $etapa = $_GET['etapa'] ?? 'email';
                 'nao_encontrado' => 'Nenhuma conta encontrada com este e-mail.',
                 'falha_email'    => 'Não foi possível enviar o e-mail. Tente mais tarde.'
               ];
-              echo $erros[$_GET['erro']] ?? 'Ocorreu um erro. Tente novamente.';
+              echo htmlspecialchars($erros[$_GET['erro']] ?? 'Ocorreu um erro. Tente novamente.', ENT_QUOTES, 'UTF-8');
             ?>
           </div>
         <?php endif; ?>
@@ -70,7 +70,7 @@ $etapa = $_GET['etapa'] ?? 'email';
                 'codigo_invalido' => 'Código incorreto. Verifique e tente novamente.',
                 'codigo_expirado' => 'O código expirou após 10 minutos. Solicite novamente.'
               ];
-              echo $erros[$_GET['erro']] ?? 'Erro ao validar o código.';
+              echo htmlspecialchars($erros[$_GET['erro']] ?? 'Erro ao validar o código.', ENT_QUOTES, 'UTF-8');
             ?>
           </div>
         <?php endif; ?>
@@ -117,7 +117,7 @@ $etapa = $_GET['etapa'] ?? 'email';
                 'senhas_diferentes' => 'As senhas não coincidem.',
                 'senha_curta'       => 'Sua senha precisa ter pelos menos 6 caracteres.'
               ];
-              echo $erros[$_GET['erro']] ?? 'Ocorreu um erro no formulário.';
+              echo htmlspecialchars($erros[$_GET['erro']] ?? 'Ocorreu um erro no formulário.', ENT_QUOTES, 'UTF-8');
             ?>
           </div>
         <?php endif; ?>

@@ -224,7 +224,7 @@ body { background-color: var(--bg); }
 
         <h1 class="ps-nome-view"><?= htmlspecialchars($visitado['nome']) ?></h1>
         <div style="font-size: 0.95rem; font-weight: 700; color: var(--text-primary); margin-top: 6px;">
-            <span id="contador-perseguidores"><?= $total_perseguidores ?></span> perseguidores
+            <span id="contador-perseguidores"><?= htmlspecialchars($total_perseguidores, ENT_QUOTES, 'UTF-8') ?></span> perseguidores
         </div>
         <p class="ps-cidade-view">📍 <?= !empty($visitado['cidade']) ? htmlspecialchars($visitado['cidade']) : 'Cidade não informada' ?></p>
         
@@ -238,7 +238,7 @@ body { background-color: var(--bg); }
         </div>
 
         <?php if (isset($_SESSION['id']) && $_SESSION['id'] != $visitado_id): ?>
-            <button id="btn-perseguir" class="btn-perseguir <?= $ja_persegue ? 'btn-perseguindo' : '' ?>" onclick="togglePerseguir(<?= $visitado_id ?>)">
+            <button id="btn-perseguir" class="btn-perseguir <?= $ja_persegue ? 'btn-perseguindo' : '' ?>" onclick="togglePerseguir(<?= htmlspecialchars($visitado_id, ENT_QUOTES, 'UTF-8') ?>)">
                 <?= $ja_persegue ? 'Perseguindo' : 'Perseguir' ?>
             </button>
         <?php endif; ?>
@@ -259,7 +259,7 @@ body { background-color: var(--bg); }
 
         <?php if ($treinador_descobrir): ?>
             <!-- TREINADOR DESSE USUARIO -->
-            <div class="card-treinador" onclick="window.location.href='/pages/perfil-publico.php?id=<?= $treinador_descobrir['id'] ?>'">
+            <div class="card-treinador" onclick="window.location.href='/pages/perfil-publico.php?id=<?= htmlspecialchars($treinador_descobrir['id'], ENT_QUOTES, 'UTF-8') ?>'">
                 <div class="card-treinador-title">🏋️ Treinador atual</div>
                 <div class="card-treinador-info">
                     <?php if (!empty($treinador_descobrir['foto'])): ?>
@@ -311,7 +311,7 @@ body { background-color: var(--bg); }
 
         <div class="ps-eventos-header">
             <h2 class="secao-titulo" style="margin:0;">Eventos desse corredor</h2>
-            <select class="ps-filter-select" onchange="window.location.href='?id=<?= $visitado_id ?>&filtro_evento='+this.value">
+            <select class="ps-filter-select" onchange="window.location.href='?id=<?= htmlspecialchars($visitado_id, ENT_QUOTES, 'UTF-8') ?>&filtro_evento='+this.value">
                 <option value="todos" <?= $filtro === 'todos' ? 'selected' : '' ?>>Todos os eventos</option>
                 <option value="proximos" <?= $filtro === 'proximos' ? 'selected' : '' ?>>Próximos</option>
                 <option value="participados" <?= $filtro === 'participados' ? 'selected' : '' ?>>Já participados</option>

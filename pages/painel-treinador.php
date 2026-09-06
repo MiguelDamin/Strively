@@ -195,8 +195,8 @@ include '../components/header.php';
     <div class="stat-card">
       <div class="stat-icon"><svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></div>
       <div class="stat-label">Alunos Ativos</div>
-      <div class="stat-valor"><?= $totalAtivos ?> <span style="font-size: 1rem; color: #999;">/ <?= count($alunosBrutos) ?></span></div>
-      <div class="stat-sub"><?= $totalInativos ?> inativos esta semana</div>
+      <div class="stat-valor"><?= htmlspecialchars($totalAtivos, ENT_QUOTES, 'UTF-8') ?> <span style="font-size: 1rem; color: #999;">/ <?= count($alunosBrutos) ?></span></div>
+      <div class="stat-sub"><?= htmlspecialchars($totalInativos, ENT_QUOTES, 'UTF-8') ?> inativos esta semana</div>
     </div>
     <div class="stat-card">
       <div class="stat-icon"><svg viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg></div>
@@ -204,7 +204,7 @@ include '../components/header.php';
       <div class="stat-valor">
         <?= $percentualGeral !== null ? round($percentualGeral) . '%' : '—' ?>
       </div>
-      <div class="stat-sub"><?= $totalRealizadosGeral ?> treinos realizados</div>
+      <div class="stat-sub"><?= htmlspecialchars($totalRealizadosGeral, ENT_QUOTES, 'UTF-8') ?> treinos realizados</div>
     </div>
     <div class="stat-card">
       <div class="stat-icon"><svg viewBox="0 0 24 24"><path d="M13.5 5.5c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zM9.8 8.9L7 23h2.1l1.8-8 2.1 2v6h2v-7.5l-2.1-2 .6-3C14.8 12 16.8 13 19 13v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1L6 8.3V13h2V9.6l1.8-.7"/></svg></div>
@@ -215,7 +215,7 @@ include '../components/header.php';
     <div class="stat-card">
       <div class="stat-icon"><svg viewBox="0 0 24 24"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.93 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6C8 8.15 9.51 6 12 6s4 2.15 4 5v6z"/></svg></div>
       <div class="stat-label">Com Alertas</div>
-      <div class="stat-valor"><?= $alunosComAlerta ?></div>
+      <div class="stat-valor"><?= htmlspecialchars($alunosComAlerta, ENT_QUOTES, 'UTF-8') ?></div>
       <div class="stat-sub">Exigem atenção</div>
     </div>
   </div>
@@ -248,7 +248,7 @@ include '../components/header.php';
   <?php else: ?>
     <div class="alunos-grid">
       <?php foreach ($alunosProcessados as $ab): ?>
-        <a href="/pages/aluno-overview.php?aluno_id=<?= $ab['id'] ?>" class="aluno-card">
+        <a href="/pages/aluno-overview.php?aluno_id=<?= htmlspecialchars($ab['id'], ENT_QUOTES, 'UTF-8') ?>" class="aluno-card">
           <div class="ac-header">
             <?php if (!empty($ab['foto'])): ?>
               <img src="<?= htmlspecialchars($ab['foto']) ?>" alt="Foto" class="ac-foto">
@@ -263,7 +263,7 @@ include '../components/header.php';
           
           <div class="ac-stats">
             <div class="ac-stat-item">
-              <span class="ac-stat-val"><?= $ab['adesao']['realizados'] ?>/<?= $ab['adesao']['planejados'] ?></span>
+              <span class="ac-stat-val"><?= htmlspecialchars($ab['adesao']['realizados'], ENT_QUOTES, 'UTF-8') ?>/<?= htmlspecialchars($ab['adesao']['planejados'], ENT_QUOTES, 'UTF-8') ?></span>
               <span>treinos</span>
             </div>
             <div style="width: 1px; background: #ddd; margin: 0 4px;"></div>

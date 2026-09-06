@@ -104,34 +104,28 @@ function converterData(string $texto, array $meses): ?string {
 }
 
 function extrairCidade(string $nome): string {
-  $cidades = [
-    'nonoai'           => 'Nonoai/RS',
-    'charrua'          => 'Charrua/RS',
-    'erechim'          => 'Erechim/RS',
-    'getúlio vargas'   => 'Getúlio Vargas/RS',
-    'getulio vargas'   => 'Getúlio Vargas/RS',
-    'marcelino ramos'  => 'Marcelino Ramos/RS',
-    'chapecó'          => 'Chapecó/SC',
-    'chapeco'          => 'Chapecó/SC',
-    'rodeio bonito'    => 'Rodeio Bonito/RS',
-    'estação'          => 'Estação/RS',
-    'estacao'          => 'Estação/RS',
-    'sertão'           => 'Sertão/RS',
-    'sertao'           => 'Sertão/RS',
-    'erebango'         => 'Erebango/RS',
-    'viadutos'         => 'Viadutos/RS',
-    'mariano moro'     => 'Mariano Moro/RS',
-    'itá'              => 'Itá/SC',
-    'ita'              => 'Itá/SC',
-    'sarandi'          => 'Sarandi/RS',
-  ];
-
-  $nomeLower = strtolower($nome);
-  foreach ($cidades as $chave => $cidade) {
-    if (strpos($nomeLower, $chave) !== false) {
-      return $cidade;
+  static $cidadesDb = null;
+  if ($cidadesDb === null) {
+    $jsonPath = __DIR__ . '/../config/cidades.json';
+    if (file_exists($jsonPath)) {
+      $cidadesDb = json_decode(file_get_contents($jsonPath), true);
+    }
+    if (!is_array($cidadesDb)) {
+      $cidadesDb = ['RS' => [], 'SC' => []];
     }
   }
+
+  $nomeLower = mb_strtolower($nome, 'UTF-8');
+
+  foreach (['RS', 'SC'] as $uf) {
+    foreach ($cidadesDb[$uf] as $cidade) {
+      $cidadeLower = mb_strtolower($cidade, 'UTF-8');
+      if (mb_stripos($nomeLower, $cidadeLower, 0, 'UTF-8') !== false) {
+        return $cidade . '/' . $uf;
+      }
+    }
+  }
+
   return 'Rio Grande do Sul/RS';
 }
 

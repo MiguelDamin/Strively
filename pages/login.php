@@ -42,7 +42,7 @@ if (isset($_SESSION['id'])) {
               'inativo'        => 'Sua conta está inativa. Entre em contato.',
               'email_invalido' => 'Digite um e-mail válido (ex: nome@dominio.com).'
             ];
-            echo $erros[$_GET['erro']] ?? 'Ocorreu um erro. Tente novamente.';
+            echo htmlspecialchars($erros[$_GET['erro']] ?? 'Ocorreu um erro. Tente novamente.', ENT_QUOTES, 'UTF-8');
           ?>
         </div>
       <?php endif; ?>

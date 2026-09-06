@@ -80,7 +80,7 @@ include '../components/header.php';
               'upload_falhou'  => 'Erro no envio do documento. Tente novamente.',
               'ja_solicitado'  => 'Você já possui uma solicitação em andamento.',
             ];
-            echo $erros[$_GET['erro']] ?? 'Ocorreu um erro. Tente novamente.';
+            echo htmlspecialchars($erros[$_GET['erro']] ?? 'Ocorreu um erro. Tente novamente.', ENT_QUOTES, 'UTF-8');
           ?>
         </div>
       <?php endif; ?>

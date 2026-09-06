@@ -387,7 +387,7 @@ include '../components/header.php';
     <div class="msg-sucesso">
       <?php
       $msgs = ['adicionado' => '✅ Aluno adicionado com sucesso!', 'removido' => '✅ Aluno removido.'];
-      echo $msgs[$_GET['msg']] ?? 'Ação realizada.';
+      echo htmlspecialchars($msgs[$_GET['msg']] ?? 'Ação realizada.', ENT_QUOTES, 'UTF-8');
       ?>
     </div>
   <?php endif; ?>
@@ -439,7 +439,7 @@ include '../components/header.php';
 
         <!-- foto do aluno — envolver em link -->
         <?php $alunoLink = '/pages/perfil-publico.php?id=' . (int) $aluno['id']; ?>
-        <a href="<?= $alunoLink ?>" title="Ver perfil de <?= htmlspecialchars($aluno['nome']) ?>"
+        <a href="<?= htmlspecialchars($alunoLink, ENT_QUOTES, 'UTF-8') ?>" title="Ver perfil de <?= htmlspecialchars($aluno['nome']) ?>"
           style="flex-shrink:0;display:block;">
           <?php if (!empty($aluno['foto'])): ?>
             <img src="<?= htmlspecialchars($aluno['foto']) ?>" class="aluno-avatar"

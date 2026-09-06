@@ -335,7 +335,7 @@ include '../../components/header.php';
           'aprovado'  => '✅ Treinador aprovado com sucesso!',
           'reprovado' => '❌ Solicitação reprovada.',
         ];
-        echo $msgs[$_GET['msg']] ?? 'Ação realizada.';
+        echo htmlspecialchars($msgs[$_GET['msg']] ?? 'Ação realizada.', ENT_QUOTES, 'UTF-8');
       ?>
     </div>
   <?php endif; ?>
@@ -343,13 +343,13 @@ include '../../components/header.php';
   <!-- Abas de filtro -->
   <div class="admin-tabs">
     <a href="?filtro=pendente" class="admin-tab admin-tab-pendente <?= $filtro === 'pendente' ? 'ativo' : '' ?>">
-      ⏳ Pendentes <span class="admin-badge"><?= $counts['pendente'] ?></span>
+      ⏳ Pendentes <span class="admin-badge"><?= htmlspecialchars($counts['pendente'], ENT_QUOTES, 'UTF-8') ?></span>
     </a>
     <a href="?filtro=aprovado" class="admin-tab admin-tab-aprovado <?= $filtro === 'aprovado' ? 'ativo' : '' ?>">
-      ✅ Aprovados <span class="admin-badge"><?= $counts['aprovado'] ?></span>
+      ✅ Aprovados <span class="admin-badge"><?= htmlspecialchars($counts['aprovado'], ENT_QUOTES, 'UTF-8') ?></span>
     </a>
     <a href="?filtro=reprovado" class="admin-tab admin-tab-reprovado <?= $filtro === 'reprovado' ? 'ativo' : '' ?>">
-      ❌ Reprovados <span class="admin-badge"><?= $counts['reprovado'] ?></span>
+      ❌ Reprovados <span class="admin-badge"><?= htmlspecialchars($counts['reprovado'], ENT_QUOTES, 'UTF-8') ?></span>
     </a>
   </div>
 
@@ -357,7 +357,7 @@ include '../../components/header.php';
   <?php if (empty($solicitacoes)): ?>
     <div class="vazio">
       <div class="vazio-icone">🎉</div>
-      <p>Nenhuma solicitação <?= $filtro ?> no momento.</p>
+      <p>Nenhuma solicitação <?= htmlspecialchars($filtro, ENT_QUOTES, 'UTF-8') ?> no momento.</p>
     </div>
   <?php else: ?>
     <?php foreach ($solicitacoes as $s): ?>
@@ -439,23 +439,23 @@ $urlAssinada = $_ENV['SUPABASE_URL'] . '/storage/v1' . ($resposta['signedURL'] ?
         <div class="req-acoes">
           <!-- APROVAR -->
           <form action="/actions/action-avaliar-treinador.php" method="POST">
-            <input type="hidden" name="treinador_id" value="<?= $s['id'] ?>">
-            <input type="hidden" name="usuario_id"   value="<?= $s['usuario_id'] ?>">
+            <input type="hidden" name="treinador_id" value="<?= htmlspecialchars($s['id'], ENT_QUOTES, 'UTF-8') ?>">
+            <input type="hidden" name="usuario_id"   value="<?= htmlspecialchars($s['usuario_id'], ENT_QUOTES, 'UTF-8') ?>">
             <input type="hidden" name="decisao"      value="aprovar">
             <button type="submit" class="btn-aprovar">Aprovar</button>
           </form>
 
           <!-- REPROVAR — com campo de motivo -->
-          <form action="/actions/action-avaliar-treinador.php" method="POST" id="form-reprovar-<?= $s['id'] ?>">
-            <input type="hidden" name="treinador_id" value="<?= $s['id'] ?>">
-            <input type="hidden" name="usuario_id"   value="<?= $s['usuario_id'] ?>">
+          <form action="/actions/action-avaliar-treinador.php" method="POST" id="form-reprovar-<?= htmlspecialchars($s['id'], ENT_QUOTES, 'UTF-8') ?>">
+            <input type="hidden" name="treinador_id" value="<?= htmlspecialchars($s['id'], ENT_QUOTES, 'UTF-8') ?>">
+            <input type="hidden" name="usuario_id"   value="<?= htmlspecialchars($s['usuario_id'], ENT_QUOTES, 'UTF-8') ?>">
             <input type="hidden" name="decisao"      value="reprovar">
 
-            <button type="button" class="btn-reprovar" onclick="mostrarMotivo(<?= $s['id'] ?>)">
+            <button type="button" class="btn-reprovar" onclick="mostrarMotivo(<?= htmlspecialchars($s['id'], ENT_QUOTES, 'UTF-8') ?>)">
                Reprovar
             </button>
 
-            <div class="motivo-wrap" id="motivo-<?= $s['id'] ?>">
+            <div class="motivo-wrap" id="motivo-<?= htmlspecialchars($s['id'], ENT_QUOTES, 'UTF-8') ?>">
               <textarea name="motivo" placeholder="Descreva o motivo da reprovação (obrigatório)..." required></textarea>
               <button type="submit" class="btn-confirmar-reprovar">Confirmar reprovação</button>
             </div>

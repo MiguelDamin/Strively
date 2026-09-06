@@ -283,7 +283,7 @@ include '../components/header.php';
                   : '/pages/perfil-publico.php?id=' . $autorDetId;
               ?>
               <div style="margin-top: 16px;">
-                <a href="<?= $linkAutorDet ?>" class="autor-badge">
+                <a href="<?= htmlspecialchars($linkAutorDet, ENT_QUOTES, 'UTF-8') ?>" class="autor-badge">
                   <?php if (!empty($evento['autor_foto'])): ?>
                     <img src="<?= htmlspecialchars($evento['autor_foto']) ?>" alt="Foto" class="autor-foto">
                   <?php else: ?>
@@ -341,7 +341,7 @@ include '../components/header.php';
         <div class="detalhe-acoes">
           <a href="eventos.php" class="btn-acao btn-secundario">← Voltar</a>
           <?php if (isset($_SESSION['id']) && ($_SESSION['id'] == $evento['usuario_id'] || $_SESSION['perfil'] === 'admin')): ?>
-            <a href="/pages/editar-evento.php?id=<?= $evento['id'] ?>" class="btn-acao btn-secundario">✏️ Editar Evento</a>
+            <a href="/pages/editar-evento.php?id=<?= htmlspecialchars($evento['id'], ENT_QUOTES, 'UTF-8') ?>" class="btn-acao btn-secundario">✏️ Editar Evento</a>
           <?php endif; ?>
           <?php if (!empty($evento['link_oficial'])): ?>
             <a href="#" 

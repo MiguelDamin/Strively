@@ -149,7 +149,7 @@ include '../components/header.php';
           elseif ($a['severidade'] === 'atencao') $icone = '<svg viewBox="0 0 24 24"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>';
           else $icone = '<svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>';
         ?>
-        <div class="alerta-item <?= $a['severidade'] ?>">
+        <div class="alerta-item <?= htmlspecialchars($a['severidade'], ENT_QUOTES, 'UTF-8') ?>">
           <?= $icone ?>
           <div>
             <strong><?= htmlspecialchars($a['tipo']) ?>:</strong> <?= htmlspecialchars($a['mensagem']) ?>
@@ -166,7 +166,7 @@ include '../components/header.php';
       <div class="widget-icon"><svg viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg></div>
       <div class="widget-label">Treinos na Semana</div>
       <div class="widget-valor">
-        <?= $adesao['realizados'] ?> / <?= $adesao['planejados'] ?>
+        <?= htmlspecialchars($adesao['realizados'], ENT_QUOTES, 'UTF-8') ?> / <?= htmlspecialchars($adesao['planejados'], ENT_QUOTES, 'UTF-8') ?>
       </div>
       <div class="widget-sub">
         <?php if ($adesao['percentual'] === null): ?>
@@ -189,7 +189,7 @@ include '../components/header.php';
     <div class="widget-card">
       <div class="widget-icon"><svg viewBox="0 0 24 24"><path d="M17.5 10c0-1.63-.82-3.1-2.14-4C13.93 5.02 12.18 2 12.18 2S10 5.46 10 8c0 1.05.35 2 .93 2.76.01.02.03.04.04.05C11.83 11.91 12.5 13.12 12.5 14.5c0 1.93-1.57 3.5-3.5 3.5s-3.5-1.57-3.5-3.5c0-.98.39-1.87 1.03-2.5.01-.01.01-.02.02-.03C7.2 11.23 7 10.63 7 10c0-1.63.82-3.1 2.14-4C7.61 7 6 9.39 6 12c0 3.31 2.69 6 6 6s6-2.69 6-6c0-1.63-.82-3.1-2.14-4-1.32.9-2.14 2.37-2.14 4h3.78z"/></svg></div>
       <div class="widget-label">Sequência (Streak)</div>
-      <div class="widget-valor"><?= $streak ?> dia<?= $streak !== 1 ? 's' : '' ?></div>
+      <div class="widget-valor"><?= htmlspecialchars($streak, ENT_QUOTES, 'UTF-8') ?> dia<?= $streak !== 1 ? 's' : '' ?></div>
       <div class="widget-sub">consecutivos</div>
     </div>
 
@@ -248,7 +248,7 @@ include '../components/header.php';
           <div class="chart-bar-wrap">
             <span class="chart-val"><?= round($sem['km_total'], 1) ?></span>
             <div class="chart-bar <?= ($i === count($volume6S)-1) ? 'filled' : '' ?>" style="height: <?= max($percentH, 2) ?>%"></div>
-            <span class="chart-label"><?= $sem['label'] ?></span>
+            <span class="chart-label"><?= htmlspecialchars($sem['label'], ENT_QUOTES, 'UTF-8') ?></span>
           </div>
         <?php endforeach; ?>
       </div>
@@ -275,7 +275,7 @@ include '../components/header.php';
                 <span class="rpe-item-titulo" title="<?= htmlspecialchars($rpe['titulo']) ?>"><?= htmlspecialchars($titulo) ?></span>
                 <span class="rpe-item-data"><?= (new DateTime($rpe['data_treino']))->format('d/m') ?></span>
               </div>
-              <span class="rpe-badge" style="background:<?= $corBg ?>;color:<?= $corTx ?>"><?= $val ?>/10</span>
+              <span class="rpe-badge" style="background:<?= htmlspecialchars($corBg, ENT_QUOTES, 'UTF-8') ?>;color:<?= htmlspecialchars($corTx, ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($val, ENT_QUOTES, 'UTF-8') ?>/10</span>
             </div>
           <?php endforeach; ?>
         </div>
@@ -293,7 +293,7 @@ include '../components/header.php';
           $tipoBadgeClass = ($ultimoTreino['tipo'] === 'strava') ? 'ut-strava' : 'ut-badge';
           $tipoTexto = ($ultimoTreino['tipo'] === 'strava') ? 'STRAVA' : (explode(' — ', $ultimoTreino['titulo'])[0] ?? 'Treino');
         ?>
-        <div class="<?= $tipoBadgeClass ?>"><?= htmlspecialchars($tipoTexto) ?></div>
+        <div class="<?= htmlspecialchars($tipoBadgeClass, ENT_QUOTES, 'UTF-8') ?>"><?= htmlspecialchars($tipoTexto) ?></div>
         <div class="ut-titulo"><?= htmlspecialchars($ultimoTreino['titulo']) ?></div>
         <div class="ut-data"><?= (new DateTime($ultimoTreino['data_treino']))->format('d \d\e M') ?></div>
         
@@ -318,7 +318,7 @@ include '../components/header.php';
 
         <?php if (!empty($ultimoTreino['strava_activity_id'])): ?>
           <div style="margin-top: 12px;">
-            <a href="https://www.strava.com/activities/<?= $ultimoTreino['strava_activity_id'] ?>" target="_blank"
+            <a href="https://www.strava.com/activities/<?= htmlspecialchars($ultimoTreino['strava_activity_id'], ENT_QUOTES, 'UTF-8') ?>" target="_blank"
                style="display:inline-flex;align-items:center;gap:6px;background:#FC4C02;color:#fff;border-radius:20px;padding:6px 13px;font-size:0.76rem;font-weight:700;text-decoration:none;font-family:'Outfit',sans-serif;">
               <svg viewBox="0 0 24 24" style="width:13px;height:13px;fill:#fff;"><path d="M15.387 17.944l-2.089-4.116h-3.065L15.387 24l5.15-10.172h-3.066m-7.008-5.599l2.836 5.598h4.172L10.463 0l-7 13.828h4.169"/></svg>
               Ver no Strava
@@ -332,8 +332,8 @@ include '../components/header.php';
   </div>
   
   <div style="display:flex;gap:12px;margin-top:24px;justify-content:center;flex-wrap:wrap;">
-      <a href="/pages/treinos-alunos.php?aba=calendario&aluno_id=<?= $aluno_id ?>" class="btn-outline" style="min-width: 150px; text-align: center;">Ver Calendário</a>
-      <a href="/pages/treinos-alunos.php?aba=planilha&aluno_id=<?= $aluno_id ?>" class="btn-primary-small" style="min-width: 150px; text-align: center;">Planilha Completa</a>
+      <a href="/pages/treinos-alunos.php?aba=calendario&aluno_id=<?= htmlspecialchars($aluno_id, ENT_QUOTES, 'UTF-8') ?>" class="btn-outline" style="min-width: 150px; text-align: center;">Ver Calendário</a>
+      <a href="/pages/treinos-alunos.php?aba=planilha&aluno_id=<?= htmlspecialchars($aluno_id, ENT_QUOTES, 'UTF-8') ?>" class="btn-primary-small" style="min-width: 150px; text-align: center;">Planilha Completa</a>
   </div>
 
 </section>

@@ -88,7 +88,7 @@ include '../components/header.php';
               'formato_imagem'  => 'Formato de imagem inválido. Use JPG, PNG ou WebP.',
               'upload_falhou'   => 'Ocorreu um erro no envio da imagem. Tente novamente.',
             ];
-            echo $erros[$_GET['erro']] ?? 'Ocorreu um erro ao processar o formulário.';
+            echo htmlspecialchars($erros[$_GET['erro']] ?? 'Ocorreu um erro ao processar o formulário.', ENT_QUOTES, 'UTF-8');
           ?>
         </div>
       <?php endif; ?>
@@ -130,7 +130,7 @@ include '../components/header.php';
               <input type="checkbox" name="distancias_pre[]" value="42km"> 42km
             </label>
           </div>
-          <input type="text" name="distancia_livre" placeholder="Outra distância (ex: 8km, 15km)">
+          <input type="text" name="distancia_livre" placeholder="Outras distâncias (ex: 8, 15) — digite apenas números">
         </div>
 
         <!-- LINK OFICIAL -->
@@ -166,6 +166,10 @@ include '../components/header.php';
       if (val && !val.match(/^https?:\/\//i)) {
           this.value = 'https://' + val;
       }
+  });
+
+  document.querySelector('input[name="distancia_livre"]')?.addEventListener('input', function() {
+      this.value = this.value.replace(/[^0-9., ]/g, '');
   });
   </script>
 

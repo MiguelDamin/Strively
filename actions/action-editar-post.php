@@ -24,7 +24,13 @@ if (!$post) { header('Location: /pages/comunidade.php?erro=sem_permissao'); exit
 // Upload de nova foto (opcional)
 $foto = $post['foto']; // mantém foto atual se não enviar nova
 if (!empty($_FILES['foto']['tmp_name'])) {
-    $ext = pathinfo($_FILES['foto']['name'], PATHINFO_EXTENSION);
+    $ext = strtolower(pathinfo($_FILES['foto']['name'], PATHINFO_EXTENSION));
+    $permitidos = ['jpg', 'jpeg', 'png', 'webp'];
+    if (!in_array($ext, $permitidos)) {
+        header('Location: /pages/comunidade.php?erro=foto_invalida');
+        exit();
+    }
+
     $nomeArquivo = 'post_' . $post_id . '_' . time() . '.' . $ext;
     $fileBinary = file_get_contents($_FILES['foto']['tmp_name']);
     $supabaseUrl = $_ENV['SUPABASE_URL'];
@@ -33,14 +39,30 @@ if (!empty($_FILES['foto']['tmp_name'])) {
     $ctx = stream_context_create([
         'http' => [
             'method' => 'POST',
-            'header' => "Authorization: Bearer {$key}\r\nContent-Type: image/{$ext}\r\nx-upsert: true\r\n",
+            'header' => "Authorization: Bearer {$key}\r\nContent-Type: image/" . ($ext === 'jpg' ? 'jpeg' : $ext) . "\r\n" .
+                        "x-upsert: true\r\n",
             'content' => $fileBinary,
             'ignore_errors' => true,
             'timeout' => 30,
         ],
     ]);
-    @file_get_contents($endpoint, false, $ctx);
-    $foto = "{$supabaseUrl}/storage/v1/object/public/posts-feed/{$nomeArquivo}";
+    
+    $resposta = @file_get_contents($endpoint, false, $ctx);
+    
+    $httpCode = 500;
+    if (!empty($http_response_header)) {
+        preg_match('#HTTP/\d+\.\d+ (\d+)#', $http_response_header[0], $matches);
+        if (isset($matches[1])) {
+            $httpCode = (int)$matches[1];
+        }
+    }
+    
+    if ($httpCode === 200 || $httpCode === 201) {
+        $foto = "{$supabaseUrl}/storage/v1/object/public/posts-feed/{$nomeArquivo}";
+    } else {
+        header('Location: /pages/comunidade.php?erro=upload_falhou');
+        exit();
+    }
 }
 
 // Atualizar post
