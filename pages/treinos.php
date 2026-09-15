@@ -51,8 +51,14 @@ foreach ($eventos_usuario as $ev) {
   $eventos_por_data[$ev['data_evento']][] = $ev;
 }
 
-// Eventos ativos do Strively para o select
-$stmt = $pdo->prepare("SELECT id, nome, data_evento, cidade FROM eventos WHERE status = 'ativo' ORDER BY data_evento ASC");
+// Eventos ativos do Strively para o select (apenas futuros, após hoje)
+$stmt = $pdo->prepare("
+  SELECT id, nome, data_evento, cidade 
+  FROM eventos 
+  WHERE status = 'ativo' 
+  AND data_evento > (CURRENT_TIMESTAMP AT TIME ZONE 'America/Sao_Paulo')::date 
+  ORDER BY data_evento ASC
+");
 $stmt->execute();
 $eventos_strive = $stmt->fetchAll();
 
@@ -909,6 +915,7 @@ function abrirModalCancelarTreinador() {
                     font-size: 0.95rem; font-weight: 600; color: #4a4a4a;
                 ">Não</button>
                 <form action="/actions/action-remover-treinador.php" method="POST" style="flex: 1; margin: 0;">
+                    <input type="hidden" name="csrf_token" value="${window.csrfToken || ''}">
                    <button type="submit" style="
                        width: 100%; padding: 12px; border: none;
                        border-radius: 10px; background: #e53935; cursor: pointer;
@@ -935,6 +942,10 @@ function deletarTreino(treinoId) {
     // Enviar para o action de remover
     const formData = new FormData();
     formData.append('treino_id', treinoId);
+    if (window.csrfToken) {
+        formData.append('csrf_token', window.csrfToken);
+    }
+    
     // Para as telas do aluno, usamos action-remover-treino.php para remoção (mas se for próprio, pode ser action-remover-treino-proprio.php)
     // O backend action-remover-treino-proprio.php requer 'aba' etc.
     form_action = '/actions/action-remover-treino-proprio.php';
@@ -1204,6 +1215,7 @@ function selecionarRPE(valor) {
     <div class="modal-body">
       <p style="color:#555;font-size:0.95rem;margin-bottom:24px;">Tem certeza que deseja desvincular de <?= htmlspecialchars($treinador['nome'] ?? '') ?>? Você perderá acesso aos treinos planejados por ele.</p>
       <form action="/actions/action-remover-treinador.php" method="POST">
+        <?= csrfField() ?>
         <input type="hidden" name="treinador_id" value="<?= htmlspecialchars($treinador['id'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
         <div style="display: flex; gap: 10px;">
           <button type="button" class="btn-secondary" style="flex:1;" onclick="fecharModal('modalCancelarTreinador')">Cancelar</button>
@@ -1345,6 +1357,9 @@ async function confirmarRPE() {
         fd.append('treino_id', treinoId);
         fd.append('rpe', rpeSelecionado || '');
         fd.append('duracao_minutos', duracao || '');
+        if (window.csrfToken) {
+            fd.append('csrf_token', window.csrfToken);
+        }
         await fetch('/actions/action-salvar-rpe.php', { method: 'POST', body: fd });
     }
     fecharModalRPE();

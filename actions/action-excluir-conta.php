@@ -15,6 +15,8 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_SESSION['id'])) {
   exit();
 }
 
+requireCsrfToken('/pages/configuracoes.php?secao=zona-de-risco');
+
 $userId        = (int)$_SESSION['id'];
 $senhaDigitada = $_POST['senha_atual']         ?? '';
 $confirmacao   = trim($_POST['confirmar_exclusao'] ?? '');

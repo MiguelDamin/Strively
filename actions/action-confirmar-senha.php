@@ -9,9 +9,11 @@ require_once '../components/header.php';
 require_once '../config/conexao.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_SESSION['id'])) {
-    header('Location: /pages/configuracoes.php');
+    header('Location: /pages/configuracoes.php?secao=seguranca');
     exit();
 }
+
+requireCsrfToken('/pages/configuracoes.php?secao=seguranca&etapa=verificacao');
 
 $codigoDigitado = trim($_POST['codigo'] ?? '');
 

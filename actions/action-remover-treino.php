@@ -8,6 +8,13 @@ if (!isset($_SESSION['id'])) {
     exit();
 }
 
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    header('Location: /pages/treinos.php');
+    exit();
+}
+
+requireCsrfToken('/pages/treinos.php');
+
 $treino_id = (int)($_POST['treino_id'] ?? 0);
 $aluno_id  = (int)($_POST['aluno_id'] ?? $_SESSION['id']);
 $user_id   = $_SESSION['id'];

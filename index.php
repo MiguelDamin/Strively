@@ -19,8 +19,8 @@ if (isset($_SESSION['id'])):
         $me = $stmtMe->fetch();
     }
 
-    // Eventos para o carrossel (antigo)
-    $stmt = $pdo->prepare("SELECT id, nome, cidade, data_evento, banner FROM eventos WHERE status = 'ativo' AND data_evento >= CURRENT_DATE ORDER BY data_evento ASC LIMIT 10");
+    // Eventos para o carrossel (apenas eventos futuros, após hoje)
+    $stmt = $pdo->prepare("SELECT id, nome, cidade, data_evento, banner FROM eventos WHERE status = 'ativo' AND data_evento > (CURRENT_TIMESTAMP AT TIME ZONE 'America/Sao_Paulo')::date ORDER BY data_evento ASC LIMIT 10");
     $stmt->execute();
     $eventos_carrossel = $stmt->fetchAll();
 
@@ -38,12 +38,14 @@ if (isset($_SESSION['id'])):
     $stmt->execute([$_SESSION['id']]);
     $stravaData = $stmt->fetch();
 
-    // WIDGET 3 — Próximo evento inscrito
+    // WIDGET 3 — Próximo evento inscrito (apenas futuro)
     $stmt = $pdo->prepare("
         SELECT e.nome, e.data_evento, e.cidade 
         FROM usuario_eventos ue 
         JOIN eventos e ON e.id = ue.evento_id 
-        WHERE ue.usuario_id = ? AND e.data_evento >= CURRENT_DATE 
+        WHERE ue.usuario_id = ? 
+        AND e.status = 'ativo' 
+        AND e.data_evento > (CURRENT_TIMESTAMP AT TIME ZONE 'America/Sao_Paulo')::date 
         ORDER BY e.data_evento ASC LIMIT 1
     ");
     $stmt->execute([$_SESSION['id']]);

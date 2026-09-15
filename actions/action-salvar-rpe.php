@@ -8,6 +8,13 @@ if (!isset($_SESSION['id'])) {
     exit();
 }
 
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    http_response_code(405);
+    exit();
+}
+
+requireCsrfToken();
+
 $treinoId = (int)($_POST['treino_id'] ?? 0);
 $rpe      = !empty($_POST['rpe'])              ? (int)$_POST['rpe']              : null;
 $duracao  = !empty($_POST['duracao_minutos'])  ? (int)$_POST['duracao_minutos']  : null;

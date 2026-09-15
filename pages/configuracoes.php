@@ -945,6 +945,7 @@ function dataRelativa(string $dtStr): string {
             <p>Para proteger sua conta, enviaremos um código de verificação para o e-mail do seu cadastro. O código tem validade de 10 minutos.</p>
 
             <form action="/actions/action-enviar-codigo.php" method="POST">
+              <?= csrfField() ?>
               <div class="form-grupo" style="margin-bottom:16px;">
                 <label for="nova_senha">Nova Senha</label>
                 <input type="password" id="nova_senha" name="nova_senha" placeholder="Mínimo 6 caracteres" required minlength="6">
@@ -965,6 +966,7 @@ function dataRelativa(string $dtStr): string {
                   $erros = [
                     'codigo_invalido' => 'O código inserido está incorreto.',
                     'codigo_expirado' => 'O código expirou após 10 minutos. Solicite novamente.',
+                    'csrf_invalido'   => 'Sessão de segurança inválida ou expirada. Recarregue a página.',
                   ];
                   echo htmlspecialchars($erros[$_GET['erro']] ?? 'Ocorreu um erro.', ENT_QUOTES, 'UTF-8');
                 ?>
@@ -972,6 +974,7 @@ function dataRelativa(string $dtStr): string {
             <?php endif; ?>
 
             <form action="/actions/action-confirmar-senha.php" method="POST">
+              <?= csrfField() ?>
               <div class="form-grupo" style="margin-bottom:32px;">
                 <label for="codigo">Código Numérico</label>
                 <input type="text" id="codigo" name="codigo" placeholder="000000" required maxlength="6"
@@ -1144,6 +1147,7 @@ function dataRelativa(string $dtStr): string {
                   'senha_incorreta'  => 'Senha incorreta. Tente novamente.',
                   'confirmacao_invalida' => 'Você deve digitar a palavra EXCLUIR exatamente.',
                   'falha_exclusao'   => 'Erro interno. Nenhum dado foi apagado. Tente novamente.',
+                  'csrf_invalido'    => 'Sessão de segurança inválida ou expirada. Recarregue a página.',
                 ];
                 echo htmlspecialchars($errosMsgs[$_GET['erro']] ?? 'Ocorreu um erro.', ENT_QUOTES, 'UTF-8');
               ?>
@@ -1170,6 +1174,7 @@ function dataRelativa(string $dtStr): string {
           </div>
 
           <form action="/actions/action-excluir-conta.php" method="POST" id="formExcluirConta">
+            <?= csrfField() ?>
             <div class="risco-form-group">
               <label for="senha_atual_risco">Confirme sua senha atual</label>
               <input type="password" id="senha_atual_risco" name="senha_atual" placeholder="Digite sua senha" autocomplete="current-password">
@@ -1223,6 +1228,7 @@ function dataRelativa(string $dtStr): string {
         <h3 style="color:#dc2626;">Desvincular Treinador</h3>
         <p style="color:#555;font-size:0.95rem;margin-bottom:24px;">Tem certeza que deseja desvincular de <?= htmlspecialchars($treinador['nome'] ?? '') ?>? Você perderá acesso aos treinos planejados por ele.</p>
         <form action="/actions/action-remover-treinador.php" method="POST">
+          <?= csrfField() ?>
           <input type="hidden" name="treinador_id" value="<?= htmlspecialchars($treinador['id'] ?? '', ENT_QUOTES, 'UTF-8') ?>">
           <input type="hidden" name="return_url" value="/pages/configuracoes.php?secao=treinador&msg=treinador_removido">
           <div class="modal-cfg-footer" style="margin-top:0;">

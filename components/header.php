@@ -30,6 +30,7 @@ if (!isset($_SESSION['id']) && isset($_COOKIE['remember_token'])) {
 if (session_status() === PHP_SESSION_NONE) {
   session_start();
 }
+require_once __DIR__ . '/../includes/csrf.php';
  
 // Busca dados do usuário logado para menus condicionais
 if (isset($_SESSION['id']) && !isset($me)) {
@@ -108,10 +109,17 @@ if (isset($_SESSION['id']) && isset($pdo)) {
         </div>
         <?php endif; ?>
         <a href="/index.php">Início</a>
-      </li>
       <li><a href="/pages/eventos.php">Eventos</a></li>
-      <li><a href="/pages/divulgar-evento.php">Divulgue Eventos</a></li>
+      <?php 
+        $adminId = (int)($_ENV['ADMIN_ID'] ?? getenv('ADMIN_ID') ?: 2);
+        if (isset($_SESSION['id']) && (int)$_SESSION['id'] === $adminId): 
+      ?>
+        <li><a href="/pages/divulgar-evento.php">Divulgue Eventos</a></li>
+      <?php endif; ?>
       <li><a href="/pages/comunidade.php">Comunidade</a></li>
+      <?php if (isset($_SESSION['id'])): ?>
+        <li><a href="/pages/buscar-treinador.php">Treinadores</a></li>
+      <?php endif; ?>
 
       <?php if (isset($_SESSION['id']) && isset($me)): ?>
         <?php if ($me['perfil'] === 'treinador'): ?>
@@ -320,6 +328,12 @@ if (isset($_SESSION['id']) && isset($pdo)) {
           <svg viewBox="0 0 24 24"><path d="M19.14 12.94c.04-.3.06-.61.06-.94s-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.49.49 0 0 0-.59-.22l-2.39.96a7.01 7.01 0 0 0-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96a.48.48 0 0 0-.59.22L2.74 8.87a.47.47 0 0 0 .12.61l2.03 1.58c-.05.3-.07.62-.07.94s.02.64.07.94l-2.03 1.58a.47.47 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.37 1.04.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.57 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32a.47.47 0 0 0-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
         </div>
         Config.
+      </a>
+      <a href="/pages/buscar-treinador.php" class="sheet-item">
+        <div class="sheet-icon">
+          <svg viewBox="0 0 24 24"><path d="M13.49 5.48c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm-3.6 13.9l1-4.4 2.1 2v6h2v-7.5l-2.1-2 .6-3c1.3 1.5 3.3 2.5 5.5 2.5v-2c-1.9 0-3.5-1-4.3-2.4l-1-1.6c-.4-.6-1-1-1.7-1-.3 0-.5.1-.8.1l-5.2 2.2v4.7h2v-3.4l1.8-.7-1.6 8.1-4.9-1-.4 2 7 1.4z"/></svg>
+        </div>
+        Treinadores
       </a>
       <a href="/pages/treinos.php" class="sheet-item">
         <div class="sheet-icon">

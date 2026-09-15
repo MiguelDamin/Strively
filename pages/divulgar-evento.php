@@ -19,6 +19,13 @@ if (!isset($_SESSION['id'])) {
   exit();
 }
 
+// Apenas o administrador tem permissão para cadastrar/divulgar eventos
+$adminId = (int)($_ENV['ADMIN_ID'] ?? getenv('ADMIN_ID') ?: 2);
+if ((int)$_SESSION['id'] !== $adminId) {
+  header('Location: /pages/eventos.php');
+  exit();
+}
+
 $tituloPagina = "Divulgar Evento";
 include '../components/head.php';
 include '../components/header.php';

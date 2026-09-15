@@ -126,7 +126,58 @@ include __DIR__ . '/../components/header.php';
       margin-top: 40px;
     }
   }
+
+  /* ── Banner Voltar para Cadastro ── */
+  .banner-voltar-cadastro {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: #111;
+    color: #fff;
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Outfit', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background 0.2s;
+    border-bottom: 2px solid rgba(29,185,84,0.4);
+  }
+  .banner-voltar-cadastro:hover {
+    background: #1a1a1a;
+  }
+  .banner-voltar-cadastro svg {
+    flex-shrink: 0;
+    transition: transform 0.2s;
+  }
+  .banner-voltar-cadastro:hover svg {
+    transform: translateX(-3px);
+  }
+  .banner-voltar-cadastro .bvc-label {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.3;
+  }
+  .banner-voltar-cadastro .bvc-sub {
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: rgba(255,255,255,0.6);
+  }
 </style>
+
+<?php if (isset($_GET['from']) && $_GET['from'] === 'cadastro'): ?>
+<a href="/pages/cadastro.php" class="banner-voltar-cadastro" id="banner-voltar-cadastro">
+  <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+    <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+  </svg>
+  <span class="bvc-label">
+    Voltar para Cadastro
+    <span class="bvc-sub">Seus dados preenchidos serão mantidos</span>
+  </span>
+</a>
+<?php endif; ?>
 
 <div class="termos-container">
 

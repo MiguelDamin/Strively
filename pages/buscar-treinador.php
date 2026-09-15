@@ -8,17 +8,26 @@ ob_start();
 $only_session = true;
 require_once '../components/header.php';
 
-// Somente corredores logados
+// Somente usuários logados
 if (!isset($_SESSION['id'])) {
   header('Location: /pages/login.php');
   exit();
 }
-if (isset($me) && $me['perfil'] === 'treinador') {
-  header('Location: /index.php');
-  exit();
-}
+// Treinadores agora podem acessar esta página para ver outros treinadores
 
 require_once '../config/conexao.php';
+
+// Busca dados do treinador atual (se houver)
+$treinadorAtual = null;
+if (!empty($me['treinador_id'])) {
+  $stmtTA = $pdo->prepare("
+    SELECT u.id, u.nome, u.foto, u.cidade
+    FROM usuarios u
+    WHERE u.id = ?
+  ");
+  $stmtTA->execute([$me['treinador_id']]);
+  $treinadorAtual = $stmtTA->fetch();
+}
 
 // Busca treinadores aprovados
 $stmt = $pdo->prepare("
@@ -41,6 +50,11 @@ $stmt = $pdo->prepare("
 $stmt->execute();
 $treinadores = $stmt->fetchAll();
 
+// Determina se o usuário visualizador é treinador
+$eTrainador = isset($me) && $me['perfil'] === 'treinador';
+// Usuário já tem treinador (aceito)?
+$temTreinador = !$eTrainador && !empty($me['treinador_id']) && $me['status_vinculo'] === 'aceito';
+
 unset($only_session);
 $tituloPagina = "Buscar Treinador";
 include '../components/head.php';
@@ -49,7 +63,7 @@ include '../components/header.php';
 
 <style>
   .bt-wrap {
-    max-width: 1000px;
+    max-width: 1200px;
     margin: 40px auto;
     padding: 0 24px 100px;
   }
@@ -67,10 +81,87 @@ include '../components/header.php';
     margin-bottom: 28px;
   }
 
+  /* Banner: Seu treinador atual */
+  .bt-banner-treinador {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: linear-gradient(135deg, rgba(29,185,84,0.12), rgba(29,185,84,0.04));
+    border: 1px solid rgba(29,185,84,0.3);
+    border-radius: var(--radius-xl);
+    padding: 18px 22px;
+    margin-bottom: 28px;
+    box-shadow: 0 2px 12px rgba(29,185,84,0.08);
+  }
+
+  .bt-banner-foto {
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--green);
+    flex-shrink: 0;
+  }
+
+  .bt-banner-avatar {
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    background: var(--surface-2);
+    border: 2px solid var(--green);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .bt-banner-avatar svg { width: 28px; height: 28px; fill: var(--text-tertiary); }
+
+  .bt-banner-info { flex: 1; }
+
+  .bt-banner-label {
+    font-size: 0.75rem;
+    color: var(--green-deeper);
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-bottom: 2px;
+  }
+
+  .bt-banner-nome {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .bt-banner-cidade {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin-top: 1px;
+  }
+
+  .bt-banner-link {
+    font-size: 0.82rem;
+    color: var(--green);
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  .bt-banner-link:hover { text-decoration: underline; }
+
+  .bt-section-label {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 14px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+  }
+
   .bt-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 18px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    align-items: stretch;
   }
 
   .bt-card {
@@ -91,6 +182,20 @@ include '../components/header.php';
     transform: translateY(-4px);
     box-shadow: var(--shadow-md);
     border-color: rgba(29,185,84,0.2);
+  }
+
+  /* Card esmaecido para treinadores não-selecionados */
+  .bt-card.bt-card-dim {
+    opacity: 0.5;
+    filter: grayscale(40%);
+  }
+
+  .bt-card.bt-card-dim:hover {
+    opacity: 0.75;
+    filter: grayscale(20%);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-xs);
+    border-color: var(--border);
   }
 
   .bt-foto {
@@ -191,7 +296,27 @@ include '../components/header.php';
     background: var(--surface-2);
     color: var(--text-tertiary);
     border: 1px solid var(--border);
+    font-size: 0.78rem;
   }
+
+  .bt-ver-perfil {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 9px 0;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-full);
+    background: transparent;
+    cursor: pointer;
+    font-family: 'Outfit', sans-serif;
+    transition: color 0.2s, border-color 0.2s;
+  }
+
+  .bt-ver-perfil:hover { color: var(--text-primary); border-color: var(--text-secondary); }
 
   .bt-vazio {
     grid-column: 1 / -1;
@@ -269,10 +394,14 @@ include '../components/header.php';
     font-size: 0.92rem;
   }
 
-  @media (max-width: 640px) {
+  @media (max-width: 768px) {
+    .bt-grid { grid-template-columns: repeat(2, 1fr); gap: 16px; }
+    .bt-banner-treinador { flex-wrap: wrap; gap: 12px; }
+  }
+  @media (max-width: 480px) {
     .bt-wrap { padding: 0 14px 100px; }
     .bt-titulo { font-size: 1.8rem; }
-    .bt-grid { grid-template-columns: 1fr; }
+    .bt-grid { grid-template-columns: 1fr; gap: 12px; }
   }
 </style>
 
@@ -293,6 +422,34 @@ include '../components/header.php';
     <?php endif; ?>
   <?php endif; ?>
 
+  <?php if ($temTreinador && $treinadorAtual): ?>
+    <!-- Banner: Seu treinador atual -->
+    <div class="bt-banner-treinador">
+      <?php if (!empty($treinadorAtual['foto'])): ?>
+        <img src="<?= strpos($treinadorAtual['foto'], 'http') === 0 ? htmlspecialchars($treinadorAtual['foto']) : '/' . htmlspecialchars($treinadorAtual['foto']) ?>"
+             class="bt-banner-foto" alt="Foto">
+      <?php else: ?>
+        <div class="bt-banner-avatar">
+          <svg viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+        </div>
+      <?php endif; ?>
+      <div class="bt-banner-info">
+        <div class="bt-banner-label">✓ Seu treinador atual</div>
+        <div class="bt-banner-nome"><?= htmlspecialchars($treinadorAtual['nome']) ?></div>
+        <?php if (!empty($treinadorAtual['cidade'])): ?>
+          <div class="bt-banner-cidade">📍 <?= htmlspecialchars($treinadorAtual['cidade']) ?></div>
+        <?php endif; ?>
+      </div>
+      <a href="/pages/perfil-publico.php?id=<?= (int)$treinadorAtual['id'] ?>" class="bt-banner-link">Ver perfil →</a>
+    </div>
+    <div class="bt-section-label">Outros treinadores disponíveis</div>
+  <?php elseif (!empty($me['treinador_id']) && $me['status_vinculo'] !== 'aceito' && !$eTrainador): ?>
+    <!-- Solicitação pendente -->
+    <div style="background: #fffbea; border:1px solid #f5d87a; border-radius:12px; padding:14px 18px; margin-bottom:24px; font-size:0.9rem; color:#92610e;">
+      ⏳ Você tem uma solicitação de vínculo pendente com um treinador.
+    </div>
+  <?php endif; ?>
+
   <div class="bt-grid">
 
     <?php if (empty($treinadores)): ?>
@@ -306,8 +463,14 @@ include '../components/header.php';
 
     <?php else: ?>
       <?php foreach ($treinadores as $tr): ?>
-        <div class="bt-card" 
-             style="cursor:pointer;" 
+        <?php
+          // Este é o treinador atual do usuário?
+          $ehMeuTreinador = isset($me['treinador_id']) && (int)$me['treinador_id'] === (int)$tr['id'];
+          // Card deve ser esmaecido? Somente se o usuário tem treinador aceito E este não é o dele E não é treinador
+          $dimCard = $temTreinador && !$ehMeuTreinador && !$eTrainador;
+        ?>
+        <div class="bt-card<?= $dimCard ? ' bt-card-dim' : '' ?>"
+             style="cursor:pointer;"
              onclick="window.location.href='/pages/perfil-publico.php?id=<?= (int)$tr['id'] ?>'">
 
           <!-- Foto -->
@@ -347,14 +510,27 @@ include '../components/header.php';
           <div class="bt-divider"></div>
 
           <!-- Botão condicional -->
-          <?php if (isset($me['treinador_id']) && (int)$me['treinador_id'] === (int)$tr['id']): ?>
+          <?php if ($ehMeuTreinador): ?>
             <?php if ($me['status_vinculo'] === 'aceito'): ?>
               <div class="bt-status-badge seu-treinador">✓ Seu treinador</div>
             <?php else: ?>
               <div class="bt-status-badge pendente">⏳ Solicitação enviada</div>
             <?php endif; ?>
-          <?php elseif (!empty($me['treinador_id'])): ?>
-            <div class="bt-status-badge vinculado">Você já tem um vínculo</div>
+          <?php elseif ($temTreinador): ?>
+            <!-- Tem treinador mas pode ver perfil -->
+            <button class="bt-ver-perfil"
+                    onclick="event.stopPropagation(); window.location.href='/pages/perfil-publico.php?id=<?= (int)$tr['id'] ?>'">
+              Ver perfil
+            </button>
+          <?php elseif (!empty($me['treinador_id']) && !$eTrainador): ?>
+            <!-- Solicitação pendente para outro -->
+            <div class="bt-status-badge vinculado">Solicitação em andamento</div>
+          <?php elseif ($eTrainador): ?>
+            <!-- Treinador vê perfil dos colegas -->
+            <button class="bt-ver-perfil"
+                    onclick="event.stopPropagation(); window.location.href='/pages/perfil-publico.php?id=<?= (int)$tr['id'] ?>'">
+              Ver perfil
+            </button>
           <?php else: ?>
             <button class="btn-primary" style="width:100%; padding:9px 0; font-size:0.85rem;"
                     onclick="event.stopPropagation(); abrirModal(<?= (int)$tr['id'] ?>, '<?= htmlspecialchars(addslashes($tr['nome']), ENT_QUOTES) ?>')">

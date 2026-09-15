@@ -106,14 +106,19 @@ if ($banner_file && $banner_file['tmp_name']) {
   }
 }
 
+require_once __DIR__ . '/../scripts/scraper-eventos.php';
+[$lat, $lng] = geocodificarCidade($cidade);
+
 try {
   $stmt = $pdo->prepare("
-    UPDATE eventos SET nome = ?, cidade = ?, data_evento = ?, distancias = ?, descricao = ?, link_oficial = ?, banner = ?
+    UPDATE eventos SET nome = ?, cidade = ?, lat = ?, lng = ?, data_evento = ?, distancias = ?, descricao = ?, link_oficial = ?, banner = ?
     WHERE id = ?
   ");
   $stmt->execute([
     $nome,
     $cidade,
+    $lat,
+    $lng,
     $data_evento,
     $distanciasStr,
     $descricao,

@@ -60,11 +60,11 @@ include '../components/header.php';
 .aluno-info h1 { font-family: 'Bebas Neue', sans-serif; font-size: 1.9rem; letter-spacing: 2px; line-height: 1; margin: 0; color: var(--text-primary, #111); }
 .aluno-info span { font-size: .82rem; color: var(--text-secondary, #555); }
 
-.acoes-topo { display: flex; gap: 8px; margin-left: auto; }
-.btn-outline { background: transparent; color: #111; border: 2px solid #ddd; padding: 8px 16px; border-radius: 8px; font-family: 'Outfit', sans-serif; font-weight: 700; font-size: .82rem; text-decoration: none; transition: all .2s; }
+.overview-botoes-topo { display: flex; gap: 12px; align-items: center; margin-bottom: 24px; flex-wrap: wrap; }
+.btn-outline { background: transparent; color: #111; border: 2px solid #ddd; padding: 8px 18px; border-radius: 8px; font-family: 'Outfit', sans-serif; font-weight: 700; font-size: .84rem; text-decoration: none; transition: all .2s; display: inline-flex; align-items: center; gap: 8px; }
 .btn-outline:hover { border-color: var(--green); color: var(--green); }
-.btn-primary-small { background: var(--green); color: #fff; border: none; padding: 10px 16px; border-radius: 8px; font-family: 'Outfit', sans-serif; font-weight: 700; font-size: .82rem; text-decoration: none; transition: opacity .2s; }
-.btn-primary-small:hover { opacity: .85; }
+.btn-primary-small { background: var(--green); color: #fff; border: 2px solid var(--green); padding: 8px 18px; border-radius: 8px; font-family: 'Outfit', sans-serif; font-weight: 700; font-size: .84rem; text-decoration: none; transition: all .2s; display: inline-flex; align-items: center; gap: 8px; }
+.btn-primary-small:hover { opacity: .9; box-shadow: 0 2px 8px rgba(29,185,84,.25); }
 
 /* Widgets Grid */
 .widgets-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
@@ -119,11 +119,11 @@ include '../components/header.php';
 .ut-titulo { font-weight: 700; font-size: 1rem; color: #111; margin-bottom: 4px; }
 .ut-data { font-size: .8rem; color: #777; margin-bottom: 12px; }
 
-/* Responsividade header */
+/* Responsividade */
 @media(max-width: 600px) {
-  .aluno-header { flex-direction: column; align-items: flex-start; gap: 12px; }
-  .acoes-topo { margin-left: 0; width: 100%; display: grid; grid-template-columns: 1fr 1fr; }
-  .btn-outline, .btn-primary-small { text-align: center; display: flex; justify-content: center; }
+  .overview-botoes-topo { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; }
+  .overview-botoes-topo .btn-outline,
+  .overview-botoes-topo .btn-primary-small { justify-content: center; padding: 10px 8px; font-size: .8rem; text-align: center; }
 }
 </style>
 
@@ -136,8 +136,21 @@ include '../components/header.php';
   $header_foto = $aluno['foto'] ?? '';
   $header_nome = $aluno['nome'] ?? '';
   $header_cidade = $aluno['cidade'] ?? 'Sem cidade registrada';
+  $header_foto_link = '/pages/perfil-publico.php?id=' . (int)$aluno['id'];
   include '../components/header-perfil-nome.php';
   ?>
+
+  <!-- AÇÕES / ATALHOS -->
+  <div class="overview-botoes-topo">
+    <a href="/pages/treinos-alunos.php?aba=calendario&aluno_id=<?= htmlspecialchars($aluno_id, ENT_QUOTES, 'UTF-8') ?>" class="btn-outline">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M19 3h-1V1h-2v2H8V1H6v2H5C3.9 3 3 3.9 3 5v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
+      Ver Calendário
+    </a>
+    <a href="/pages/treinos-alunos.php?aba=planilha&aluno_id=<?= htmlspecialchars($aluno_id, ENT_QUOTES, 'UTF-8') ?>" class="btn-primary-small">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg>
+      Planilha Completa
+    </a>
+  </div>
 
   <!-- ALERTAS -->
   <?php if (!empty($alertas)): ?>
@@ -330,11 +343,7 @@ include '../components/header.php';
       <p style="color:#888;font-size:.9rem;">Nenhum treino realizado ainda.</p>
     <?php endif; ?>
   </div>
-  
-  <div style="display:flex;gap:12px;margin-top:24px;justify-content:center;flex-wrap:wrap;">
-      <a href="/pages/treinos-alunos.php?aba=calendario&aluno_id=<?= htmlspecialchars($aluno_id, ENT_QUOTES, 'UTF-8') ?>" class="btn-outline" style="min-width: 150px; text-align: center;">Ver Calendário</a>
-      <a href="/pages/treinos-alunos.php?aba=planilha&aluno_id=<?= htmlspecialchars($aluno_id, ENT_QUOTES, 'UTF-8') ?>" class="btn-primary-small" style="min-width: 150px; text-align: center;">Planilha Completa</a>
-  </div>
+
 
 </section>
 

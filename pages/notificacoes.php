@@ -77,14 +77,33 @@ try {
                         </div>
                     <?php endif; ?>
 
-                    <?php if (!empty($n['data_criacao'])): ?>
-                        <?php 
-                            $dt = new DateTime($n['data_criacao']);
-                            $tempo = $dt->format('d/m/Y H:i');
-                        ?>
+                    <?php 
+                        $dataNotif = $n['created_at'] ?? $n['data_criacao'] ?? null;
+                        $tempo = '';
+                        if (!empty($dataNotif)) {
+                            try {
+                                $dt = new DateTime($dataNotif);
+                                $dt->setTimezone(new DateTimeZone('America/Sao_Paulo'));
+                                $agora = new DateTime('now', new DateTimeZone('America/Sao_Paulo'));
+                                
+                                $hoje = $agora->format('Y-m-d');
+                                $ontem = (clone $agora)->modify('-1 day')->format('Y-m-d');
+                                $diaNotif = $dt->format('Y-m-d');
+
+                                if ($diaNotif === $hoje) {
+                                    $tempo = 'Hoje às ' . $dt->format('H:i');
+                                } elseif ($diaNotif === $ontem) {
+                                    $tempo = 'Ontem às ' . $dt->format('H:i');
+                                } else {
+                                    $tempo = $dt->format('d/m/Y \à\s H:i');
+                                }
+                            } catch (Exception $e) {
+                                $tempo = '';
+                            }
+                        }
+                    ?>
+                    <?php if (!empty($tempo)): ?>
                         <div class="notif-time"><?= htmlspecialchars($tempo, ENT_QUOTES, 'UTF-8') ?></div>
-                    <?php else: ?>
-                        <div class="notif-time">Agora mesmo</div>
                     <?php endif; ?>
                 </div>
             </a>

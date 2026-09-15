@@ -8,8 +8,9 @@ $only_session = true;
 require_once '../components/header.php';
 require_once '../config/conexao.php';
 
-// 1. SÓ ACEITA POST E USUÁRIO LOGADO
-if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_SESSION['id'])) {
+// 1. SÓ ACEITA POST E USUÁRIO ADMIN LOGADO
+$adminId = (int)($_ENV['ADMIN_ID'] ?? getenv('ADMIN_ID') ?: 2);
+if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_SESSION['id']) || (int)$_SESSION['id'] !== $adminId) {
   header('Location: ../pages/eventos.php');
   exit();
 }
@@ -101,15 +102,20 @@ if ($httpCode !== 200 && $httpCode !== 201) {
 $bannerUrl = "{$supabaseUrl}/storage/v1/object/public/{$bucketName}/{$nomeUnico}";
 
 // 5. SALVA NO BANCO (STATUS = ATIVO DIRETO)
+require_once __DIR__ . '/../scripts/scraper-eventos.php';
+[$lat, $lng] = geocodificarCidade($cidade);
+
 try {
   $stmt = $pdo->prepare("
-    INSERT INTO eventos (usuario_id, nome, cidade, data_evento, distancias, descricao, link_oficial, banner, status)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'ativo')
+    INSERT INTO eventos (usuario_id, nome, cidade, lat, lng, data_evento, distancias, descricao, link_oficial, banner, status)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'ativo')
   ");
   $stmt->execute([
     $_SESSION['id'],
     $nome,
     $cidade,
+    $lat,
+    $lng,
     $data_evento,
     $distanciasStr,
     $descricao,

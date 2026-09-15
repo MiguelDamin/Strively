@@ -1388,6 +1388,9 @@ include '../components/header.php';
         const formData = new FormData();
         formData.append('treino_id', treinoId);
         formData.append('rpe', rpe);
+        if (window.csrfToken) {
+            formData.append('csrf_token', window.csrfToken);
+        }
         
         fetch('/actions/action-salvar-rpe.php', { method: 'POST', body: formData })
         .then(() => {

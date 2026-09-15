@@ -13,6 +13,8 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_SESSION['id'])) {
   exit();
 }
 
+requireCsrfToken('/pages/treinos.php');
+
 $treino_id = (int)($_POST['treino_id'] ?? 0);
 $aba       = $_POST['aba']             ?? 'calendario';
 

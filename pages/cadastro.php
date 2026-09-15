@@ -52,7 +52,7 @@ if (isset($_SESSION['id'])) {
       <?php endif; ?>
 
       <!-- Formulário de cadastro -->
-      <form action="../actions/action-cadastro.php" method="POST" class="auth-form" id="formCadastro">
+      <form action="../actions/action-cadastro.php" method="POST" class="auth-form" id="formCadastro" novalidate>
 
         <div class="form-grupo">
           <label for="nome">Nome completo</label>
@@ -82,15 +82,10 @@ if (isset($_SESSION['id'])) {
           <span id="email-erro" style="display:none; color: #e74c3c; font-size: 0.8rem; margin-top: 5px;">Digite um e-mail válido (ex: nome@dominio.com).</span>
         </div>
 
-        <div class="form-grupo">
-          <label for="cidade">Cidade</label>
-          <input
-            type="text"
-            id="cidade"
-            name="cidade"
-            placeholder="Ex: São Paulo, SP"
-          />
-        </div>
+        <input type="hidden" name="lat" id="lat" value="">
+        <input type="hidden" name="lng" id="lng" value="">
+        <input type="hidden" name="compartilha_localizacao" id="compartilha_localizacao" value="0">
+        <input type="hidden" name="cidade" id="cidade" value="">
 
         <div class="form-grupo">
           <label for="senha">Senha</label>
@@ -143,6 +138,40 @@ if (isset($_SESSION['id'])) {
           <span id="confirma-msg" class="confirma-msg" style="display:none;"></span>
         </div>
 
+        <!-- Pergunta de Localização para Eventos -->
+        <div class="form-grupo form-grupo-geo">
+          <label class="geo-pergunta-label">
+            📍 Deseja compartilhar sua localização para ver eventos perto de você?
+          </label>
+          <p class="geo-pergunta-sub">Mostraremos corridas e eventos esportivos próximos à sua região.</p>
+
+          <div class="geo-botoes-wrap">
+            <button type="button" class="btn-geo-choice" id="btn-geo-sim">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>
+              Sim, compartilhar
+            </button>
+            <button type="button" class="btn-geo-choice" id="btn-geo-nao">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              Não, prefiro digitar minha cidade
+            </button>
+          </div>
+
+          <div id="geo-status-msg" class="geo-status-msg" style="display:none;"></div>
+
+          <div id="bloco-cidade-manual" class="bloco-cidade-manual" style="display:none; margin-top: 14px;">
+            <label for="cidade_manual" style="font-size:0.85rem; font-weight:500; color:var(--text-secondary); margin-bottom:6px; display:block;">
+              Sua Cidade / Estado
+            </label>
+            <input
+              type="text"
+              id="cidade_manual"
+              name="cidade_manual"
+              placeholder="Ex: Porto Alegre, RS ou Curitiba, PR"
+              autocomplete="address-level2"
+            />
+          </div>
+        </div>
+
         <!-- Checkbox de termos -->
         <div class="form-grupo form-grupo-check">
           <label class="check-label" for="aceitar_termos">
@@ -155,7 +184,7 @@ if (isset($_SESSION['id'])) {
             />
             <span>
               Li e aceito os
-              <a href="/pages/termos" target="_blank" rel="noopener noreferrer">Termos de Uso</a>
+              <a href="#" id="link-termos" rel="noopener noreferrer">Termos de Uso</a>
               do Strively
             </span>
           </label>
@@ -274,14 +303,247 @@ if (isset($_SESSION['id'])) {
 .check-label a:hover {
   opacity: 0.7;
 }
+
+/* ── Pergunta de Localização no Cadastro ── */
+.form-grupo-geo {
+  background: var(--surface-2, #f5f6f5);
+  border: 1px solid var(--border, #e5e7eb);
+  border-radius: var(--radius-md, 14px);
+  padding: 16px;
+  margin-bottom: 20px;
+}
+.geo-pergunta-label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary, #111);
+  display: block;
+  margin-bottom: 4px;
+  line-height: 1.35;
+}
+.geo-pergunta-sub {
+  font-size: 0.82rem;
+  color: var(--text-secondary, #666);
+  margin: 0 0 14px;
+  line-height: 1.4;
+}
+.geo-botoes-wrap {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.btn-geo-choice {
+  flex: 1;
+  min-width: 140px;
+  padding: 10px 14px;
+  background: var(--surface, #fff);
+  border: 1.5px solid var(--border-strong, #ccc);
+  border-radius: var(--radius-sm, 10px);
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-primary, #222);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+.btn-geo-choice:hover {
+  border-color: var(--green, #1DB954);
+  background: #fafbfa;
+}
+.btn-geo-choice.selected {
+  border-color: var(--green, #1DB954);
+  background: rgba(29, 185, 84, 0.1);
+  color: var(--green-deeper, #0f7a34);
+  font-weight: 600;
+  box-shadow: 0 0 0 1px var(--green, #1DB954);
+}
+.geo-status-msg {
+  margin-top: 10px;
+  font-size: 0.82rem;
+  padding: 8px 12px;
+  border-radius: var(--radius-xs, 6px);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 500;
+}
+.geo-status-msg.geo-loading {
+  background: #eff6ff;
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+}
+.geo-status-msg.geo-success {
+  background: #f0fdf4;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+}
+.geo-status-msg.geo-warn {
+  background: #fffbeb;
+  color: #b45309;
+  border: 1px solid #fde68a;
+}
 </style>
 
 <script>
+// ── Salvar / restaurar dados do formulário no sessionStorage ──────────────
+const FORM_KEY = 'strively_cadastro_draft';
+
+function salvarRascunho() {
+  const dados = {
+    nome:                    document.getElementById('nome').value,
+    email:                   document.getElementById('email').value,
+    cidade:                  document.getElementById('cidade').value,
+    cidade_manual:           document.getElementById('cidade_manual') ? document.getElementById('cidade_manual').value : '',
+    lat:                     document.getElementById('lat').value,
+    lng:                     document.getElementById('lng').value,
+    compartilha_localizacao: document.getElementById('compartilha_localizacao').value,
+    modo_geo:                document.getElementById('btn-geo-sim').classList.contains('selected') ? 'sim' : 
+                             (document.getElementById('btn-geo-nao').classList.contains('selected') ? 'nao' : '')
+    // senhas não são salvas por segurança
+  };
+  sessionStorage.setItem(FORM_KEY, JSON.stringify(dados));
+}
+
+function restaurarRascunho() {
+  const raw = sessionStorage.getItem(FORM_KEY);
+  if (!raw) return;
+  try {
+    const dados = JSON.parse(raw);
+    if (dados.nome)   document.getElementById('nome').value   = dados.nome;
+    if (dados.email)  document.getElementById('email').value  = dados.email;
+    if (dados.cidade) document.getElementById('cidade').value = dados.cidade;
+    if (dados.cidade_manual && document.getElementById('cidade_manual')) {
+      document.getElementById('cidade_manual').value = dados.cidade_manual;
+    }
+    if (dados.lat) document.getElementById('lat').value = dados.lat;
+    if (dados.lng) document.getElementById('lng').value = dados.lng;
+    if (dados.compartilha_localizacao) {
+      document.getElementById('compartilha_localizacao').value = dados.compartilha_localizacao;
+    }
+
+    if (dados.modo_geo === 'sim' && dados.lat && dados.lng) {
+      document.getElementById('btn-geo-sim').classList.add('selected');
+      const msg = document.getElementById('geo-status-msg');
+      msg.style.display = 'block';
+      msg.className = 'geo-status-msg geo-success';
+      msg.innerHTML = '✅ Localização salva com sucesso!';
+    } else if (dados.modo_geo === 'nao' || dados.cidade_manual) {
+      document.getElementById('btn-geo-nao').classList.add('selected');
+      document.getElementById('bloco-cidade-manual').style.display = 'block';
+    }
+  } catch(e) {}
+}
+
+// Restaura ao carregar
+document.addEventListener('DOMContentLoaded', function() {
+  restaurarRascunho();
+
+  const btnSim = document.getElementById('btn-geo-sim');
+  const btnNao = document.getElementById('btn-geo-nao');
+  const blocoManual = document.getElementById('bloco-cidade-manual');
+  const inputCidadeManual = document.getElementById('cidade_manual');
+  const inputLat = document.getElementById('lat');
+  const inputLng = document.getElementById('lng');
+  const inputCompartilha = document.getElementById('compartilha_localizacao');
+  const inputCidadeHidden = document.getElementById('cidade');
+  const geoStatusMsg = document.getElementById('geo-status-msg');
+
+  btnSim.addEventListener('click', function() {
+    btnSim.classList.add('selected');
+    btnNao.classList.remove('selected');
+    blocoManual.style.display = 'none';
+
+    if (!navigator.geolocation) {
+      geoStatusMsg.style.display = 'block';
+      geoStatusMsg.className = 'geo-status-msg geo-warn';
+      geoStatusMsg.innerHTML = '⚠️ Seu navegador não suporta geolocalização. Por favor, digite sua cidade.';
+      blocoManual.style.display = 'block';
+      btnNao.classList.add('selected');
+      btnSim.classList.remove('selected');
+      if (inputCidadeManual) inputCidadeManual.focus();
+      return;
+    }
+
+    geoStatusMsg.style.display = 'block';
+    geoStatusMsg.className = 'geo-status-msg geo-loading';
+    geoStatusMsg.innerHTML = '⏳ Obtendo sua localização...';
+    btnSim.disabled = true;
+
+    navigator.geolocation.getCurrentPosition(
+      function(position) {
+        inputLat.value = position.coords.latitude;
+        inputLng.value = position.coords.longitude;
+        inputCompartilha.value = '1';
+        btnSim.disabled = false;
+        geoStatusMsg.className = 'geo-status-msg geo-success';
+        geoStatusMsg.innerHTML = '✅ Localização compartilhada com sucesso!';
+        salvarRascunho();
+      },
+      function(error) {
+        btnSim.disabled = false;
+        inputLat.value = '';
+        inputLng.value = '';
+        inputCompartilha.value = '0';
+        btnSim.classList.remove('selected');
+        btnNao.classList.add('selected');
+        geoStatusMsg.className = 'geo-status-msg geo-warn';
+        geoStatusMsg.innerHTML = '⚠️ Não foi possível obter sua localização automaticamente. Por favor, digite sua cidade abaixo:';
+        blocoManual.style.display = 'block';
+        if (inputCidadeManual) inputCidadeManual.focus();
+        salvarRascunho();
+      },
+      { timeout: 10000, enableHighAccuracy: false }
+    );
+  });
+
+  btnNao.addEventListener('click', function() {
+    btnNao.classList.add('selected');
+    btnSim.classList.remove('selected');
+    inputCompartilha.value = '0';
+    inputLat.value = '';
+    inputLng.value = '';
+    geoStatusMsg.style.display = 'none';
+    blocoManual.style.display = 'block';
+    if (inputCidadeManual) inputCidadeManual.focus();
+    salvarRascunho();
+  });
+
+  if (inputCidadeManual) {
+    inputCidadeManual.addEventListener('input', function() {
+      if (inputCidadeHidden) inputCidadeHidden.value = inputCidadeManual.value;
+      salvarRascunho();
+    });
+  }
+});
+
+// Salva ao digitar em qualquer campo
+['nome','email','cidade_manual'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.addEventListener('input', salvarRascunho);
+});
+
+// ── Link Termos de Uso: desktop = nova aba, mobile = mesma aba ────────────
+document.getElementById('link-termos').addEventListener('click', function(e) {
+  e.preventDefault();
+  salvarRascunho();
+  const termoUrl = '/pages/termos.php?from=cadastro';
+  const isMobile = window.matchMedia('(max-width: 768px)').matches
+                || ('ontouchstart' in window && window.innerWidth <= 1024);
+  if (isMobile) {
+    window.location.href = termoUrl;
+  } else {
+    window.open(termoUrl, '_blank', 'noopener,noreferrer');
+  }
+});
+
+// ── Funções de UI ─────────────────────────────────────────────────────────
 function togglePassword(inputId, iconSpan) {
   const input = document.getElementById(inputId);
   const openIcon = iconSpan.querySelector('.eye-open');
   const closedIcon = iconSpan.querySelector('.eye-closed');
-  
   if (input.type === 'password') {
     input.type = 'text';
     openIcon.style.display = 'none';
@@ -306,7 +568,6 @@ function validarEmail(campo) {
 function validarNome(campo) {
   const regexInvalidos = /[^a-zA-ZàáâãäéêëíîïóôõöúûüçÀÁÂÃÄÉÊËÍÎÏÓÔÕÖÚÛÜÇ '\-]/g;
   const erroSpan = document.getElementById(campo.id + '-erro');
-  
   if (regexInvalidos.test(campo.value)) {
     campo.value = campo.value.replace(regexInvalidos, '');
     erroSpan.style.display = 'block';
@@ -323,43 +584,28 @@ function validarSenha() {
   const regraTamanho = document.getElementById('regra-tamanho');
   const regraNumero  = document.getElementById('regra-numero');
 
-  if (val.length === 0) {
-    feedback.style.display = 'none';
-    return;
-  }
+  if (val.length === 0) { feedback.style.display = 'none'; return; }
 
   feedback.style.display = 'block';
-
   const temTamanho = val.length >= 8;
   const temNumero  = /\d/.test(val);
-
   regraTamanho.classList.toggle('ok', temTamanho);
   regraNumero.classList.toggle('ok', temNumero);
 
   const pontos = [temTamanho, temNumero, val.length >= 12].filter(Boolean).length;
-
   const cores = ['#e74c3c', '#f39c12', '#2ecc71'];
   const larguras = ['33%', '66%', '100%'];
-
   barra.style.width      = larguras[pontos - 1] || '10%';
   barra.style.background = pontos === 0 ? '#e0e0e0' : cores[pontos - 1];
 
-  // Também revalida confirmação se já estiver preenchida
-  if (document.getElementById('senha_confirma').value) {
-    validarConfirma();
-  }
+  if (document.getElementById('senha_confirma').value) validarConfirma();
 }
 
 function validarConfirma() {
   const senha    = document.getElementById('senha').value;
   const confirma = document.getElementById('senha_confirma').value;
   const msg      = document.getElementById('confirma-msg');
-
-  if (confirma.length === 0) {
-    msg.style.display = 'none';
-    return;
-  }
-
+  if (confirma.length === 0) { msg.style.display = 'none'; return; }
   msg.style.display = 'block';
   if (senha === confirma) {
     msg.textContent = '✓ Senhas coincidem';
@@ -370,7 +616,7 @@ function validarConfirma() {
   }
 }
 
-// Valida no submit antes de enviar ao servidor
+// ── Validação no submit ───────────────────────────────────────────────────
 document.getElementById('formCadastro').addEventListener('submit', function(e) {
   const senha    = document.getElementById('senha').value;
   const confirma = document.getElementById('senha_confirma').value;
@@ -396,6 +642,8 @@ document.getElementById('formCadastro').addEventListener('submit', function(e) {
     alert('Você precisa aceitar os Termos de Uso para criar uma conta.');
     return;
   }
+  // Limpa rascunho ao enviar com sucesso
+  sessionStorage.removeItem(FORM_KEY);
 });
 </script>
 

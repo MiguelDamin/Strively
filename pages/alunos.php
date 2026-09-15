@@ -474,6 +474,7 @@ include '../components/header.php';
           </a>
           <form action="/actions/action-remover-aluno.php" method="POST"
             onsubmit="return confirm('Remover <?= htmlspecialchars(addslashes($aluno['nome'])) ?> da sua lista?')">
+            <?= csrfField() ?>
             <input type="hidden" name="aluno_id" value="<?= (int) $aluno['id'] ?>">
             <button type="submit" class="btn-remover">Remover</button>
           </form>

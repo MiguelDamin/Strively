@@ -341,6 +341,7 @@ include '../components/header.php';
             <div class="planilha-acoes">
               <?php if (!$item['_proprio']): ?>
               <form action="/actions/action-remover-treino.php" method="POST" onsubmit="removerTreinoAjax(event, this); return false;">
+                <?= csrfField() ?>
                 <input type="hidden" name="treino_id" value="<?= (int)$item['id'] ?>">
                 <input type="hidden" name="aluno_id"  value="<?= htmlspecialchars($aluno_id, ENT_QUOTES, 'UTF-8') ?>">
                 <input type="hidden" name="aba"        value="planilha">
@@ -542,7 +543,7 @@ function abrirModalDia(ds, tt) {
 
       // Botão remover
       let acoes = '';
-      if (!proprio) acoes = '<form method="POST" action="/actions/action-remover-treino.php" onsubmit="removerTreinoAjax(event, this); return false;" style="display:inline"><input type="hidden" name="treino_id" value="'+it.id+'"><input type="hidden" name="aluno_id" value="'+it.aluno_id+'"><input type="hidden" name="aba" value="calendario"><button type="submit" class="btn-remover-treino">Remover</button></form>';
+      if (!proprio) acoes = '<form method="POST" action="/actions/action-remover-treino.php" onsubmit="removerTreinoAjax(event, this); return false;" style="display:inline"><input type="hidden" name="csrf_token" value="'+(window.csrfToken || '')+'"><input type="hidden" name="treino_id" value="'+it.id+'"><input type="hidden" name="aluno_id" value="'+it.aluno_id+'"><input type="hidden" name="aba" value="calendario"><button type="submit" class="btn-remover-treino">Remover</button></form>';
 
       div.className = 'modal-treino-item' + (realizado ? ' realizado' : '');
       div.innerHTML = badgeTipo

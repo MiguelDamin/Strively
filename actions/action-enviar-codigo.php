@@ -11,9 +11,11 @@ require_once '../config/conexao.php'; // Já carrega autoload e Dotenv
 require_once __DIR__ . '/../config/mailer.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST' || !isset($_SESSION['id'])) {
-    header('Location: /pages/configuracoes.php');
+    header('Location: /pages/configuracoes.php?secao=seguranca');
     exit();
 }
+
+requireCsrfToken('/pages/configuracoes.php?secao=seguranca');
 
 $novaSenha = $_POST['nova_senha'] ?? '';
 $confirmaSenha = $_POST['confirma_senha'] ?? '';

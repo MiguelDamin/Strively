@@ -17,6 +17,9 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
   exit();
 }
 
+$returnUrl = $_POST['return_url'] ?? '/pages/treinos.php';
+requireCsrfToken($returnUrl);
+
 require_once '../config/conexao.php';
 
 $usuario_id = $_SESSION['id'];

@@ -16,6 +16,7 @@
 
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../config/conexao.php';
+require_once __DIR__ . '/scraper-eventos.php';
 
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/..');
 $dotenv->load();
@@ -308,9 +309,9 @@ foreach ($eventosFinal as $ev) {
     continue;
   }
 
-  // Pula eventos que já passaram
-  if (strtotime($dataConvertida) < strtotime('today')) {
-    echo "  PASSADO (ignorado): {$ev['nome']} — $dataConvertida\n";
+  // Pula eventos que já passaram ou que acontecem hoje
+  if (strtotime($dataConvertida) <= strtotime('today')) {
+    echo "  PASSADO OU HOJE (ignorado): {$ev['nome']} — $dataConvertida\n";
     continue;
   }
 
@@ -357,17 +358,22 @@ foreach ($eventosParaInserir as $ev) {
     continue;
   }
 
+  // Geocodifica a cidade via Nominatim
+  [$lat, $lng] = geocodificarCidade($ev['cidade']);
+
   // Insere
   try {
     $stmt = $pdo->prepare("
       INSERT INTO eventos
-        (usuario_id, nome, cidade, data_evento, distancias, descricao, link_oficial, banner, status)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'ativo')
+        (usuario_id, nome, cidade, lat, lng, data_evento, distancias, descricao, link_oficial, banner, status)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'ativo')
     ");
     $stmt->execute([
       USUARIO_BOT_ID,
       $ev['nome'],
       $ev['cidade'],
+      $lat,
+      $lng,
       $ev['data'],
       $ev['distancias'],
       $ev['descricao'],

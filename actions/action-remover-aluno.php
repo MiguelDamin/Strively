@@ -17,6 +17,8 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
   exit();
 }
 
+requireCsrfToken('/pages/alunos.php');
+
 $aluno_id = (int) ($_POST['aluno_id'] ?? 0);
 
 if (!$aluno_id) {
