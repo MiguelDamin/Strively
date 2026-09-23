@@ -99,13 +99,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Renova o token caso expirado
         if (time() > (int)$user['strava_token_expira']) {
-            $payload = json_encode([
+            // IMPORTANTE: Strava exige application/x-www-form-urlencoded (não JSON)
+            $payload = http_build_query([
                 'client_id'     => $_ENV['STRAVA_CLIENT_ID'],
                 'client_secret' => $_ENV['STRAVA_CLIENT_SECRET'],
                 'refresh_token' => $user['strava_refresh_token'],
                 'grant_type'    => 'refresh_token',
             ]);
-            $ctx  = stream_context_create(['http' => ['method' => 'POST', 'header' => "Content-Type: application/json\r\n", 'content' => $payload, 'ignore_errors' => true, 'timeout' => 15]]);
+            $ctx  = stream_context_create(['http' => ['method' => 'POST', 'header' => "Content-Type: application/x-www-form-urlencoded\r\n", 'content' => $payload, 'ignore_errors' => true, 'timeout' => 15]]);
             $resp = @file_get_contents('https://www.strava.com/oauth/token', false, $ctx);
             $data = json_decode((string)$resp, true);
 

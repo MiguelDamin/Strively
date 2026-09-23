@@ -42,7 +42,8 @@ if (isset($_GET['error']) || empty($_GET['code'])) {
 $code = $_GET['code'];
 
 // 3. Troca o code por access_token via POST
-$payload = json_encode([
+// IMPORTANTE: Strava exige application/x-www-form-urlencoded (não JSON)
+$payload = http_build_query([
   'client_id'     => $_ENV['STRAVA_CLIENT_ID'],
   'client_secret' => $_ENV['STRAVA_CLIENT_SECRET'],
   'code'          => $code,
@@ -52,7 +53,7 @@ $payload = json_encode([
 $ctx = stream_context_create([
   'http' => [
     'method'        => 'POST',
-    'header'        => "Content-Type: application/json\r\nAccept: application/json\r\n",
+    'header'        => "Content-Type: application/x-www-form-urlencoded\r\nAccept: application/json\r\n",
     'content'       => $payload,
     'ignore_errors' => true,
     'timeout'       => 15,
