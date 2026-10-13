@@ -215,7 +215,18 @@ if (isset($_SESSION['id'])):
   </section>
   <?php endif; ?>
 
-
+  <!-- Instalar App (abaixo do carrossel, para usuários logados) -->
+  <div class="home-install-bar">
+    <span class="home-install-bar-label">Instalar app</span>
+    <button id="btn-instalar-android" class="home-install-btn" onclick="instalarAndroid()">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M3.18 23.76c.3.17.64.22.99.14l12.82-7.41-2.76-2.76-11.05 10.03zm-1.81-20.1c-.23.3-.37.72-.37 1.26v17.16c0 .54.14.96.38 1.26l.07.07 9.61-9.61v-.23L1.44 3.59l-.07.07zm19.55 8.51l-2.74-1.58-3.06 3.06 3.06 3.06 2.75-1.59c.78-.45.78-1.5-.01-1.95zm-17.74 9.98l11.05-10.03-2.76-2.76-8.29 12.79z"/></svg>
+      Android
+    </button>
+    <button class="home-install-btn" onclick="abrirModalIOS()">
+      <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+      iPhone / iPad
+    </button>
+  </div>
 
 <?php 
 // =====================================================
@@ -367,46 +378,122 @@ else:
   <?php include_once __DIR__ . '/components/footer.php'; ?>
 </div>
 
-<!-- Modal iOS: Instruções de Instalação PWA no iPhone -->
+<?php endif; // Fim do if/else principal ?>
+
+<!-- ================================================
+     PWA Modals + Install JS (compartilhado logado/visitante)
+     ================================================ -->
+
+<!-- Modal iOS/Apple: Instruções de Instalação PWA no iPhone -->
 <div class="pwa-modal-overlay" id="pwaModalIOS" onclick="fecharModalIOS(event)">
   <div class="pwa-modal-box">
     <div class="pwa-modal-handle"></div>
-    <h3>📱 Instalar no iPhone</h3>
-    <p class="pwa-modal-sub">Siga os passos abaixo para adicionar o Strively à tela de início do seu iPhone.</p>
-    <ol class="pwa-modal-steps">
+    <h3>📱 Instalar no iPhone / iPad</h3>
+    <p class="pwa-modal-sub">Escolha como você quer instalar:</p>
+
+    <!-- Abas Safari / Chrome -->
+    <div class="pwa-tabs">
+      <button class="pwa-tab pwa-tab-active" id="pwaTabSafari" onclick="mudarAba('safari')">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15v-4H7l5-8v4h4l-5 8z"/></svg>
+        Safari
+      </button>
+      <button class="pwa-tab" id="pwaTabChrome" onclick="mudarAba('chrome')">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.48 0 2.85.43 4.01 1.17L6.17 16.01A7.93 7.93 0 0 1 5 12c0-3.87 2.76-7.1 6.43-7.82L12 5zm7 7c0 3.87-2.76 7.1-6.43 7.82L12 19c-1.48 0-2.85-.43-4.01-1.17l9.84-9.84A7.93 7.93 0 0 1 19 12z"/></svg>
+        Chrome
+      </button>
+    </div>
+
+    <!-- Passos Safari -->
+    <ol class="pwa-modal-steps" id="pwaStepsSafari">
       <li class="pwa-step">
         <div class="pwa-step-num">1</div>
-        <div class="pwa-step-text">Abra esta página no <strong>Safari</strong> (não funciona em outros navegadores no iPhone).</div>
+        <div class="pwa-step-text">Abra o Strively no <strong>Safari</strong> (o navegador padrão da Apple).</div>
       </li>
       <li class="pwa-step">
         <div class="pwa-step-num">2</div>
-        <div class="pwa-step-text">Toque no ícone de <strong>Compartilhar</strong> <span style="font-size:1.1em">⬆️</span> na barra inferior do Safari.</div>
+        <div class="pwa-step-text">Toque no ícone de <strong>Compartilhar ⬆️</strong> na barra inferior da tela.</div>
       </li>
       <li class="pwa-step">
         <div class="pwa-step-num">3</div>
-        <div class="pwa-step-text">Role até encontrar <strong>"Adicionar à Tela de Início"</strong> e toque nessa opção.</div>
+        <div class="pwa-step-text">Role a lista e toque em <strong>"Adicionar à Tela de Início"</strong>.</div>
       </li>
       <li class="pwa-step">
         <div class="pwa-step-num">4</div>
-        <div class="pwa-step-text">Confirme tocando em <strong>"Adicionar"</strong> no canto superior direito.</div>
+        <div class="pwa-step-text">Toque em <strong>"Adicionar"</strong> no canto superior direito. Pronto!</div>
       </li>
     </ol>
+
+    <!-- Passos Chrome -->
+    <ol class="pwa-modal-steps" id="pwaStepsChrome" style="display:none">
+      <li class="pwa-step">
+        <div class="pwa-step-num">1</div>
+        <div class="pwa-step-text">Abra o Strively no <strong>Chrome</strong> no seu iPhone.</div>
+      </li>
+      <li class="pwa-step">
+        <div class="pwa-step-num">2</div>
+        <div class="pwa-step-text">Toque nos <strong>três pontos ⋯</strong> no canto inferior direito da tela.</div>
+      </li>
+      <li class="pwa-step">
+        <div class="pwa-step-num">3</div>
+        <div class="pwa-step-text">Toque em <strong>"Adicionar à Tela de Início"</strong> na lista de opções.</div>
+      </li>
+      <li class="pwa-step">
+        <div class="pwa-step-num">4</div>
+        <div class="pwa-step-text">Confirme tocando em <strong>"Adicionar"</strong>. Pronto!</div>
+      </li>
+    </ol>
+
     <button class="pwa-modal-btn-close" onclick="fecharModalIOS()">Entendido!</button>
+  </div>
+</div>
+
+<!-- Modal Android: Guia quando o prompt automático não dispara -->
+<div class="pwa-modal-overlay" id="pwaModalAndroid" onclick="fecharModalAndroid(event)">
+  <div class="pwa-modal-box">
+    <div class="pwa-modal-handle"></div>
+    <h3>🤖 Instalar no Android</h3>
+    <p class="pwa-modal-sub">O app já está instalado, ou siga os passos para instalar manualmente pelo Chrome:</p>
+    <ol class="pwa-modal-steps">
+      <li class="pwa-step">
+        <div class="pwa-step-num">1</div>
+        <div class="pwa-step-text">Abra o Strively no <strong>Chrome</strong> no seu Android.</div>
+      </li>
+      <li class="pwa-step">
+        <div class="pwa-step-num">2</div>
+        <div class="pwa-step-text">Toque nos <strong>três pontos ⋮</strong> no canto superior direito.</div>
+      </li>
+      <li class="pwa-step">
+        <div class="pwa-step-num">3</div>
+        <div class="pwa-step-text">Toque em <strong>"Adicionar à tela inicial"</strong> ou <strong>"Instalar app"</strong>.</div>
+      </li>
+      <li class="pwa-step">
+        <div class="pwa-step-num">4</div>
+        <div class="pwa-step-text">Confirme tocando em <strong>"Instalar"</strong>. Pronto!</div>
+      </li>
+    </ol>
+    <button class="pwa-modal-btn-close" onclick="fecharModalAndroid()">Entendido!</button>
   </div>
 </div>
 
 <script>
   /* ================================================
-     PWA Install — Android (prompt nativo) + iOS (modal)
+     PWA Install — Android (prompt nativo + fallback modal) + iOS/Apple (modal)
      ================================================ */
 
-  // Abre o modal de instruções para iOS
+  // Troca de aba no modal iOS
+  function mudarAba(aba) {
+    var isSafari = aba === 'safari';
+    document.getElementById('pwaStepsSafari').style.display = isSafari ? 'flex' : 'none';
+    document.getElementById('pwaStepsChrome').style.display  = isSafari ? 'none'  : 'flex';
+    document.getElementById('pwaTabSafari').classList.toggle('pwa-tab-active', isSafari);
+    document.getElementById('pwaTabChrome').classList.toggle('pwa-tab-active', !isSafari);
+  }
+
+  // Abre o modal de instruções para iOS/Apple
   function abrirModalIOS() {
     document.getElementById('pwaModalIOS').classList.add('pwa-modal-open');
     document.body.style.overflow = 'hidden';
   }
-
-  // Fecha o modal iOS (clique no overlay ou no botão)
   function fecharModalIOS(e) {
     if (!e || e.target === document.getElementById('pwaModalIOS')) {
       document.getElementById('pwaModalIOS').classList.remove('pwa-modal-open');
@@ -414,35 +501,37 @@ else:
     }
   }
 
-  // Tenta instalar o PWA no Android usando o evento beforeinstallprompt
+  // Modal guia manual para Android
+  function abrirModalAndroid() {
+    document.getElementById('pwaModalAndroid').classList.add('pwa-modal-open');
+    document.body.style.overflow = 'hidden';
+  }
+  function fecharModalAndroid(e) {
+    if (!e || e.target === document.getElementById('pwaModalAndroid')) {
+      document.getElementById('pwaModalAndroid').classList.remove('pwa-modal-open');
+      document.body.style.overflow = '';
+    }
+  }
+
+  // Instalar no Android — tenta o prompt nativo, se não disponível abre o guia manual
   function instalarAndroid() {
     if (window.deferredPWAPrompt) {
       window.deferredPWAPrompt.prompt();
       window.deferredPWAPrompt.userChoice.then(function(choice) {
         if (choice.outcome === 'accepted') {
-          // App aceito — pode esconder/desabilitar o botão
-          var btn = document.getElementById('btn-instalar-android');
-          if (btn) {
-            btn.textContent = '✓ Instalado!';
+          document.querySelectorAll('#btn-instalar-android').forEach(function(btn) {
+            btn.innerHTML = '✓ Instalado!';
             btn.disabled = true;
             btn.style.opacity = '0.7';
-          }
+          });
         }
         window.deferredPWAPrompt = null;
       });
     } else {
-      // Prompt não disponível: app já instalado ou navegador não suporta
-      var isAndroid = /android/i.test(navigator.userAgent);
-      if (isAndroid) {
-        alert('O app já pode estar instalado, ou abra o site no Chrome para instalar.');
-      } else {
-        alert('Instale pelo Chrome no Android para usar esta opção.');
-      }
+      abrirModalAndroid();
     }
   }
 </script>
-
-<?php endif; // Fim do if/else principal ?>
 
 
 <style>
@@ -760,6 +849,31 @@ else:
   transition: background 0.2s;
 }
 .pwa-modal-btn-close:hover { background: #17a349; }
+
+/* Abas Safari/Chrome no modal iOS */
+.pwa-tabs { display: flex; gap: 8px; margin-bottom: 20px; }
+.pwa-tab {
+  flex: 1; display: flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 10px 14px; border: 2px solid #e8e8e8; border-radius: 10px;
+  background: #f7f7f7; color: #888; font-size: 0.88rem; font-weight: 600;
+  cursor: pointer; font-family: inherit; transition: all 0.2s;
+}
+.pwa-tab.pwa-tab-active { border-color: #1DB954; background: rgba(29,185,84,0.08); color: #1DB954; }
+
+/* Barra de instalação para usuários logados */
+.home-install-bar {
+  display: flex; align-items: center; justify-content: center;
+  gap: 12px; flex-wrap: wrap; padding: 16px 24px 32px;
+}
+.home-install-bar-label { font-size: 0.78rem; color: #bbb; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; }
+.home-install-btn {
+  display: inline-flex; align-items: center; gap: 7px;
+  background: #1a1a1a; color: #fff; border: 1px solid #333; border-radius: 10px;
+  padding: 9px 16px; font-size: 0.82rem; font-weight: 600;
+  cursor: pointer; font-family: inherit; transition: background 0.2s, transform 0.15s, box-shadow 0.15s;
+}
+.home-install-btn:hover { background: #1DB954; border-color: #1DB954; transform: translateY(-2px); box-shadow: 0 6px 16px rgba(29,185,84,0.25); }
+.home-install-btn:active { transform: translateY(0); }
 
 /* FEATURE SECTIONS */
 .lp2-feature {

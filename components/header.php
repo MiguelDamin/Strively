@@ -486,12 +486,8 @@ body.modal-aberto {
     });
   })();
 
-  /* PWA Install Prompt — captura o evento para uso pelos botões da landing page */
-  window.deferredPWAPrompt = null;
-  window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    window.deferredPWAPrompt = e;
-  });
+
+  /* PWA Install Prompt — capturado em head.php antes do carregamento da página */
 
   /* Global Toast System - Premium Redesign */
   window.Strively = {

@@ -28,5 +28,11 @@ require_once __DIR__ . '/../includes/csrf.php';
         .then(() => console.log('Service Worker Registrado'))
         .catch(err => console.error('Erro no Service Worker', err));
     }
+    // Captura o prompt de instalação PWA o mais cedo possível (Android/Chrome)
+    window.deferredPWAPrompt = null;
+    window.addEventListener('beforeinstallprompt', function(e) {
+      e.preventDefault();
+      window.deferredPWAPrompt = e;
+    });
   </script>
 </head>
