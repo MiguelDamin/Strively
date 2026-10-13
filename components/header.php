@@ -374,10 +374,7 @@ if (isset($_SESSION['id']) && isset($pdo)) {
   <?php endif; ?>
 </div>
 
-<!-- Botão PWA Instalar APP (aparece via JS e só no Mobile usualmente) -->
-<button id="btn-instalar" style="display: none; position: fixed; bottom: 85px; right: 20px; z-index: 1000; background-color: var(--green, #1DB954); color: #fff; border: none; border-radius: 50px; padding: 12px 20px; font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.1); cursor: pointer;">
-  Instalar App
-</button>
+
 
 <!-- Scripts: dropdown desktop + bottom sheet mobile + PWA -->
 
@@ -489,26 +486,11 @@ body.modal-aberto {
     });
   })();
 
-  /* PWA Install Prompt */
-  let deferredPrompt;
+  /* PWA Install Prompt — captura o evento para uso pelos botões da landing page */
+  window.deferredPWAPrompt = null;
   window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
-    deferredPrompt = e;
-    document.getElementById('btn-instalar').style.display = 'block';
-  });
-  document.getElementById('btn-instalar')?.addEventListener('click', () => {
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      deferredPrompt.userChoice.then((choiceResult) => {
-        if (choiceResult.outcome === 'accepted') {
-          console.log('User accepted the A2HS prompt');
-        } else {
-          console.log('User dismissed the A2HS prompt');
-        }
-        deferredPrompt = null;
-        document.getElementById('btn-instalar').style.display = 'none';
-      });
-    }
+    window.deferredPWAPrompt = e;
   });
 
   /* Global Toast System - Premium Redesign */

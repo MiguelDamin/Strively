@@ -259,14 +259,16 @@ else:
         <p>Monte planilhas, acompanhe a evolução dos seus corredores e centralize toda a comunicação — sem custo algum.</p>
         <a href="/pages/cadastro.php" class="lp2-btn-ghost">Começar agora</a>
         <div class="lp2-badges">
-          <div class="lp2-badge">
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
-            App Store
-          </div>
-          <div class="lp2-badge">
+          <!-- Botão Android: aciona prompt nativo de instalação PWA -->
+          <button id="btn-instalar-android" class="lp2-badge lp2-badge-install" onclick="instalarAndroid()" title="Instalar no Android">
             <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M3.18 23.76c.3.17.64.22.99.14l12.82-7.41-2.76-2.76-11.05 10.03zm-1.81-20.1c-.23.3-.37.72-.37 1.26v17.16c0 .54.14.96.38 1.26l.07.07 9.61-9.61v-.23L1.44 3.59l-.07.07zm19.55 8.51l-2.74-1.58-3.06 3.06 3.06 3.06 2.75-1.59c.78-.45.78-1.5-.01-1.95zm-17.74 9.98l11.05-10.03-2.76-2.76-8.29 12.79z"/></svg>
-            Google Play
-          </div>
+            Instalação Android
+          </button>
+          <!-- Botão Apple: abre modal com instruções para iOS -->
+          <button class="lp2-badge lp2-badge-install" onclick="abrirModalIOS()" title="Instalar no iPhone">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+            Instalação Apple
+          </button>
         </div>
       </div>
       <div class="lp2-green-right">
@@ -364,6 +366,81 @@ else:
 
   <?php include_once __DIR__ . '/components/footer.php'; ?>
 </div>
+
+<!-- Modal iOS: Instruções de Instalação PWA no iPhone -->
+<div class="pwa-modal-overlay" id="pwaModalIOS" onclick="fecharModalIOS(event)">
+  <div class="pwa-modal-box">
+    <div class="pwa-modal-handle"></div>
+    <h3>📱 Instalar no iPhone</h3>
+    <p class="pwa-modal-sub">Siga os passos abaixo para adicionar o Strively à tela de início do seu iPhone.</p>
+    <ol class="pwa-modal-steps">
+      <li class="pwa-step">
+        <div class="pwa-step-num">1</div>
+        <div class="pwa-step-text">Abra esta página no <strong>Safari</strong> (não funciona em outros navegadores no iPhone).</div>
+      </li>
+      <li class="pwa-step">
+        <div class="pwa-step-num">2</div>
+        <div class="pwa-step-text">Toque no ícone de <strong>Compartilhar</strong> <span style="font-size:1.1em">⬆️</span> na barra inferior do Safari.</div>
+      </li>
+      <li class="pwa-step">
+        <div class="pwa-step-num">3</div>
+        <div class="pwa-step-text">Role até encontrar <strong>"Adicionar à Tela de Início"</strong> e toque nessa opção.</div>
+      </li>
+      <li class="pwa-step">
+        <div class="pwa-step-num">4</div>
+        <div class="pwa-step-text">Confirme tocando em <strong>"Adicionar"</strong> no canto superior direito.</div>
+      </li>
+    </ol>
+    <button class="pwa-modal-btn-close" onclick="fecharModalIOS()">Entendido!</button>
+  </div>
+</div>
+
+<script>
+  /* ================================================
+     PWA Install — Android (prompt nativo) + iOS (modal)
+     ================================================ */
+
+  // Abre o modal de instruções para iOS
+  function abrirModalIOS() {
+    document.getElementById('pwaModalIOS').classList.add('pwa-modal-open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  // Fecha o modal iOS (clique no overlay ou no botão)
+  function fecharModalIOS(e) {
+    if (!e || e.target === document.getElementById('pwaModalIOS')) {
+      document.getElementById('pwaModalIOS').classList.remove('pwa-modal-open');
+      document.body.style.overflow = '';
+    }
+  }
+
+  // Tenta instalar o PWA no Android usando o evento beforeinstallprompt
+  function instalarAndroid() {
+    if (window.deferredPWAPrompt) {
+      window.deferredPWAPrompt.prompt();
+      window.deferredPWAPrompt.userChoice.then(function(choice) {
+        if (choice.outcome === 'accepted') {
+          // App aceito — pode esconder/desabilitar o botão
+          var btn = document.getElementById('btn-instalar-android');
+          if (btn) {
+            btn.textContent = '✓ Instalado!';
+            btn.disabled = true;
+            btn.style.opacity = '0.7';
+          }
+        }
+        window.deferredPWAPrompt = null;
+      });
+    } else {
+      // Prompt não disponível: app já instalado ou navegador não suporta
+      var isAndroid = /android/i.test(navigator.userAgent);
+      if (isAndroid) {
+        alert('O app já pode estar instalado, ou abra o site no Chrome para instalar.');
+      } else {
+        alert('Instale pelo Chrome no Android para usar esta opção.');
+      }
+    }
+  }
+</script>
 
 <?php endif; // Fim do if/else principal ?>
 
@@ -556,7 +633,7 @@ else:
   margin: 0 auto;
 }
 
-/* STORE BADGES */
+/* INSTALL BADGES */
 .lp2-badges {
   display: flex;
   gap: 12px;
@@ -577,7 +654,112 @@ else:
   cursor: default;
   transition: background 0.2s;
 }
-.lp2-badge:hover { background: rgba(255,255,255,0.22); }
+.lp2-badge-install {
+  cursor: pointer;
+  border: none;
+  font-family: inherit;
+  transition: background 0.2s, transform 0.15s, box-shadow 0.15s;
+}
+.lp2-badge-install:hover {
+  background: rgba(255,255,255,0.28);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+}
+.lp2-badge-install:active { transform: translateY(0); }
+.lp2-badge:not(.lp2-badge-install):hover { background: rgba(255,255,255,0.22); }
+
+/* MODAL iOS PWA */
+.pwa-modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.65);
+  backdrop-filter: blur(4px);
+  z-index: 9999;
+  align-items: flex-end;
+  justify-content: center;
+}
+.pwa-modal-overlay.pwa-modal-open {
+  display: flex;
+  animation: pwaFadeIn 0.2s ease;
+}
+@keyframes pwaFadeIn { from { opacity:0 } to { opacity:1 } }
+.pwa-modal-box {
+  background: #fff;
+  border-radius: 24px 24px 0 0;
+  padding: 32px 28px 40px;
+  width: 100%;
+  max-width: 480px;
+  animation: pwaSlideUp 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  position: relative;
+}
+@keyframes pwaSlideUp { from { transform: translateY(100%) } to { transform: translateY(0) } }
+.pwa-modal-handle {
+  width: 40px;
+  height: 4px;
+  background: #e0e0e0;
+  border-radius: 4px;
+  margin: 0 auto 24px;
+}
+.pwa-modal-box h3 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #111;
+  margin: 0 0 6px;
+}
+.pwa-modal-box .pwa-modal-sub {
+  font-size: 0.85rem;
+  color: #777;
+  margin-bottom: 24px;
+}
+.pwa-modal-steps {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.pwa-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+.pwa-step-num {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  background: #1DB954;
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.9rem;
+}
+.pwa-step-text {
+  flex: 1;
+  padding-top: 5px;
+  font-size: 0.9rem;
+  color: #333;
+  line-height: 1.5;
+}
+.pwa-step-text strong { color: #111; }
+.pwa-modal-btn-close {
+  width: 100%;
+  background: #1DB954;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 14px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.2s;
+}
+.pwa-modal-btn-close:hover { background: #17a349; }
 
 /* FEATURE SECTIONS */
 .lp2-feature {
